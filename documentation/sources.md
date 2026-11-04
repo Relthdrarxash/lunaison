@@ -1,4 +1,6 @@
-# Sources
+# Sources et choix de conception
+
+L'appli reste au strict nécessaire : ce document explique ce qu'elle ne dit pas elle-même, à savoir d'où viennent ses repères et pourquoi elle est faite ainsi. Il est publié sur le site : [Sources et choix de conception](https://relthdrarxash.github.io/lunaison/sources.html).
 
 Chaque affirmation de santé de l'appli renvoie à l'une de ces références. Elles sont aussi déclarées dans [`Sources.kt`](../core/content/src/main/kotlin/fr/lunaison/core/content/Sources.kt), et un test vérifie que chaque fiche en cite au moins une.
 
@@ -41,3 +43,17 @@ Chaque affirmation de santé de l'appli renvoie à l'une de ces références. El
 
 - La fiche « Pour l'entourage » donne des conseils de bon sens, sans référence.
 - Les seuils des signaux (deux règles sur les trois dernières avec des douleurs fortes, trois jours abondants ou plus) sont des choix prudents de l'appli, pas des critères cliniques. Ils servent à suggérer un avis, jamais à poser un diagnostic.
+
+## Choix de conception
+
+Certains s'appuient sur une des références ci-dessus, d'autres sur le bon sens. Aucun n'a été évalué dans l'appli elle-même, et ils peuvent changer si les retours montrent qu'ils gênent.
+
+- **Une plage plutôt qu'une date.** La durée du cycle varie de quelques jours d'un mois à l'autre, même chez une personne régulière (Bull et al., 2019). L'appli affiche donc une plage, calculée sur les six derniers cycles, qui se resserre quand l'historique grandit.
+- **L'ovulation estimée à partir des règles suivantes, pas au 14e jour.** La phase après l'ovulation est assez stable alors que celle d'avant varie beaucoup (Bull et al., 2019). L'appli indique cette période pour comprendre son cycle, jamais comme des jours « sans risque » : les méthodes fondées sur le calendrier échouent souvent (Trussell, 2011).
+- **La douleur décrite par son effet, pas par une note sur 10.** « Légère », « Gênante », « Forte : elle m'empêche de faire mes activités ». Le niveau « Forte » reprend le critère qui justifie un avis médical : une douleur qui empêche les activités (ACOG, 2018). Une note chiffrée varie d'une personne à l'autre et ne dit pas ce que la douleur empêche.
+- **Des conseils par phase sans injonction.** L'appli dit ce qui se passe et ce qui aide. Elle ne dit pas qu'une phase « doit » se vivre d'une certaine façon : adapter tout son quotidien à chaque phase ne repose pas sur des études solides.
+- **Ce qui revient chez soi d'un cycle à l'autre.** Plutôt que des généralités, l'appli montre ce que la personne a elle-même noté pendant la même phase des cycles précédents.
+- **Des repères adaptés avant 18 ans.** Les cycles sont plus variables les premières années (ACOG, 2015) : les seuils des signaux en tiennent compte.
+- **Le partage réservé aux 18 ans et plus, et envoyé par la personne.** Il s'agit d'informations intimes : l'appli prépare un message, la personne le relit et appuie elle-même sur Envoyer. Il n'y a ni serveur, ni envoi automatique.
+- **Pas de sauvegarde dans le nuage.** Les données de santé ne quittent pas le téléphone du fait de l'appli. Un export au format tableur permet de les garder ailleurs, à l'endroit choisi par la personne.
+- **Des rappels discrets.** Sur l'écran verrouillé, seul le nom de l'appli s'affiche.
