@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comment ça marche : Lunaison</title>
+  <meta name="description" content="Comment Lunaison reconnaît vos règles, estime les suivantes, place les phases et signale ce qui mérite un avis médical.">
+  <link rel="icon" href="icone.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#contenu">Aller au contenu</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="./">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F1E2EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        Lunaison
+      </a>
+      <nav class="site-nav" aria-label="Navigation du site">
+        <a href="./">L'appli</a>
+        <a href="fonctionnement.html" aria-current="page">Comment ça marche</a>
+        <a href="sources.html">Ce que disent les études</a>
+        <a href="questions.html">Questions</a>
+        <a href="confidentialite.html">Confidentialité</a>
+      </nav>
+    </div>
+  </header>
+  <main id="contenu" class="wrap">
+    <section class="hero">
+      <p class="eyebrow">Comment ça marche</p>
+      <h1>Pas de magie, juste vos cycles</h1>
+      <p class="lead">Lunaison ne devine rien : elle lit ce que vous avez noté, applique quelques règles simples et publiques, et vous montre toujours la part d'incertitude. Voici lesquelles.</p>
+    </section>
+
+    <section class="section" aria-labelledby="phases">
+      <h2 id="phases">Les quatre temps d'un cycle</h2>
+      <p>Un cycle commence le premier jour des règles. Les durées ci-dessous sont un exemple : chez la plupart des personnes, c'est la première moitié qui varie, la seconde reste assez stable autour de 12 à 13 jours.</p>
+      <figure class="figure">
+        <svg viewBox="0 0 640 170" role="img" aria-labelledby="phases-titre phases-desc">
+          <title id="phases-titre">Les phases d'un cycle de 28 jours, à titre d'exemple</title>
+          <desc id="phases-desc">Règles du jour 1 au jour 5, phase folliculaire du jour 6 au jour 12, ovulation estimée autour des jours 13 à 16, phase lutéale du jour 17 au jour 28.</desc>
+          <rect x="20" y="40" width="100" height="44" rx="10" style="fill:var(--clay)"/>
+          <rect x="124" y="40" width="136" height="44" rx="10" style="fill:var(--accent-soft)"/>
+          <rect x="264" y="40" width="76" height="44" rx="10" style="fill:none;stroke:var(--clay);stroke-width:3;stroke-dasharray:6 5"/>
+          <rect x="344" y="40" width="276" height="44" rx="10" style="fill:var(--accent-soft);opacity:.7"/>
+          <g style="fill:var(--text);font-size:15px;font-weight:700;font-family:inherit">
+            <text x="70" y="67" text-anchor="middle" style="fill:var(--bg)">Règles</text>
+            <text x="192" y="67" text-anchor="middle">Folliculaire</text>
+            <text x="302" y="67" text-anchor="middle">Ovulation</text>
+            <text x="482" y="67" text-anchor="middle">Lutéale</text>
+          </g>
+          <g style="fill:var(--text-muted);font-size:13px;font-family:inherit">
+            <text x="20" y="28">Jour 1</text>
+            <text x="264" y="28">vers le jour 14 (estimé)</text>
+            <text x="620" y="28" text-anchor="end">Jour 28</text>
+            <text x="192" y="110" text-anchor="middle">durée variable</text>
+            <text x="482" y="110" text-anchor="middle">environ 12 à 13 jours, plus stable</text>
+            <text x="482" y="150" text-anchor="middle">les derniers jours : syndrome prémenstruel possible</text>
+          </g>
+          <line x1="560" y1="122" x2="620" y2="122" style="stroke:var(--clay);stroke-width:3;stroke-linecap:round"/>
+        </svg>
+        <figcaption>Seuls 13 % des cycles durent exactement 28 jours (Bull et al., 2019, plus de 600 000 cycles). L'ovulation n'a pas lieu au 14e jour chez la plupart des gens.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" aria-labelledby="prevision">
+      <h2 id="prevision">Comment Lunaison estime vos prochaines règles</h2>
+      <ol class="steps">
+        <li><strong>Reconnaître les règles.</strong> Un jour avec un vrai saignement commence des règles ; de simples traces, non. Jusqu'à deux jours sans saisie au milieu ne coupent pas des règles en deux.</li>
+        <li><strong>Mesurer vos cycles.</strong> Chaque cycle va d'un premier jour de règles au suivant. Un écart de moins de 15 jours ou de plus de 90 jours est probablement un oubli de saisie : il est écarté du calcul.</li>
+        <li><strong>Prendre la médiane de vos six derniers cycles.</strong> La médiane, c'est la valeur du milieu : un cycle inhabituel (stress, maladie, voyage) ne la fait pas dérailler, contrairement à une moyenne.</li>
+        <li><strong>Donner une fourchette.</strong> Sa largeur dépend de la variation de vos cycles : de 2 jours de part et d'autre si vos cycles sont très réguliers, jusqu'à 7 si vos cycles varient beaucoup. Sans historique, elle part de ce que vous avez indiqué au démarrage, avec 4 jours de marge.</li>
+        <li><strong>Estimer les phases.</strong> L'ovulation est placée environ 13 jours avant les prochaines règles, parce que cette partie du cycle varie peu. C'est une estimation, pas une mesure.</li>
+      </ol>
+      <figure class="figure">
+        <svg viewBox="0 0 640 230" role="img" aria-labelledby="prev-titre prev-desc">
+          <title id="prev-titre">Exemple de prévision à partir de six cycles</title>
+          <desc id="prev-desc">Six cycles de 27, 28, 28, 29, 30 et 31 jours. La médiane est de 28,5 jours, arrondie à 29. La fourchette affichée va de 2 jours avant à 2 jours après.</desc>
+          <g style="fill:var(--text-muted);font-size:13px;font-family:inherit">
+            <text x="20" y="22" style="fill:var(--text);font-weight:700;font-size:15px">Vos six derniers cycles (en jours)</text>
+            <text x="80" y="102" text-anchor="middle">26</text><text x="160" y="102" text-anchor="middle">27</text><text x="240" y="102" text-anchor="middle">28</text>
+            <text x="320" y="102" text-anchor="middle">29</text><text x="400" y="102" text-anchor="middle">30</text><text x="480" y="102" text-anchor="middle">31</text><text x="560" y="102" text-anchor="middle">32</text>
+          </g>
+          <line x1="60" y1="80" x2="580" y2="80" style="stroke:var(--line);stroke-width:2"/>
+          <g style="fill:var(--clay)">
+            <circle cx="160" cy="66" r="8"/><circle cx="240" cy="66" r="8"/><circle cx="240" cy="48" r="8"/>
+            <circle cx="400" cy="66" r="8"/><circle cx="480" cy="66" r="8"/><circle cx="320" cy="66" r="8"/>
+          </g>
+          <line x1="280" y1="34" x2="280" y2="86" style="stroke:var(--text);stroke-width:2;stroke-dasharray:4 4"/>
+          <text x="286" y="42" style="fill:var(--text);font-size:13px;font-weight:700;font-family:inherit">médiane 28,5 → 29</text>
+          <text x="20" y="146" style="fill:var(--text);font-weight:700;font-size:15px;font-family:inherit">Ce que l'appli affiche</text>
+          <line x1="60" y1="190" x2="580" y2="190" style="stroke:var(--line);stroke-width:2"/>
+          <rect x="240" y="172" width="160" height="36" rx="18" style="fill:var(--accent-soft)"/>
+          <circle cx="320" cy="190" r="9" style="fill:var(--clay)"/>
+          <g style="fill:var(--text-muted);font-size:13px;font-family:inherit">
+            <text x="60" y="222">dernières règles</text>
+            <text x="320" y="222" text-anchor="middle">jour probable</text>
+            <text x="240" y="166">au plus tôt</text>
+            <text x="400" y="166" text-anchor="end">au plus tard</text>
+          </g>
+        </svg>
+        <figcaption>Plus vos cycles sont réguliers, plus la fourchette est étroite. L'appli indique aussi si l'estimation est provisoire, à affiner ou fiable pour vous.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" aria-labelledby="signaux">
+      <h2 id="signaux">Les signaux « à en parler »</h2>
+      <p>Quand vos notes s'éloignent des repères médicaux, Lunaison vous le signale avec un lien vers la fiche utile. Ce n'est jamais un diagnostic : juste un point à mentionner à un médecin, un gynécologue ou une sage-femme.</p>
+      <div class="table-scroll">
+        <table class="simple">
+          <thead><tr><th>Signal</th><th>Quand il apparaît</th><th>D'où vient le repère</th></tr></thead>
+          <tbody>
+            <tr><td>Douleurs qui empêchent les activités</td><td>Douleur « forte » sur au moins 2 de vos 3 dernières règles</td><td>ACOG 2018 ; seuil choisi par l'appli</td></tr>
+            <tr><td>Flux souvent abondant</td><td>3 jours abondants ou plus, sur au moins 2 des 3 dernières règles</td><td>FIGO 2018 ; seuil choisi par l'appli</td></tr>
+            <tr><td>Règles longues</td><td>Plus de 8 jours, sur l'une des 3 dernières règles</td><td>FIGO 2018</td></tr>
+            <tr><td>Cycles hors des repères</td><td>Vos 2 derniers cycles hors de 24 à 38 jours (21 à 45 avant 18 ans)</td><td>FIGO 2018, ACOG 2015</td></tr>
+            <tr><td>Cycles très variables</td><td>Plus de 9 jours d'écart entre vos cycles, sur au moins 4 cycles (adultes)</td><td>FIGO 2018</td></tr>
+            <tr><td>Pas de règles depuis longtemps</td><td>Plus de 90 jours depuis les dernières règles</td><td>ACOG 2015</td></tr>
+            <tr><td>Saignements entre les règles</td><td>Au moins 2 jours de traces en dehors des règles, sur les 3 derniers cycles</td><td>Seuil choisi par l'appli</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="donnees">
+      <h2 id="donnees">Où vont vos données</h2>
+      <p>Nulle part. Lunaison n'a pas la permission d'accéder à Internet : même par erreur, elle ne pourrait rien envoyer. Le seul chemin de sortie, c'est vous.</p>
+      <figure class="figure">
+        <svg viewBox="0 0 640 210" role="img" aria-labelledby="flux-titre flux-desc">
+          <title id="flux-titre">Le trajet de vos données</title>
+          <desc id="flux-desc">Vos notes restent dans le téléphone. Aucune flèche ne va vers Internet. Deux sorties possibles, toutes deux déclenchées par vous : un message envoyé par votre messagerie, ou un fichier exporté.</desc>
+          <rect x="20" y="30" width="220" height="150" rx="24" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/>
+          <text x="130" y="62" text-anchor="middle" style="fill:var(--text);font-weight:800;font-size:16px;font-family:inherit">Votre téléphone</text>
+          <rect x="50" y="80" width="160" height="40" rx="12" style="fill:var(--accent-soft)"/>
+          <text x="130" y="105" text-anchor="middle" style="fill:var(--text);font-size:14px;font-family:inherit">Lunaison et vos notes</text>
+          <text x="130" y="152" text-anchor="middle" style="fill:var(--text-muted);font-size:13px;font-family:inherit">sauvegarde cloud désactivée</text>
+          <g style="stroke:var(--text-muted);stroke-width:2;fill:none">
+            <path d="M300 40 a24 24 0 0 1 46 -6 a18 18 0 0 1 30 14 a16 16 0 0 1 -6 32 h-66 a20 20 0 0 1 -4 -40 z"/>
+          </g>
+          <line x1="292" y1="30" x2="388" y2="94" style="stroke:var(--clay);stroke-width:4;stroke-linecap:round"/>
+          <text x="340" y="118" text-anchor="middle" style="fill:var(--text-muted);font-size:13px;font-family:inherit">pas d'accès à Internet</text>
+          <path d="M240 150 H420" style="stroke:var(--clay);stroke-width:3;fill:none;marker-end:url(#fleche)"/>
+          <defs><marker id="fleche" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--clay)"/></marker></defs>
+          <rect x="425" y="122" width="195" height="62" rx="16" style="fill:var(--accent-soft)"/>
+          <text x="522" y="148" text-anchor="middle" style="fill:var(--text);font-weight:700;font-size:14px;font-family:inherit">Message ou fichier</text>
+          <text x="522" y="168" text-anchor="middle" style="fill:var(--text-muted);font-size:13px;font-family:inherit">seulement si vous l'envoyez</text>
+        </svg>
+        <figcaption>Le partage avec un ou une partenaire passe par votre propre messagerie (SMS, WhatsApp, Signal). L'export produit un fichier tableur que vous rangez où vous voulez.</figcaption>
+      </figure>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Lunaison n'est ni un dispositif médical ni une méthode de contraception. Elle ne remplace pas l'avis d'un professionnel de santé.</p>
+      <div class="footer-links">
+        <a href="./">L'appli</a>
+        <a href="fonctionnement.html">Comment ça marche</a>
+        <a href="sources.html">Ce que disent les études</a>
+        <a href="questions.html">Questions</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="https://github.com/Relthdrarxash/lunaison">Code source</a>
+        <a href="mailto:escale.apps@proton.me">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
