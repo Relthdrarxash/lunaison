@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lunaison : suivi du cycle, libre et sans compte</title>
-  <meta name="description" content="Lunaison : suivi du cycle menstruel gratuit et libre, sans compte, sans traceur et sans accès à Internet. Prévisions, conseils sourcés et partage avec son ou sa partenaire.">
+  <meta name="description" content="Lunaison : suivi du cycle menstruel gratuit et libre, sans compte, sans traceur et sans accès à Internet. Prévisions honnêtes, conseils sourcés, partage avec son ou sa partenaire.">
   <link rel="icon" href="icone.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -17,7 +17,10 @@
         Lunaison
       </a>
       <nav class="site-nav" aria-label="Navigation du site">
-        <a href="./#fonctions" aria-current="page">L'appli</a>
+        <a href="./" aria-current="page">L'appli</a>
+        <a href="fonctionnement.html">Comment ça marche</a>
+        <a href="sources.html">Ce que disent les études</a>
+        <a href="questions.html">Questions</a>
         <a href="confidentialite.html">Confidentialité</a>
       </nav>
     </div>
@@ -25,55 +28,85 @@
   <main id="contenu" class="wrap">
     <section class="hero">
       <h1>Votre cycle, rien qu'à vous.</h1>
-      <p>Lunaison suit vos règles, vos symptômes et votre humeur, vous explique chaque phase et prévoit les prochaines règles. Tout reste sur votre téléphone.</p>
+      <p class="lead">Lunaison suit vos règles, vos symptômes et votre humeur, vous explique ce qui se passe à chaque phase et estime l'arrivée des prochaines règles. Tout reste sur votre téléphone : l'appli n'a même pas accès à Internet.</p>
       <ul class="badges">
         <li>Gratuit</li>
         <li>Libre (GPL-3.0)</li>
         <li>Sans compte</li>
-        <li>Sans traceur</li>
+        <li>Sans publicité ni traceur</li>
         <li>Sans accès à Internet</li>
+      </ul>
+      <div class="actions">
+        <a class="button" href="#installer">Installer Lunaison</a>
+        <a class="button secondary" href="fonctionnement.html">Comment ça marche</a>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="captures">
+      <p class="eyebrow">Aperçu</p>
+      <h2 id="captures">À quoi ressemble l'appli</h2>
+      <ul class="gallery">
+        <li><figure><img src="captures/accueil.png" alt="Écran d'accueil : jour du cycle, phase estimée, prochaines règles et conseil du moment" loading="lazy"><figcaption>L'accueil : où vous en êtes, et quand arrivent les prochaines règles.</figcaption></figure></li>
+        <li><figure><img src="captures/journee.png" alt="Saisie d'une journée : flux, douleur, symptômes, humeurs et note" loading="lazy"><figcaption>Noter sa journée : flux, douleur, symptômes, humeurs.</figcaption></figure></li>
+        <li><figure><img src="captures/calendrier.png" alt="Calendrier avec les règles notées et les règles prévues" loading="lazy"><figcaption>Le calendrier : chaque jour se complète d'un appui, même après coup.</figcaption></figure></li>
+        <li><figure><img src="captures/accueil_regles.png" alt="Accueil pendant les règles, avec les conseils de la phase" loading="lazy"><figcaption>Pendant les règles : des conseils adaptés à la phase.</figcaption></figure></li>
+        <li><figure><img src="captures/comprendre.png" alt="Liste des fiches : cycle, douleurs, alimentation, syndrome prémenstruel" loading="lazy"><figcaption>Des fiches courtes, chacune avec ses études.</figcaption></figure></li>
+        <li><figure><img src="captures/fiche_douleurs.png" alt="Fiche sur les douleurs de règles avec ses sources" loading="lazy"><figcaption>Ce qui soulage vraiment les douleurs, et quand consulter.</figcaption></figure></li>
+        <li><figure><img src="captures/partage.png" alt="Message préparé pour prévenir un ou une partenaire" loading="lazy"><figcaption>Prévenir son ou sa partenaire, par sa propre messagerie.</figcaption></figure></li>
+        <li><figure><img src="captures/accueil_sombre.png" alt="Accueil en thème sombre" loading="lazy"><figcaption>Un thème sombre, plus doux le soir.</figcaption></figure></li>
       </ul>
     </section>
 
-    <div class="shots" aria-label="Captures d'écran">
-      <img src="captures/accueil.png" alt="Accueil : jour du cycle, phase estimée et prochaines règles">
-      <img src="captures/journee.png" alt="Saisie d'une journée : flux, douleur, symptômes et humeur">
-      <img src="captures/calendrier.png" alt="Calendrier des règles notées et prévues, et historique des cycles">
-      <img src="captures/partage.png" alt="Partage d'un message avec un ou une partenaire">
-    </div>
+    <section class="section" aria-labelledby="pourquoi">
+      <p class="eyebrow">Pourquoi</p>
+      <h2 id="pourquoi">Des données parmi les plus intimes qui soient</h2>
+      <p>Les applis de suivi du cycle les plus utilisées stockent tout sur leurs serveurs, et certaines ont déjà partagé ces informations avec des services de publicité ou d'analyse. Les dates de règles, les rapports, une grossesse possible : ce ne sont pas des données comme les autres.</p>
+      <p>Lunaison part du principe inverse : <strong>ce que vous notez ne quitte jamais votre téléphone</strong>, sauf si vous l'envoyez vous-même. Pas de compte, pas de serveur, pas de publicité. Et parce que le code est public, chacun peut le vérifier.</p>
+      <p>L'autre parti pris, c'est l'honnêteté : une prévision est toujours une fourchette, chaque conseil de santé renvoie à une étude publiée, et quand les preuves sont faibles, l'appli le dit.</p>
+    </section>
 
-    <section id="fonctions" class="cards">
-      <div class="card">
-        <h2>Noter en quelques secondes</h2>
-        <p>Flux, douleur, symptômes, humeur et une note si vous le souhaitez. Tout est facultatif, et un jour oublié se remplit plus tard.</p>
+    <section class="section" aria-labelledby="fonctions">
+      <p class="eyebrow">Ce que fait l'appli</p>
+      <h2 id="fonctions">Six choses, bien faites</h2>
+      <div class="cards">
+        <div class="card"><h3>Noter en quelques secondes</h3><p>Flux, douleur, symptômes, humeur et une note si vous voulez. Tout est facultatif, et un jour oublié se remplit plus tard depuis le calendrier.</p></div>
+        <div class="card"><h3>Des prévisions honnêtes</h3><p>Une plage de dates probable, calculée sur vos six derniers cycles, qui se resserre à mesure que vous en notez.</p></div>
+        <div class="card"><h3>Comprendre chaque phase</h3><p>Ce qui se passe dans le corps, ce qui peut aider, et ce qui revient chez vous à ce moment du cycle d'après vos notes.</p></div>
+        <div class="card"><h3>Des fiches sourcées</h3><p>Douleurs, alimentation, syndrome prémenstruel, protections, quand consulter : chaque fiche cite ses études.</p></div>
+        <div class="card"><h3>Savoir quand en parler</h3><p>Douleurs fortes répétées, règles très longues ou abondantes, cycles hors des repères : l'appli le signale, sans jamais poser de diagnostic.</p></div>
+        <div class="card"><h3>Prévenir son ou sa partenaire</h3><p>Un message prêt à envoyer par SMS, WhatsApp ou Signal. C'est vous qui appuyez sur Envoyer. Réservé aux 18 ans et plus.</p></div>
       </div>
-      <div class="card">
-        <h2>Des prévisions honnêtes</h2>
-        <p>Une plage de dates probable, calculée à partir de vos derniers cycles, qui se resserre à mesure que vous en notez.</p>
+    </section>
+
+    <section class="section" aria-labelledby="chercher">
+      <p class="eyebrow">Vous cherchez…</p>
+      <h2 id="chercher">Aller directement à l'essentiel</h2>
+      <div class="cards">
+        <div class="card"><h3>Comment sont calculées les prévisions ?</h3><p>Les étapes du calcul, les schémas et les seuils des signaux.</p><p><a href="fonctionnement.html">Comment ça marche</a></p></div>
+        <div class="card"><h3>Ce qui soulage vraiment les règles douloureuses</h3><p>Les études derrière chaque conseil, avec leur niveau de preuve.</p><p><a href="sources.html">Ce que disent les études</a></p></div>
+        <div class="card"><h3>Est-ce une contraception ? Où vont mes données ?</h3><p>Les réponses courtes aux questions les plus fréquentes.</p><p><a href="questions.html">Questions fréquentes</a></p></div>
       </div>
-      <div class="card">
-        <h2>Comprendre chaque phase</h2>
-        <p>Ce qui se passe, ce qui aide, et ce qui revient chez vous pendant cette phase d'après vos cycles précédents.</p>
+    </section>
+
+    <section class="section" aria-labelledby="installer">
+      <p class="eyebrow">Installer</p>
+      <h2 id="installer">Pour Android 8 et plus</h2>
+      <p>Lunaison est en phase de test. Elle arrivera sur Google Play après les tests ; en attendant, l'APK signé est disponible sur GitHub.</p>
+      <div class="actions">
+        <a class="button" href="https://github.com/Relthdrarxash/lunaison/releases/latest">Télécharger l'APK (GitHub)</a>
+        <a class="button secondary" href="mailto:escale.apps@proton.me?subject=Tester%20Lunaison">Devenir testeur ou testeuse</a>
       </div>
-      <div class="card">
-        <h2>Des fiches sourcées</h2>
-        <p>Douleurs, alimentation, syndrome prémenstruel, quand consulter, choc toxique : chaque fiche cite ses études.</p>
-      </div>
-      <div class="card">
-        <h2>Savoir quand consulter</h2>
-        <p>Douleurs fortes répétées, règles très longues ou abondantes, cycles hors des repères : l'appli vous le signale, sans jamais poser de diagnostic.</p>
-      </div>
-      <div class="card">
-        <h2>Prévenir son ou sa partenaire</h2>
-        <p>Un message prêt à envoyer par SMS, WhatsApp ou Signal. C'est vous qui appuyez sur Envoyer : rien ne part automatiquement. Réservé aux 18 ans et plus.</p>
-      </div>
+      <p class="source">La version GitHub et la future version Google Play ne sont pas signées par la même clé : pour passer de l'une à l'autre, désinstallez d'abord la première (en exportant vos données si besoin, depuis les réglages).</p>
     </section>
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>Lunaison n'est ni un dispositif médical ni une méthode de contraception.</p>
+      <p>Lunaison n'est ni un dispositif médical ni une méthode de contraception. Elle ne remplace pas l'avis d'un professionnel de santé.</p>
       <div class="footer-links">
-        <a href="./">Accueil</a>
+        <a href="./">L'appli</a>
+        <a href="fonctionnement.html">Comment ça marche</a>
+        <a href="sources.html">Ce que disent les études</a>
+        <a href="questions.html">Questions</a>
         <a href="confidentialite.html">Confidentialité</a>
         <a href="https://github.com/Relthdrarxash/lunaison">Code source</a>
         <a href="mailto:escale.apps@proton.me">Contact</a>
