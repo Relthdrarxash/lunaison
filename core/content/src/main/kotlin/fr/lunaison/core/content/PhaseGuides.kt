@@ -1,6 +1,7 @@
 package fr.lunaison.core.content
 
 import fr.lunaison.core.cycle.Phase
+import fr.lunaison.core.model.Language
 
 /**
  * Conseils affichés sur l'accueil selon la phase estimée.
@@ -16,6 +17,17 @@ data class PhaseGuide(
 )
 
 object PhaseGuides {
+    val all: List<PhaseGuide> get() = forLanguage(Language.current())
+
+    fun forLanguage(language: Language): List<PhaseGuide> = when (language) {
+        Language.FR -> PhaseGuidesFr.all
+        Language.EN -> PhaseGuidesEn.all
+    }
+
+    fun forPhase(phase: Phase): PhaseGuide = all.first { it.phase == phase }
+}
+
+internal object PhaseGuidesFr {
 
     val menstrual = PhaseGuide(
         phase = Phase.MENSTRUAL,
@@ -77,6 +89,4 @@ object PhaseGuides {
     )
 
     val all: List<PhaseGuide> = listOf(menstrual, follicular, ovulation, luteal, late)
-
-    fun forPhase(phase: Phase): PhaseGuide = all.first { it.phase == phase }
 }
