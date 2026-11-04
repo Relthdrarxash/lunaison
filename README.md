@@ -16,6 +16,10 @@ Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans 
 
 Lunaison n'est **ni un dispositif médical ni une méthode de contraception**.
 
+## Pourquoi Lunaison est gratuite
+
+Lunaison est née d'un besoin de ma compagne : suivre son cycle plus facilement, et me permettre de l'accompagner au quotidien. Les applications existantes réservent souvent leurs fonctions utiles à un abonnement, ou se financent avec les données de leurs utilisatrices, alors que ce sont parmi les plus intimes qui soient. Lunaison fait l'inverse : elle est gratuite, libre, fonctionne sans Internet et garde tout sur le téléphone. Le partage avec le ou la partenaire passe par la messagerie du téléphone, quand la personne le décide, et ne contient jamais de données de fertilité.
+
 ## Vie privée
 
 - Aucune permission Internet, aucun SDK tiers, aucun compte.
