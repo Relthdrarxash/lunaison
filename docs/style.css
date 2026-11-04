@@ -134,3 +134,14 @@ a { color: var(--link); text-underline-offset: 3px; }
 table.simple { border-collapse: collapse; width: 100%; font-size: 1rem; }
 table.simple th, table.simple td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .table-scroll { overflow-x: auto; }
+
+/* Capture agrandie au clic (zoom.js). */
+.gallery img { cursor: zoom-in; transition: transform .15s ease; }
+.gallery img:hover { transform: scale(1.02); }
+.gallery img:focus-visible { outline: 3px solid var(--clay); outline-offset: 3px; }
+dialog.zoom { border: none; padding: 0; background: transparent; max-width: 94vw; max-height: 94vh; overflow: visible; cursor: zoom-out; }
+dialog.zoom::backdrop { background: rgba(20, 12, 24, .82); }
+dialog.zoom img { display: block; max-width: 94vw; max-height: 82vh; width: auto; height: auto; margin: 0 auto; border-radius: 22px; box-shadow: 0 12px 48px rgba(0, 0, 0, .45); }
+.zoom-caption { color: #FBF5F2; text-align: center; margin: 12px auto 0; max-width: 40ch; font-size: 1rem; }
+.zoom-close { position: fixed; top: 12px; right: 12px; width: 48px; height: 48px; border-radius: 50%; border: none; background: #FBF5F2; color: #2A1F2D; font-size: 1.8rem; line-height: 1; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .gallery img { transition: none; } .gallery img:hover { transform: none; } }
