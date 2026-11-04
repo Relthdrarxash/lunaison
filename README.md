@@ -16,6 +16,8 @@ Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans 
 
 Lunaison n'est **ni un dispositif médical ni une méthode de contraception**.
 
+L'appli reste au strict nécessaire. Ce qu'elle ne dit pas elle-même, d'où viennent ses repères et pourquoi elle est faite ainsi, est expliqué dans [Sources et choix de conception](https://relthdrarxash.github.io/lunaison/sources.html).
+
 ## Vie privée
 
 - Aucune permission Internet, aucun SDK tiers, aucun compte.
@@ -36,7 +38,7 @@ Kotlin, Jetpack Compose, Material 3, Room, WorkManager. minSdk 26, targetSdk 36.
 :core:designsystem   Thème, police Atkinson Hyperlegible, composants accessibles
 ```
 
-Les règles du moteur et leurs références sont dans [`CycleConfig.kt`](core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt). Les sources des contenus sont listées dans [documentation/sources.md](documentation/sources.md).
+Les règles du moteur et leurs références sont dans [`CycleConfig.kt`](core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt). Les sources des contenus et les choix de conception sont dans [documentation/sources.md](documentation/sources.md), publié sur le site : [Sources et choix de conception](https://relthdrarxash.github.io/lunaison/sources.html). Après une modification, régénérer la page avec `python3 scripts/site-sources.py`.
 
 Tests : `./gradlew test`. Construction : `./gradlew :app:assembleDebug`.
 
