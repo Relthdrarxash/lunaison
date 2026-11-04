@@ -1,5 +1,6 @@
 name: Fiche Play Store
 
+
 # Envoie à Google Play les textes de la fiche (titre, descriptions courte et longue) dans toutes
 # les langues du dossier fastlane/metadata/android, et, si demandé, l'icône, la bannière et les captures.
 # À lancer à la main : onglet Actions > Fiche Play Store > Run workflow.
