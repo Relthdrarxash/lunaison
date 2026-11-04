@@ -1,0 +1,92 @@
+package fr.lunaison.ui
+
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
+
+/** Colonne de page défilante, avec les marges communes. */
+@Composable
+fun Page(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        content = {
+            content()
+            Spacer(Modifier.height(24.dp))
+        },
+    )
+}
+
+/** Titre de page, avec un retour libellé si la page n'est pas un onglet. */
+@Composable
+fun PageTitle(title: String, onBack: (() -> Unit)? = null, subtitle: String? = null) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        if (onBack != null) {
+            IconButton(onClick = onBack) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
+            }
+            Spacer(Modifier.width(4.dp))
+        }
+        Column {
+            Text(title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
+            if (subtitle != null) {
+                Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    }
+}
+
+@Composable
+fun Bullet(text: String) {
+    Row {
+        Text("•", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(end = 10.dp))
+        Text(text, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+@Composable
+fun Muted(text: String, modifier: Modifier = Modifier) {
+    Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = modifier)
+}
+
+/** Ouvre un lien dans le navigateur de la personne. L'appli elle-même n'a pas accès à Internet. */
+fun openLink(context: Context, url: String) {
+    try {
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    } catch (_: ActivityNotFoundException) {
+        // Aucun navigateur : rien à faire.
+    }
+}
+
+object Links {
+    const val PRIVACY = "https://relthdrarxash.github.io/lunaison/confidentialite.html"
+    const val SOURCE = "https://github.com/Relthdrarxash/lunaison"
+    const val CONTACT = "mailto:escale.apps@proton.me"
+}
