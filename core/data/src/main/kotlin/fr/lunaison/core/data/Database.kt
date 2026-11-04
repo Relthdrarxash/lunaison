@@ -9,6 +9,8 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Upsert
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.flow.Flow
 
 /** Une journée notée. Les dates sont stockées au format ISO (2026-11-04), les listes séparées par des virgules. */
@@ -39,6 +41,8 @@ data class SettingsEntity(
     val partnerPhone: String?,
     val partnerChannel: String?,
     val dismissedAlerts: String,
+    /** Début du cycle dont le bilan a déjà été lu (format ISO), pour ne pas le remontrer. */
+    val recapSeen: String? = null,
 )
 
 @Dao
@@ -71,12 +75,21 @@ interface LunaisonDao {
     suspend fun deleteSettings()
 }
 
-@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 1, exportSchema = true)
+@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 2, exportSchema = true)
 abstract class LunaisonDatabase : RoomDatabase() {
     abstract fun dao(): LunaisonDao
 
     companion object {
         fun create(context: Context): LunaisonDatabase =
-            Room.databaseBuilder(context.applicationContext, LunaisonDatabase::class.java, "lunaison.db").build()
+            Room.databaseBuilder(context.applicationContext, LunaisonDatabase::class.java, "lunaison.db")
+                .addMigrations(MIGRATION_1_2)
+                .build()
+
+        /** Version 2 : mémorise le bilan de cycle déjà lu. Une colonne ajoutée, aucune donnée touchée. */
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE settings ADD COLUMN recapSeen TEXT")
+            }
+        }
     }
 }
