@@ -14,9 +14,13 @@ Lunaison is a free Android app, open source (GPL-3.0), with no ads, no trackers 
 - **Spot what deserves medical advice**: repeated severe pain, periods longer than 8 days, repeated heavy periods, cycles outside the usual range, bleeding between periods, missing periods. Never a diagnosis.
 - **Read referenced guides**: the cycle, pain, food, premenstrual syndrome, when to see a doctor, toxic shock, limits of forecasts, a guide for partners and family.
 - **Reminders**: before your period and to log your day, discreet on the lock screen.
+- **See what your cycles show**: usual length, accuracy of forecasts, what comes back during a phase and how many days before your period, a review of each completed cycle. Calculated on the phone, never before two complete cycles.
+- **One referenced tip a day**: it changes each day according to the phase, and responds first to what you have logged.
 - **Share with a partner** (18 and over): the app prepares a message and opens SMS, WhatsApp, Signal or another app. The person taps Send themselves: nothing is sent automatically.
 
 Lunaison is **neither a medical device nor a method of contraception**.
+
+The app sticks to what is necessary. What it does not say itself, where its reference ranges come from and why it is built this way, is explained in [Sources and design choices](https://relthdrarxash.github.io/lunaison/references.html) (in French).
 
 ## Why Lunaison is free
 
@@ -44,7 +48,7 @@ The app is in French and English, following the phone's language. Every text is 
 :core:designsystem   Theme, Atkinson Hyperlegible font, accessible components
 ```
 
-The engine's rules and their references are in [`CycleConfig.kt`](core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt). The sources for the content are listed in [documentation/sources.md](documentation/sources.md) (in French).
+The engine's rules and their references are in [`CycleConfig.kt`](core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt). The sources for the content and the design choices are in [documentation/sources.md](documentation/sources.md) (in French), published on the website as [Sources and design choices](https://relthdrarxash.github.io/lunaison/references.html). After a change, regenerate the page with `python3 scripts/site-sources.py`.
 
 Tests: `./gradlew test`. Build: `./gradlew :app:assembleDebug`.
 

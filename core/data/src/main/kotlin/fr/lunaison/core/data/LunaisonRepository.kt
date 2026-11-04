@@ -36,6 +36,8 @@ data class AppSettings(
     val partner: Partner? = null,
     /** Signaux masqués par la personne, avec la date du masquage : ils reviennent au bout de 60 jours. */
     val dismissedAlerts: Map<AlertKind, LocalDate> = emptyMap(),
+    /** Début du cycle dont le bilan a été lu ou masqué. */
+    val recapSeen: LocalDate? = null,
 ) {
     val isAdult: Boolean get() = baseline.ageGroup == AgeGroup.ADULT
 
@@ -146,6 +148,7 @@ internal fun SettingsEntity.toModel() = AppSettings(
         val date = parts.getOrNull(1)?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
         if (kind != null && date != null) kind to date else null
     }.toMap(),
+    recapSeen = recapSeen?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
 )
 
 internal fun AppSettings.toEntity() = SettingsEntity(
@@ -162,4 +165,5 @@ internal fun AppSettings.toEntity() = SettingsEntity(
     partnerPhone = partner?.phone,
     partnerChannel = partner?.channel?.name,
     dismissedAlerts = dismissedAlerts.entries.joinToString(",") { "${it.key.name}@${it.value}" },
+    recapSeen = recapSeen?.toString(),
 )

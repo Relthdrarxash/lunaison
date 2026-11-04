@@ -43,14 +43,15 @@ fun ArticleScreen(id: String, onBack: () -> Unit) {
             SectionTitle(section.heading)
             section.paragraphs.forEach { Text(it, style = MaterialTheme.typography.bodyLarge) }
         }
+        // Les références ne sont pas dans le texte : un lien discret mène à la page du site qui les détaille.
         if (article.sources.isNotEmpty()) {
-            SectionTitle(tr("Sources", "Sources"))
-            article.sources.forEach { source ->
-                TextButton(onClick = { openLink(context, source.url) }) {
-                    Text(source.label, style = MaterialTheme.typography.bodySmall, textDecoration = TextDecoration.Underline)
-                }
+            TextButton(onClick = { openLink(context, Links.sourcesOf(article.id)) }) {
+                Text(
+                    tr("Sources de cette fiche, sur le site", "Sources for this guide, on the website (in French)"),
+                    style = MaterialTheme.typography.bodySmall,
+                    textDecoration = TextDecoration.Underline,
+                )
             }
-            Muted(tr("Les liens s'ouvrent dans votre navigateur.", "Links open in your browser."))
         }
     }
 }
