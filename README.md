@@ -40,6 +40,10 @@ Les règles du moteur et leurs références sont dans [`CycleConfig.kt`](core/cy
 
 Tests : `./gradlew test`. Construction : `./gradlew :app:assembleDebug`.
 
+## Pistes envisagées
+
+Les fonctions étudiées mais pas encore réalisées, comme l'import de l'historique depuis Clue ou Flo, sont décrites dans [documentation/pistes.md](documentation/pistes.md).
+
 ## Contact
 
 escale.apps@proton.me
