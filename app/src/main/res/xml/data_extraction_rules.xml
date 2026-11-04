@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Rien n'est sauvegardé dans le nuage ni transféré vers un autre appareil. L'export se fait depuis les réglages. -->
+<!--
+    Rien n'est sauvegardé dans le nuage : les données de santé ne passent jamais par un serveur.
+    Le transfert direct vers un nouveau téléphone (câble ou sans fil, au moment de sa configuration)
+    est autorisé : les données vont d'un appareil à l'autre sans quitter les mains de la personne.
+    Ces règles s'appliquent à partir d'Android 12. Avant, android:allowBackup="false" bloque tout.
+-->
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="root" />
@@ -9,10 +14,8 @@
         <exclude domain="external" />
     </cloud-backup>
     <device-transfer>
-        <exclude domain="root" />
-        <exclude domain="file" />
-        <exclude domain="database" />
-        <exclude domain="sharedpref" />
-        <exclude domain="external" />
+        <include domain="database" />
+        <include domain="sharedpref" />
+        <include domain="file" />
     </device-transfer>
 </data-extraction-rules>
