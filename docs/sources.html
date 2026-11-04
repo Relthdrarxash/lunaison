@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sources et choix de conception | Lunaison</title>
+  <meta name="description" content="D'où viennent les repères de Lunaison, et pourquoi l'appli est faite ainsi : références scientifiques et choix de conception.">
+  <link rel="icon" href="icone.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Page générée par scripts/site-sources.py à partir de documentation/sources.md : ne pas la modifier à la main. -->
+  <a class="skip" href="#contenu">Aller au contenu</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="./">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F1E2EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        Lunaison
+      </a>
+      <nav class="site-nav" aria-label="Navigation du site">
+        <a href="./#fonctions">L'appli</a>
+        <a href="sources.html" aria-current="page">Sources et choix</a>
+        <a href="confidentialite.html">Confidentialité</a>
+      </nav>
+    </div>
+  </header>
+  <main id="contenu" class="wrap">
+    <article class="prose prose-wide">
+      <h1>Sources et choix de conception</h1>
+      <p>L'appli reste au strict nécessaire : ce document explique ce qu'elle ne dit pas elle-même, à savoir d'où viennent ses repères et pourquoi elle est faite ainsi.</p>
+      <p>Chaque affirmation de santé de l'appli renvoie à l'une de ces références. Elles sont aussi déclarées dans <a href="https://github.com/Relthdrarxash/lunaison/blob/HEAD/documentation/../core/content/src/main/kotlin/fr/lunaison/core/content/Sources.kt"><code>Sources.kt</code></a>, et un test vérifie que chaque fiche en cite au moins une.</p>
+      <h2>Le cycle et ses repères</h2>
+      <div class="table-scroll"><table>
+      <thead><tr><th>Référence</th><th>Utilisée pour</th></tr></thead>
+      <tbody>
+      <tr><td>Munro MG, Critchley HOD, Fraser IS (FIGO). <em>The two FIGO systems for normal and abnormal uterine bleeding symptoms and classification of causes of abnormal uterine bleeding in the reproductive years: 2018 revisions.</em> Int J Gynaecol Obstet, 2018;143(3):393-408. <a href="https://doi.org/10.1002/ijgo.12666">doi:10.1002/ijgo.12666</a></td><td>Repères adultes : cycle de 24 à 38 jours, règles de 8 jours au plus, écart entre cycles de 7 à 9 jours au plus</td></tr>
+      <tr><td>Manuel MSD, <em>Normal Menstrual Parameters</em> (d'après la FIGO). <a href="https://www.msdmanuals.com/professional/multimedia/table/normal-menstrual-parameters">Lien</a></td><td>Signes de règles abondantes : protection changée en moins de 3 heures, caillots de plus de 2,5 cm</td></tr>
+      <tr><td>Bull JR et al. <em>Real-world menstrual cycle characteristics of more than 600,000 menstrual cycles.</em> npj Digital Medicine, 2019;2:83. <a href="https://doi.org/10.1038/s41746-019-0152-7">doi:10.1038/s41746-019-0152-7</a></td><td>Cycle moyen de 29,3 jours, 13 % de cycles de 28 jours, phase lutéale moyenne de 12,4 jours, variation moyenne de 2,6 jours d'un cycle à l'autre. Étude financée par Natural Cycles</td></tr>
+      <tr><td>ACOG, Committee Opinion n° 651. <em>Menstruation in Girls and Adolescents: Using the Menstrual Cycle as a Vital Sign</em>, 2015. <a href="https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2015/12/menstruation-in-girls-and-adolescents-using-the-menstrual-cycle-as-a-vital-sign">Lien</a></td><td>Repères à l'adolescence : cycles de 21 à 45 jours, avis après 90 jours sans règles</td></tr>
+      </tbody></table></div>
+      <h2>Douleurs</h2>
+      <div class="table-scroll"><table>
+      <thead><tr><th>Référence</th><th>Utilisée pour</th></tr></thead>
+      <tbody>
+      <tr><td>Marjoribanks J et al. <em>Nonsteroidal anti-inflammatory drugs for dysmenorrhoea.</em> Cochrane, 2015. <a href="https://doi.org/10.1002/14651858.CD001751.pub3">doi:10.1002/14651858.CD001751.pub3</a></td><td>Anti-inflammatoires plus efficaces que le placebo (45 à 53 % de soulagement contre 18 %) et que le paracétamol</td></tr>
+      <tr><td>Jo J, Lee SH. <em>Heat therapy for primary dysmenorrhea.</em> Scientific Reports, 2018;8:16252. <a href="https://doi.org/10.1038/s41598-018-34303-z">doi:10.1038/s41598-018-34303-z</a></td><td>Chaleur efficace, effet comparable aux anti-inflammatoires, preuves limitées</td></tr>
+      <tr><td>Armour M et al. <em>Exercise for dysmenorrhoea.</em> Cochrane, 2019. <a href="https://doi.org/10.1002/14651858.CD004142.pub4">doi:10.1002/14651858.CD004142.pub4</a></td><td>Activité physique régulière (45 à 60 minutes, trois fois par semaine)</td></tr>
+      <tr><td>Daily JW et al. <em>Efficacy of ginger for alleviating the symptoms of primary dysmenorrhea.</em> Pain Medicine, 2015;16(12):2243-55. <a href="https://pubmed.ncbi.nlm.nih.gov/26177393/">PubMed 26177393</a></td><td>Gingembre, preuves faibles</td></tr>
+      <tr><td>ACOG, Committee Opinion n° 760. <em>Dysmenorrhea and Endometriosis in the Adolescent</em>, 2018. <a href="https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/12/dysmenorrhea-and-endometriosis-in-the-adolescent">Lien</a></td><td>Douleur qui empêche les activités ou résiste aux traitements : consulter</td></tr>
+      <tr><td>Kvaskoff M (Inserm). <em>Endométriose : état des connaissances épidémiologiques.</em> Questions de santé publique n° 48, 2024. <a href="https://doi.org/10.1051/qsp/2024048">doi:10.1051/qsp/2024048</a></td><td>Environ 10 % des personnes réglées, délai de diagnostic de 7 à 12 ans</td></tr>
+      </tbody></table></div>
+      <h2>Alimentation et syndrome prémenstruel</h2>
+      <div class="table-scroll"><table>
+      <thead><tr><th>Référence</th><th>Utilisée pour</th></tr></thead>
+      <tbody>
+      <tr><td>EFSA. <em>Scientific Opinion on Dietary Reference Values for iron.</em> EFSA Journal, 2015;13(10):4254. <a href="https://www.efsa.europa.eu/en/efsajournal/pub/4254">Lien</a></td><td>Apport de référence en fer de 16 mg par jour avant la ménopause</td></tr>
+      <tr><td>Mohammadi MM et al. <em>The impact of omega-3 polyunsaturated fatty acids on primary dysmenorrhea.</em> Eur J Clin Pharmacol, 2022. <a href="https://pubmed.ncbi.nlm.nih.gov/35059756/">PubMed 35059756</a></td><td>Oméga-3, effet modeste</td></tr>
+      <tr><td>Thys-Jacobs S et al. <em>Calcium carbonate and the premenstrual syndrome.</em> Am J Obstet Gynecol, 1998;179(2):444-52. <a href="https://doi.org/10.1016/S0002-9378(98">doi:10.1016/S0002-9378(98)70377-1</a>70377-1)</td><td>Calcium et symptômes prémenstruels</td></tr>
+      </tbody></table></div>
+      <h2>Protections et contraception</h2>
+      <div class="table-scroll"><table>
+      <thead><tr><th>Référence</th><th>Utilisée pour</th></tr></thead>
+      <tbody>
+      <tr><td>Anses. <em>Protections intimes : composition et choc toxique, toutes nos recommandations</em>, 2025. <a href="https://www.anses.fr/fr/content/protections-intimes-composition-et-choc-toxique-toutes-nos-recommandations">Lien</a></td><td>Bons gestes avec tampons et coupes</td></tr>
+      <tr><td>Trussell J. <em>Contraceptive failure in the United States.</em> Contraception, 2011;83(5):397-404. <a href="https://doi.org/10.1016/j.contraception.2011.01.021">doi:10.1016/j.contraception.2011.01.021</a></td><td>Méthodes fondées sur le calendrier : environ une grossesse sur quatre en un an d'usage courant</td></tr>
+      </tbody></table></div>
+      <h2>Ce qui n'est pas tiré d'une étude</h2>
+      <ul>
+      <li>La fiche « Pour l'entourage » donne des conseils de bon sens, sans référence.</li>
+      <li>Les seuils des signaux (deux règles sur les trois dernières avec des douleurs fortes, trois jours abondants ou plus) sont des choix prudents de l'appli, pas des critères cliniques. Ils servent à suggérer un avis, jamais à poser un diagnostic.</li>
+      </ul>
+      <h2>Choix de conception</h2>
+      <p>Certains s'appuient sur une des références ci-dessus, d'autres sur le bon sens. Aucun n'a été évalué dans l'appli elle-même, et ils peuvent changer si les retours montrent qu'ils gênent.</p>
+      <ul>
+      <li><strong>Une plage plutôt qu'une date.</strong> La durée du cycle varie de quelques jours d'un mois à l'autre, même chez une personne régulière (Bull et al., 2019). L'appli affiche donc une plage, calculée sur les six derniers cycles, qui se resserre quand l'historique grandit.</li>
+      <li><strong>L'ovulation estimée à partir des règles suivantes, pas au 14e jour.</strong> La phase après l'ovulation est assez stable alors que celle d'avant varie beaucoup (Bull et al., 2019). L'appli indique cette période pour comprendre son cycle, jamais comme des jours « sans risque » : les méthodes fondées sur le calendrier échouent souvent (Trussell, 2011).</li>
+      <li><strong>La douleur décrite par son effet, pas par une note sur 10.</strong> « Légère », « Gênante », « Forte : elle m'empêche de faire mes activités ». Le niveau « Forte » reprend le critère qui justifie un avis médical : une douleur qui empêche les activités (ACOG, 2018). Une note chiffrée varie d'une personne à l'autre et ne dit pas ce que la douleur empêche.</li>
+      <li><strong>Des conseils par phase sans injonction.</strong> L'appli dit ce qui se passe et ce qui aide. Elle ne dit pas qu'une phase « doit » se vivre d'une certaine façon : adapter tout son quotidien à chaque phase ne repose pas sur des études solides.</li>
+      <li><strong>Ce qui revient chez soi d'un cycle à l'autre.</strong> Plutôt que des généralités, l'appli montre ce que la personne a elle-même noté pendant la même phase des cycles précédents.</li>
+      <li><strong>Des repères adaptés avant 18 ans.</strong> Les cycles sont plus variables les premières années (ACOG, 2015) : les seuils des signaux en tiennent compte.</li>
+      <li><strong>Le partage réservé aux 18 ans et plus, et envoyé par la personne.</strong> Il s'agit d'informations intimes : l'appli prépare un message, la personne le relit et appuie elle-même sur Envoyer. Il n'y a ni serveur, ni envoi automatique.</li>
+      <li><strong>Pas de sauvegarde dans le nuage.</strong> Les données de santé ne quittent pas le téléphone du fait de l'appli. Un export au format tableur permet de les garder ailleurs, à l'endroit choisi par la personne.</li>
+      <li><strong>Des rappels discrets.</strong> Sur l'écran verrouillé, seul le nom de l'appli s'affiche.</li>
+      </ul>
+      <p>Une remarque sur une source, un seuil ou une formulation ? Écrivez à <a href="mailto:escale.apps@proton.me">escale.apps@proton.me</a> ou ouvrez une demande sur <a href="https://github.com/Relthdrarxash/lunaison/issues">GitHub</a>.</p>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Lunaison n'est ni un dispositif médical ni une méthode de contraception.</p>
+      <div class="footer-links">
+        <a href="./">Accueil</a>
+        <a href="sources.html">Sources et choix</a>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="https://github.com/Relthdrarxash/lunaison">Code source</a>
+        <a href="mailto:escale.apps@proton.me">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
