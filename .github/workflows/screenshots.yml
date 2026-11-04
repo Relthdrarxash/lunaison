@@ -12,7 +12,7 @@ on:
       - ".github/workflows/screenshots.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: screenshots-${{ github.ref }}
@@ -45,17 +45,24 @@ jobs:
             echo "::error::${line}"
           done
 
-      - name: Renommer
+      - name: Copier dans docs/captures
         run: |
-          mkdir -p captures
+          mkdir -p docs/captures
           for f in screenshots/src/test/snapshots/images/*_ScreensTest_*.png; do
             name=$(basename "$f")
-            cp "$f" "captures/${name#*_ScreensTest_captures_}"
+            cp "$f" "docs/captures/${name#*_ScreensTest_captures_}"
           done
-          ls -la captures
+          ls -la docs/captures
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: captures
-          path: captures/
-          retention-days: 30
+      # Un envoi fait avec le jeton de la CI ne relance pas les workflows : pas de boucle.
+      - name: Enregistrer si elles ont changé
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add docs/captures
+          if git diff --cached --quiet; then
+            echo "Captures inchangées."
+          else
+            git commit -m "Captures d'écran à jour"
+            git push
+          fi

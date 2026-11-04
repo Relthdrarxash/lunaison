@@ -1,11 +1,17 @@
 package fr.lunaison.screenshots
 
+import androidx.activity.compose.LocalActivityResultRegistryOwner
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.ActivityResultRegistryOwner
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityOptionsCompat
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import fr.lunaison.core.data.AppSettings
@@ -88,10 +94,19 @@ class ScreensTest {
     @get:Rule
     val paparazzi = Paparazzi(deviceConfig = DeviceConfig.PIXEL_5, maxPercentDifference = 0.1)
 
+    // Les écrans qui ouvrent le sélecteur de contacts ou de fichiers ont besoin d'un registre, même factice.
+    private val registryOwner = object : ActivityResultRegistryOwner {
+        override val activityResultRegistry = object : ActivityResultRegistry() {
+            override fun <I, O> onLaunch(requestCode: Int, contract: ActivityResultContract<I, O>, input: I, options: ActivityOptionsCompat?) = Unit
+        }
+    }
+
     private fun shot(name: String, dark: Boolean = false, content: @Composable () -> Unit) {
         paparazzi.snapshot(name) {
-            LunaisonTheme(dark = dark) {
-                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
+            CompositionLocalProvider(LocalActivityResultRegistryOwner provides registryOwner) {
+                LunaisonTheme(dark = dark) {
+                    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
+                }
             }
         }
     }
