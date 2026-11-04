@@ -26,5 +26,14 @@ kotlin {
 
 dependencies {
     implementation(project(":ui"))
+    implementation(libs.androidx.activity.compose)
     testImplementation(libs.junit)
+}
+
+// Trace complète en cas d'échec, lisible directement dans le journal de la CI.
+tasks.withType<Test>().configureEach {
+    testLogging {
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        events("failed")
+    }
 }
