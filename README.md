@@ -46,4 +46,8 @@ Les fonctions étudiées mais pas encore réalisées, comme l'import de l'histor
 
 ## Contact
 
-escale.apps@proton.me
+pilmil.studio@proton.me
+
+## Note sur le développement
+
+L'essentiel du code de Lunaison a été écrit avec Claude, l'assistant IA d'Anthropic. Je l'ai relu, testé et je le maintiens : le moteur du cycle et les contenus sont couverts par des tests automatiques, et je réponds moi-même aux tickets et aux messages.
