@@ -146,10 +146,11 @@ private fun MainScaffold(state: AppState, actions: Actions, versionName: String)
                     onArticle = { navController.navigate("fiche/$it") },
                     onShare = { navController.navigate("partage") },
                     onCalendar = { navController.openTab(Tab.CALENDAR.route) },
+                    onInsights = { navController.navigate("cycles") },
                 )
             }
             composable(Tab.CALENDAR.route) {
-                CalendarScreen(state = state, onDay = { navController.navigate("jour/$it") })
+                CalendarScreen(state = state, onDay = { navController.navigate("jour/$it") }, onInsights = { navController.navigate("cycles") })
             }
             composable(Tab.LEARN.route) {
                 LearnScreen(onArticle = { navController.navigate("fiche/$it") })
@@ -175,6 +176,9 @@ private fun MainScaffold(state: AppState, actions: Actions, versionName: String)
             }
             composable("fiche/{id}") { entry ->
                 ArticleScreen(id = entry.arguments?.getString("id").orEmpty(), onBack = { navController.popBackStack() })
+            }
+            composable("cycles") {
+                InsightsScreen(state = state, onBack = { navController.popBackStack() }, onArticle = { navController.navigate("fiche/$it") })
             }
             composable("partage") {
                 ShareScreen(

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
@@ -24,8 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
+import fr.lunaison.core.content.DailyTip
+import fr.lunaison.core.content.InsightTexts
 import fr.lunaison.core.content.PhaseGuides
 import fr.lunaison.core.cycle.AlertKind
+import fr.lunaison.core.cycle.CycleConfig
+import fr.lunaison.core.cycle.CycleRecap
 import fr.lunaison.core.cycle.CycleState
 import fr.lunaison.core.cycle.PhasePatterns
 import fr.lunaison.core.designsystem.LunaButton
@@ -43,6 +48,7 @@ fun HomeScreen(
     onArticle: (String) -> Unit,
     onShare: () -> Unit,
     onCalendar: () -> Unit,
+    onInsights: () -> Unit = {},
 ) {
     val cycle = state.cycle
     val todayLog = state.logFor(state.today)
@@ -99,8 +105,31 @@ fun HomeScreen(
             )
         }
 
+        state.recap?.let { recap ->
+            RecapCard(
+                recap = recap,
+                onInsights = onInsights,
+                onDismiss = { actions.updateSettings { it.copy(recapSeen = recap.record.start) } },
+            )
+        }
+
         if (cycle is CycleState.Known) {
             PhaseCard(state, cycle, onArticle)
+            if (cycle.stats.completedCycles >= CycleConfig.MIN_CYCLES_FOR_STATS) {
+                LunaButton("Mes cycles", onClick = onInsights, style = LunaButtonStyle.Quiet, icon = Icons.Filled.DateRange)
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecapCard(recap: CycleRecap, onInsights: () -> Unit, onDismiss: () -> Unit) {
+    LunaCard {
+        Text("Votre cycle qui vient de finir", style = MaterialTheme.typography.titleMedium)
+        InsightTexts.recapLines(recap).forEach { Bullet(it) }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            TextButton(onClick = onDismiss) { Text("Masquer") }
+            TextButton(onClick = onInsights) { Text("Mes cycles") }
         }
     }
 }
@@ -170,13 +199,9 @@ private fun AlertCard(alert: AlertKind, onRead: () -> Unit, onDismiss: () -> Uni
 private fun PhaseCard(state: AppState, cycle: CycleState.Known, onArticle: (String) -> Unit) {
     val guide = PhaseGuides.forPhase(cycle.phase)
     val pattern = PhasePatterns.compute(state.logs, cycle, cycle.phase)
+    val tip = DailyTip.pick(guide, state.today, state.logs.firstOrNull { it.date == state.today })
     SectionTitle("Ce qui se passe en ce moment")
-    LunaCard {
-        Text(guide.name, style = MaterialTheme.typography.titleMedium)
-        Text(guide.whatHappens, style = MaterialTheme.typography.bodyMedium)
-        guide.tips.forEach { Bullet(it) }
-        TextButton(onClick = { onArticle(guide.articleId) }) { Text("En savoir plus") }
-    }
+    // Ce qui est propre à la personne passe avant les conseils généraux.
     if (!pattern.isEmpty) {
         LunaCard {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -190,5 +215,17 @@ private fun PhaseCard(state: AppState, cycle: CycleState.Known, onArticle: (Stri
             pattern.symptoms.forEach { (symptom, count) -> Bullet("${symptom.label} (${count} cycles sur ${pattern.cycles})") }
             pattern.moods.forEach { (mood, count) -> Bullet("${mood.label} (${count} cycles sur ${pattern.cycles})") }
         }
+    }
+    LunaCard {
+        Text(guide.name, style = MaterialTheme.typography.titleMedium)
+        Text(guide.whatHappens, style = MaterialTheme.typography.bodyMedium)
+        if (tip != null) {
+            Text("Le conseil du jour", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
+            Text(tip.text, style = MaterialTheme.typography.bodyMedium)
+        }
+        TextButton(onClick = { onArticle(guide.articleId) }) { Text("En savoir plus") }
+    }
+    state.anticipation?.let { coming ->
+        Muted(InsightTexts.anticipationLine(coming))
     }
 }

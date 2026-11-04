@@ -9,12 +9,16 @@ Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans 
 - **Noter ses journées** : flux, douleur (décrite par son effet), symptômes, humeurs, note personnelle. Tout est facultatif, et on peut remplir un jour oublié.
 - **Prévoir les règles** : une date estimée et une plage plausible, calculées à partir des derniers cycles. La plage se resserre à mesure que l'historique grandit.
 - **Comprendre la phase en cours** : ce qui se passe, ce qui aide, et ce qui revient chez soi pendant cette phase d'après les cycles précédents.
+- **Voir ce que disent ses cycles** : durée habituelle, justesse des prévisions, ce qui revient pendant une phase et combien de jours avant les règles, bilan de chaque cycle terminé. Calculé sur le téléphone, jamais avant deux cycles complets.
+- **Un conseil sourcé par jour** : il change chaque jour selon la phase, et répond en priorité à ce qui a été noté.
 - **Repérer ce qui mérite un avis médical** : douleurs fortes répétées, règles de plus de 8 jours, règles abondantes répétées, cycles hors des repères, saignements entre les règles, absence de règles. Jamais un diagnostic.
 - **Lire des fiches sourcées** : cycle, douleurs, alimentation, syndrome prémenstruel, quand consulter, choc toxique, limites des prévisions, fiche pour l'entourage.
 - **Rappels** : avant les règles et pour noter sa journée, discrets sur l'écran verrouillé.
 - **Partager avec un ou une partenaire** (18 ans et plus) : l'appli prépare un message et ouvre SMS, WhatsApp, Signal ou une autre appli. C'est la personne qui appuie sur Envoyer : rien ne part automatiquement.
 
 Lunaison n'est **ni un dispositif médical ni une méthode de contraception**.
+
+L'appli reste au strict nécessaire. Ce qu'elle ne dit pas elle-même, d'où viennent ses repères et pourquoi elle est faite ainsi, est expliqué dans [Sources et choix de conception](https://relthdrarxash.github.io/lunaison/sources.html).
 
 ## Vie privée
 
@@ -36,7 +40,7 @@ Kotlin, Jetpack Compose, Material 3, Room, WorkManager. minSdk 26, targetSdk 36.
 :core:designsystem   Thème, police Atkinson Hyperlegible, composants accessibles
 ```
 
-Les règles du moteur et leurs références sont dans [`CycleConfig.kt`](core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt). Les sources des contenus sont listées dans [documentation/sources.md](documentation/sources.md).
+Les règles du moteur et leurs références sont dans [`CycleConfig.kt`](core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt). Les sources des contenus et les choix de conception sont dans [documentation/sources.md](documentation/sources.md), publié sur le site : [Sources et choix de conception](https://relthdrarxash.github.io/lunaison/sources.html). Après une modification, régénérer la page avec `python3 scripts/site-sources.py`.
 
 Tests : `./gradlew test`. Construction : `./gradlew :app:assembleDebug`.
 
