@@ -92,10 +92,10 @@ private object NoActions : Actions {
 }
 
 /**
- * Captures en français (docs/captures). [ScreensEnTest] produit la même série en anglais.
- * Les textes de l'appli suivent la langue de la JVM : on la fixe avant chaque série.
+ * Une série de captures dans une langue : [ScreensTest] en français (docs/captures),
+ * [ScreensEnTest] en anglais (docs/captures/en). Les textes de l'appli suivent la langue de la JVM.
  */
-open class ScreensTest(private val locale: Locale = Locale.FRENCH) {
+abstract class LocalizedScreens(private val locale: Locale) {
 
     init {
         Locale.setDefault(locale)
@@ -137,4 +137,6 @@ open class ScreensTest(private val locale: Locale = Locale.FRENCH) {
     }
 }
 
-class ScreensEnTest : ScreensTest(Locale.ENGLISH)
+class ScreensTest : LocalizedScreens(Locale.FRENCH)
+
+class ScreensEnTest : LocalizedScreens(Locale.ENGLISH)
