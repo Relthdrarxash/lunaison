@@ -46,7 +46,7 @@ private enum class Tab(val route: String, val label: String, val icon: ImageVect
 }
 
 @Composable
-fun LunaisonApp(repository: LunaisonRepository) {
+fun LunaisonApp(repository: LunaisonRepository, versionName: String) {
     val logs by repository.logs.collectAsStateWithLifecycle(initialValue = null)
     val settings by repository.settings.collectAsStateWithLifecycle(initialValue = null)
     // La date change à minuit sans redémarrer l'appli.
@@ -78,34 +78,43 @@ fun LunaisonApp(repository: LunaisonRepository) {
     }
 
     val state = remember(currentLogs, currentSettings, today) { AppState.compute(currentLogs, currentSettings, today) }
-    val actions = remember(repository) { Actions(repository, scope) }
-    MainScaffold(state, actions)
+    val actions = remember(repository) { RepositoryActions(repository, scope) }
+    MainScaffold(state, actions, versionName)
 }
 
-/** Les actions des écrans, toutes enregistrées localement. */
-class Actions(private val repository: LunaisonRepository, private val scope: kotlinx.coroutines.CoroutineScope) {
-    fun save(log: DayLog) {
-        scope.launch { repository.save(log) }
-    }
+/** Ce que les écrans peuvent faire. Une interface, pour afficher les écrans sans base de données dans les captures. */
+interface Actions {
+    fun save(log: DayLog)
 
     /** « Mes règles ont commencé » : un flux moyen par défaut, modifiable ensuite. */
     fun startPeriod(existing: DayLog) {
         save(existing.copy(flow = existing.flow?.takeIf { it.isBleeding } ?: Flow.MEDIUM))
     }
 
-    fun updateSettings(transform: (AppSettings) -> AppSettings) {
+    fun updateSettings(transform: (AppSettings) -> AppSettings)
+    fun eraseAll()
+    suspend fun exportCsv(): String
+}
+
+/** Les actions réelles, toutes enregistrées localement. */
+class RepositoryActions(private val repository: LunaisonRepository, private val scope: kotlinx.coroutines.CoroutineScope) : Actions {
+    override fun save(log: DayLog) {
+        scope.launch { repository.save(log) }
+    }
+
+    override fun updateSettings(transform: (AppSettings) -> AppSettings) {
         scope.launch { repository.updateSettings(transform) }
     }
 
-    fun eraseAll() {
+    override fun eraseAll() {
         scope.launch { repository.eraseAll() }
     }
 
-    suspend fun exportCsv(): String = repository.exportCsv()
+    override suspend fun exportCsv(): String = repository.exportCsv()
 }
 
 @Composable
-private fun MainScaffold(state: AppState, actions: Actions) {
+private fun MainScaffold(state: AppState, actions: Actions, versionName: String) {
     val navController = rememberNavController()
     val backStack by navController.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
@@ -146,7 +155,7 @@ private fun MainScaffold(state: AppState, actions: Actions) {
                 LearnScreen(onArticle = { navController.navigate("fiche/$it") })
             }
             composable(Tab.SETTINGS.route) {
-                SettingsScreen(state = state, actions = actions, onArticle = { navController.navigate("fiche/$it") })
+                SettingsScreen(state = state, actions = actions, versionName = versionName, onArticle = { navController.navigate("fiche/$it") })
             }
             composable(
                 "jour/{date}?debut={debut}",

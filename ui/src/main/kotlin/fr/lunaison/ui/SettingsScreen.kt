@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.core.content.ContextCompat
-import fr.lunaison.BuildConfig
 import fr.lunaison.core.cycle.LogReminderMode
 import fr.lunaison.core.designsystem.ChoiceChips
 import fr.lunaison.core.designsystem.LunaButton
@@ -38,7 +37,7 @@ import fr.lunaison.core.model.AgeGroup
 import kotlinx.coroutines.launch
 
 @Composable
-fun SettingsScreen(state: AppState, actions: Actions, onArticle: (String) -> Unit) {
+fun SettingsScreen(state: AppState, actions: Actions, versionName: String, onArticle: (String) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val settings = state.settings
@@ -137,7 +136,7 @@ fun SettingsScreen(state: AppState, actions: Actions, onArticle: (String) -> Uni
 
         SectionTitle("À propos")
         LunaCard {
-            Text("Lunaison ${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.titleSmall)
+            Text("Lunaison $versionName", style = MaterialTheme.typography.titleSmall)
             Text("Libre (GPL-3.0), gratuit, sans publicité ni traceur. Ce n'est ni un dispositif médical ni une méthode de contraception.", style = MaterialTheme.typography.bodySmall)
             TextButton(onClick = { onArticle("previsions") }) { Text("Ce que les prévisions peuvent dire") }
             TextButton(onClick = { openLink(context, Links.PRIVACY) }) { Text("Politique de confidentialité") }
