@@ -94,6 +94,7 @@ fun openLink(context: Context, url: String) {
 
 object Links {
     const val PRIVACY = "https://relthdrarxash.github.io/lunaison/confidentialite.html"
+    const val SOURCES = "https://relthdrarxash.github.io/lunaison/sources.html"
     const val SOURCE = "https://github.com/Relthdrarxash/lunaison"
     const val CONTACT = "mailto:escale.apps@proton.me"
 }
