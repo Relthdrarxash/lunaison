@@ -18,7 +18,7 @@
         </intent>
     </queries>
 
-    <!-- Pas de sauvegarde dans le nuage ni de transfert automatique : les données de santé restent sur ce téléphone. -->
+    <!-- Pas de sauvegarde dans le nuage. Seul le transfert direct vers un nouveau téléphone est permis (voir data_extraction_rules). -->
     <application
         android:name=".LunaisonApplication"
         android:allowBackup="false"
