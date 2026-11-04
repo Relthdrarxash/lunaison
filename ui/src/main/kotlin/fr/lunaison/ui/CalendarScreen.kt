@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +49,7 @@ import java.time.YearMonth
 private enum class DayMark { PERIOD, SPOTTING, PREDICTED, NONE }
 
 @Composable
-fun CalendarScreen(state: AppState, onDay: (LocalDate) -> Unit) {
+fun CalendarScreen(state: AppState, onDay: (LocalDate) -> Unit, onInsights: () -> Unit = {}) {
     var monthText by rememberSaveable { mutableStateOf(YearMonth.from(state.today).toString()) }
     val month = YearMonth.parse(monthText)
     val known = state.cycle as? CycleState.Known
@@ -69,6 +70,7 @@ fun CalendarScreen(state: AppState, onDay: (LocalDate) -> Unit) {
 
     Page {
         PageTitle("Calendrier", subtitle = "Touchez un jour passé pour le remplir.")
+        TextButton(onClick = onInsights) { Text("Mes cycles : durées, prévisions, ce qui revient") }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { monthText = month.minusMonths(1).toString() }) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Mois précédent")
