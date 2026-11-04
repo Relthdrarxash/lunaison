@@ -104,7 +104,7 @@ TEMPLATE = """<!doctype html>
   <main id="contenu" class="wrap">
     <article class="prose prose-wide">
       {body}
-      <p>Une remarque sur une source, un seuil ou une formulation ? Écrivez à <a href="mailto:escale.apps@proton.me">escale.apps@proton.me</a> ou ouvrez une demande sur <a href="https://github.com/Relthdrarxash/lunaison/issues">GitHub</a>.</p>
+      <p>Une remarque sur une source, un seuil ou une formulation ? Écrivez à <a href="mailto:pilmil.studio@proton.me">pilmil.studio@proton.me</a> ou ouvrez une demande sur <a href="https://github.com/Relthdrarxash/lunaison/issues">GitHub</a>.</p>
     </article>
   </main>
   <footer class="site-footer">
@@ -115,7 +115,7 @@ TEMPLATE = """<!doctype html>
         <a href="sources.html">Sources et choix</a>
         <a href="confidentialite.html">Confidentialité</a>
         <a href="https://github.com/Relthdrarxash/lunaison">Code source</a>
-        <a href="mailto:escale.apps@proton.me">Contact</a>
+        <a href="mailto:pilmil.studio@proton.me">Contact</a>
       </div>
     </div>
   </footer>

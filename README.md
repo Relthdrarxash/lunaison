@@ -44,6 +44,14 @@ Les règles du moteur et leurs références sont dans [`CycleConfig.kt`](core/cy
 
 Tests : `./gradlew test`. Construction : `./gradlew :app:assembleDebug`.
 
+## Comment Lunaison est faite
+
+Lunaison est un projet personnel de Relthdrarxash, publié sous le nom Pilmil Studio. L'essentiel du code a été écrit avec Claude, l'assistant IA d'Anthropic. Je l'ai relu, testé et je le maintiens.
+
+- **Les décisions sont humaines.** Ce que l'appli fait et ne fait pas, les contenus retenus à partir des sources citées, ce qui a été écarté (séries, badges, notifications de conseils), le design.
+- **Pas besoin de me croire sur parole.** Le code est public, sous licence GPL-3.0, et le manifeste ne déclare pas la permission `INTERNET`.
+- **Le moteur est testé.** Prévisions, signaux, statistiques et choix du conseil du jour sont en Kotlin pur, couverts par des tests lancés à chaque compilation. Un test vérifie aussi que chaque fiche et chaque conseil figurent avec leurs sources dans [documentation/sources.md](documentation/sources.md).
+
 ## Contact
 
-escale.apps@proton.me
+Questions, retours, remarques de professionnels de santé : [pilmil.studio@proton.me](mailto:pilmil.studio@proton.me), ou une [demande sur GitHub](https://github.com/Relthdrarxash/lunaison/issues).

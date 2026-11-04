@@ -99,5 +99,5 @@ object Links {
     /** Ancre de la fiche sur la page des sources, au format de documentation/sources.md. */
     fun sourcesOf(articleId: String) = "$SOURCES#fiche-$articleId"
     const val SOURCE = "https://github.com/Relthdrarxash/lunaison"
-    const val CONTACT = "mailto:escale.apps@proton.me"
+    const val CONTACT = "mailto:pilmil.studio@proton.me"
 }
