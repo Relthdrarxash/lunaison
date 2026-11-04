@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import fr.lunaison.core.model.tr
 
 /** Colonne de page défilante, avec les marges communes. */
 @Composable
@@ -57,7 +58,7 @@ fun PageTitle(title: String, onBack: (() -> Unit)? = null, subtitle: String? = n
     Row(verticalAlignment = Alignment.CenterVertically) {
         if (onBack != null) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("Retour", "Back"))
             }
             Spacer(Modifier.width(4.dp))
         }
@@ -93,7 +94,8 @@ fun openLink(context: Context, url: String) {
 }
 
 object Links {
-    const val PRIVACY = "https://relthdrarxash.github.io/lunaison/confidentialite.html"
+    val PRIVACY: String
+        get() = tr("https://relthdrarxash.github.io/lunaison/confidentialite.html", "https://relthdrarxash.github.io/lunaison/en/privacy.html")
     const val SOURCE = "https://github.com/Relthdrarxash/lunaison"
     const val CONTACT = "mailto:pilmil.studio@proton.me"
 }

@@ -38,6 +38,7 @@ import fr.lunaison.core.model.Baseline
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
+import fr.lunaison.core.model.tr
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,30 +57,30 @@ fun OnboardingScreen(today: LocalDate, onFinish: (Baseline) -> Unit) {
     Page(Modifier.safeDrawingPadding()) {
         when (step) {
             0 -> {
-                PageTitle("Bienvenue dans Lunaison")
-                Text("Pour suivre votre cycle, comprendre ce qui se passe et savoir quand vos règles arrivent.", style = MaterialTheme.typography.bodyLarge)
+                PageTitle(tr("Bienvenue dans Lunaison", "Welcome to Lunaison"))
+                Text(tr("Pour suivre votre cycle, comprendre ce qui se passe et savoir quand vos règles arrivent.", "To track your cycle, understand what is happening and know when your period is coming."), style = MaterialTheme.typography.bodyLarge)
                 LunaCard {
-                    Text("Vos données restent sur ce téléphone", style = MaterialTheme.typography.titleMedium)
-                    Bullet("Pas de compte, pas de serveur, pas de publicité, pas de traceur.")
-                    Bullet("Lunaison n'a même pas accès à Internet.")
-                    Bullet("Rien n'est partagé sans que vous l'envoyiez vous-même.")
-                    Bullet("Vous pouvez tout effacer en un geste.")
+                    Text(tr("Vos données restent sur ce téléphone", "Your data stays on this phone"), style = MaterialTheme.typography.titleMedium)
+                    Bullet(tr("Pas de compte, pas de serveur, pas de publicité, pas de traceur.", "No account, no server, no ads, no trackers."))
+                    Bullet(tr("Lunaison n'a même pas accès à Internet.", "Lunaison does not even have Internet access."))
+                    Bullet(tr("Rien n'est partagé sans que vous l'envoyiez vous-même.", "Nothing is shared unless you send it yourself."))
+                    Bullet(tr("Vous pouvez tout effacer en un geste.", "You can erase everything in one tap."))
                 }
-                Muted("Lunaison aide à s'organiser et à mieux se connaître. Ce n'est ni un dispositif médical ni une méthode de contraception.")
-                LunaButton("Commencer", onClick = { step = 1 })
+                Muted(tr("Lunaison aide à s'organiser et à mieux se connaître. Ce n'est ni un dispositif médical ni une méthode de contraception.", "Lunaison helps you plan and get to know yourself better. It is neither a medical device nor a method of contraception."))
+                LunaButton(tr("Commencer", "Get started"), onClick = { step = 1 })
             }
             1 -> {
-                PageTitle("Quel âge avez-vous ?", onBack = { step = 0 })
+                PageTitle(tr("Quel âge avez-vous ?", "How old are you?"), onBack = { step = 0 })
                 Text(
-                    "Les repères d'un cycle normal ne sont pas les mêmes les premières années après les premières règles. Votre réponse reste sur ce téléphone.",
+                    tr("Les repères d'un cycle normal ne sont pas les mêmes les premières années après les premières règles. Votre réponse reste sur ce téléphone.", "What counts as a normal cycle is different in the first years after your first period. Your answer stays on this phone."),
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                LunaButton("Moins de 18 ans", onClick = { ageGroup = AgeGroup.UNDER_18; step = 2 }, style = LunaButtonStyle.Outlined)
-                LunaButton("18 ans ou plus", onClick = { ageGroup = AgeGroup.ADULT; step = 2 }, style = LunaButtonStyle.Outlined)
+                LunaButton(tr("Moins de 18 ans", "Under 18"), onClick = { ageGroup = AgeGroup.UNDER_18; step = 2 }, style = LunaButtonStyle.Outlined)
+                LunaButton(tr("18 ans ou plus", "18 or over"), onClick = { ageGroup = AgeGroup.ADULT; step = 2 }, style = LunaButtonStyle.Outlined)
             }
             2 -> {
-                PageTitle("Vos dernières règles", onBack = { step = 1 })
-                Text("Quel jour ont-elles commencé ? Une date approximative suffit.", style = MaterialTheme.typography.bodyLarge)
+                PageTitle(tr("Vos dernières règles", "Your last period"), onBack = { step = 1 })
+                Text(tr("Quel jour ont-elles commencé ? Une date approximative suffit.", "What day did it start? An approximate date is enough."), style = MaterialTheme.typography.bodyLarge)
                 val pickerState = rememberDatePickerState(
                     initialSelectedDateMillis = lastStart?.let { LocalDate.parse(it).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli() },
                     selectableDates = remember(today) {
@@ -94,37 +95,37 @@ fun OnboardingScreen(today: LocalDate, onFinish: (Baseline) -> Unit) {
                 DatePicker(state = pickerState, title = null, headline = null, showModeToggle = false)
                 val selected = pickerState.selectedDateMillis?.let { Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate() }
                 LunaButton(
-                    if (selected != null) "Le ${Format.dayMonth(selected)}" else "Choisissez une date",
+                    if (selected != null) tr("Le ${Format.dayMonth(selected)}", "${Format.dayMonth(selected)}") else tr("Choisissez une date", "Choose a date"),
                     onClick = { lastStart = selected?.toString(); step = 3 },
                     enabled = selected != null,
                     icon = Icons.Filled.Check,
                 )
-                LunaButton("Je ne sais plus", onClick = { lastStart = null; step = 3 }, style = LunaButtonStyle.Quiet)
+                LunaButton(tr("Je ne sais plus", "I don't remember"), onClick = { lastStart = null; step = 3 }, style = LunaButtonStyle.Quiet)
             }
             3 -> {
-                PageTitle("Votre cycle habituel", onBack = { step = 2 })
+                PageTitle(tr("Votre cycle habituel", "Your usual cycle"), onBack = { step = 2 })
                 Text(
-                    "Combien de jours entre le début de vos règles et le début des suivantes, en général ? Si vous ne savez pas, Lunaison l'apprendra au fil des cycles.",
+                    tr("Combien de jours entre le début de vos règles et le début des suivantes, en général ? Si vous ne savez pas, Lunaison l'apprendra au fil des cycles.", "How many days between the start of one period and the start of the next, usually? If you don't know, Lunaison will learn it over your cycles."),
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 val value = usualLength ?: 28
                 Stepper(
-                    label = "$value jours",
+                    label = tr("$value jours", "$value days"),
                     onMinus = { usualLength = (value - 1).coerceAtLeast(18) },
                     onPlus = { usualLength = (value + 1).coerceAtMost(60) },
                 )
-                LunaButton("Continuer", onClick = { usualLength = value; step = 4 })
-                LunaButton("Je ne sais pas", onClick = { usualLength = null; step = 4 }, style = LunaButtonStyle.Quiet)
+                LunaButton(tr("Continuer", "Continue"), onClick = { usualLength = value; step = 4 })
+                LunaButton(tr("Je ne sais pas", "I don't know"), onClick = { usualLength = null; step = 4 }, style = LunaButtonStyle.Quiet)
             }
             else -> {
-                PageTitle("Les rappels", onBack = { step = 3 })
+                PageTitle(tr("Les rappels", "Reminders"), onBack = { step = 3 })
                 Text(
-                    "Lunaison peut vous prévenir deux jours avant vos prochaines règles, et vous rappeler de noter vos journées autour des règles. Les notifications restent discrètes sur l'écran verrouillé.",
+                    tr("Lunaison peut vous prévenir deux jours avant vos prochaines règles, et vous rappeler de noter vos journées autour des règles. Les notifications restent discrètes sur l'écran verrouillé.", "Lunaison can let you know two days before your next period, and remind you to log your days around your period. Notifications stay discreet on the lock screen."),
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                Muted("Vous pourrez tout changer dans les réglages.")
+                Muted(tr("Vous pourrez tout changer dans les réglages.", "You can change everything in the settings."))
                 LunaButton(
-                    "Autoriser les notifications",
+                    tr("Autoriser les notifications", "Allow notifications"),
                     onClick = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -132,7 +133,7 @@ fun OnboardingScreen(today: LocalDate, onFinish: (Baseline) -> Unit) {
                         finish()
                     },
                 )
-                LunaButton("Plus tard", onClick = { finish() }, style = LunaButtonStyle.Quiet)
+                LunaButton(tr("Plus tard", "Later"), onClick = { finish() }, style = LunaButtonStyle.Quiet)
             }
         }
     }
@@ -146,10 +147,10 @@ fun Stepper(label: String, onMinus: () -> Unit, onPlus: () -> Unit, modifier: Mo
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FilledTonalIconButton(onClick = onMinus, modifier = Modifier.semantics { contentDescription = "Moins un" }) {
+        FilledTonalIconButton(onClick = onMinus, modifier = Modifier.semantics { contentDescription = tr("Moins un", "Minus one") }) {
             Text("−", style = MaterialTheme.typography.headlineMedium)
         }
         Text(label, style = MaterialTheme.typography.headlineMedium)
-        FilledTonalIconButton(onClick = onPlus) { Icon(Icons.Filled.Add, contentDescription = "Plus un") }
+        FilledTonalIconButton(onClick = onPlus) { Icon(Icons.Filled.Add, contentDescription = tr("Plus un", "Plus one")) }
     }
 }

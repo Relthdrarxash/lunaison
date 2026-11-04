@@ -34,15 +34,19 @@ import fr.lunaison.core.data.AppSettings
 import fr.lunaison.core.data.LunaisonRepository
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Flow
+import fr.lunaison.core.model.tr
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-private enum class Tab(val route: String, val label: String, val icon: ImageVector) {
-    HOME("accueil", "Aujourd'hui", Icons.Filled.Home),
-    CALENDAR("calendrier", "Calendrier", Icons.Filled.DateRange),
-    LEARN("comprendre", "Comprendre", Icons.Filled.Info),
-    SETTINGS("reglages", "Réglages", Icons.Filled.Settings),
+private enum class Tab(val route: String, private val fr: String, private val en: String, val icon: ImageVector) {
+    HOME("accueil", "Aujourd'hui", "Today", Icons.Filled.Home),
+    CALENDAR("calendrier", "Calendrier", "Calendar", Icons.Filled.DateRange),
+    LEARN("comprendre", "Comprendre", "Learn", Icons.Filled.Info),
+    SETTINGS("reglages", "Réglages", "Settings", Icons.Filled.Settings),
+    ;
+
+    val label: String get() = tr(fr, en)
 }
 
 @Composable
