@@ -3,56 +3,79 @@ package fr.lunaison.ui
 import fr.lunaison.core.cycle.Confidence
 import fr.lunaison.core.cycle.CycleState
 import fr.lunaison.core.cycle.Phase
+import fr.lunaison.core.model.Language
+import fr.lunaison.core.model.tr
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-/** Mise en forme des dates et des phrases de prévision, en français courant. */
+/** Mise en forme des dates et des phrases de prévision, dans la langue de l'appli. */
 object Format {
-    private val dayMonth = DateTimeFormatter.ofPattern("d MMMM", Locale.FRENCH)
-    private val weekdayDayMonth = DateTimeFormatter.ofPattern("EEEE d MMMM", Locale.FRENCH)
-    private val monthYear = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.FRENCH)
+    private val french = Formatters(Locale.FRENCH, "d MMMM", "EEEE d MMMM", "MMMM yyyy")
+    private val english = Formatters(Locale.ENGLISH, "MMMM d", "EEEE, MMMM d", "MMMM yyyy")
 
-    fun dayMonth(date: LocalDate): String = date.format(dayMonth)
+    private class Formatters(locale: Locale, dayMonth: String, weekday: String, monthYear: String) {
+        val dayMonth: DateTimeFormatter = DateTimeFormatter.ofPattern(dayMonth, locale)
+        val weekday: DateTimeFormatter = DateTimeFormatter.ofPattern(weekday, locale)
+        val monthYear: DateTimeFormatter = DateTimeFormatter.ofPattern(monthYear, locale)
+    }
 
-    fun weekday(date: LocalDate): String = date.format(weekdayDayMonth).replaceFirstChar { it.uppercase() }
+    private val current: Formatters get() = if (Language.current() == Language.FR) french else english
 
-    fun monthYear(date: LocalDate): String = date.format(monthYear).replaceFirstChar { it.uppercase() }
+    fun dayMonth(date: LocalDate): String = date.format(current.dayMonth)
 
-    fun days(count: Int): String = if (count <= 1) "$count jour" else "$count jours"
+    fun weekday(date: LocalDate): String = date.format(current.weekday).replaceFirstChar { it.uppercase() }
+
+    fun monthYear(date: LocalDate): String = date.format(current.monthYear).replaceFirstChar { it.uppercase() }
+
+    fun days(count: Int): String = if (count <= 1) tr("$count jour", "$count day") else tr("$count jours", "$count days")
 
     fun relativeDay(date: LocalDate, today: LocalDate): String = when (date) {
-        today -> "Aujourd'hui"
-        today.minusDays(1) -> "Hier"
+        today -> tr("Aujourd'hui", "Today")
+        today.minusDays(1) -> tr("Hier", "Yesterday")
         else -> weekday(date)
     }
 
     fun phaseName(phase: Phase): String = when (phase) {
-        Phase.MENSTRUAL -> "Règles"
-        Phase.FOLLICULAR -> "Phase folliculaire"
-        Phase.OVULATION -> "Autour de l'ovulation"
-        Phase.LUTEAL -> "Phase lutéale"
-        Phase.LATE -> "Règles en retard"
+        Phase.MENSTRUAL -> tr("Règles", "Period")
+        Phase.FOLLICULAR -> tr("Phase folliculaire", "Follicular phase")
+        Phase.OVULATION -> tr("Autour de l'ovulation", "Around ovulation")
+        Phase.LUTEAL -> tr("Phase lutéale", "Luteal phase")
+        Phase.LATE -> tr("Règles en retard", "Period late")
     }
 
     /** Phrase principale de prévision, sans fausse précision. */
     fun nextPeriod(state: CycleState.Known): String {
         val next = state.next
         return when {
-            state.inPeriod -> "Règles en cours, jour ${state.dayOfCycle}."
-            state.daysLate > 0 -> "Vos règles avaient été estimées vers le ${dayMonth(next.start)}. ${days(state.daysLate)} de retard."
-            state.daysUntilNext <= 0 -> "Vos règles peuvent arriver d'un jour à l'autre."
-            state.daysUntilNext == 1 -> "Prochaines règles probablement demain."
-            else -> "Prochaines règles dans ${days(state.daysUntilNext)} environ, vers le ${dayMonth(next.start)}."
+            state.inPeriod -> tr("Règles en cours, jour ${state.dayOfCycle}.", "Period in progress, day ${state.dayOfCycle}.")
+            state.daysLate > 0 -> tr(
+                "Vos règles avaient été estimées vers le ${dayMonth(next.start)}. ${days(state.daysLate)} de retard.",
+                "Your period was expected around ${dayMonth(next.start)}. ${days(state.daysLate)} late.",
+            )
+            state.daysUntilNext <= 0 -> tr("Vos règles peuvent arriver d'un jour à l'autre.", "Your period may arrive any day now.")
+            state.daysUntilNext == 1 -> tr("Prochaines règles probablement demain.", "Next period probably tomorrow.")
+            else -> tr(
+                "Prochaines règles dans ${days(state.daysUntilNext)} environ, vers le ${dayMonth(next.start)}.",
+                "Next period in about ${days(state.daysUntilNext)}, around ${dayMonth(next.start)}.",
+            )
         }
     }
 
-    fun range(state: CycleState.Known): String =
-        "Plage probable : du ${dayMonth(state.next.earliest)} au ${dayMonth(state.next.latest)}."
+    fun range(state: CycleState.Known): String = tr(
+        "Plage probable : du ${dayMonth(state.next.earliest)} au ${dayMonth(state.next.latest)}.",
+        "Likely range: ${dayMonth(state.next.earliest)} to ${dayMonth(state.next.latest)}.",
+    )
 
     fun confidence(confidence: Confidence): String = when (confidence) {
-        Confidence.PROVISIONAL -> "Estimation provisoire : elle s'affinera dès vos prochains cycles."
-        Confidence.LOW -> "Estimation encore approximative : elle s'appuie sur peu de cycles."
-        Confidence.GOOD -> "Estimation fondée sur vos derniers cycles."
+        Confidence.PROVISIONAL -> tr(
+            "Estimation provisoire : elle s'affinera dès vos prochains cycles.",
+            "Provisional estimate: it will get more precise with your next cycles.",
+        )
+        Confidence.LOW -> tr(
+            "Estimation encore approximative : elle s'appuie sur peu de cycles.",
+            "Still a rough estimate: it is based on only a few cycles.",
+        )
+        Confidence.GOOD -> tr("Estimation fondée sur vos derniers cycles.", "Estimate based on your recent cycles.")
     }
 }
