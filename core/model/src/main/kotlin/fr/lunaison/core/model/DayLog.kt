@@ -40,9 +40,11 @@ enum class Mood(val label: String, val positive: Boolean) {
     CALM("Calme", true),
     HAPPY("De bonne humeur", true),
     ENERGETIC("Énergie haute", true),
+    MOTIVATED("Motivation", true),
     SENSITIVE("À fleur de peau", false),
     IRRITABLE("Irritable", false),
     ANXIOUS("Anxiété", false),
+    STRESSED("Stress", false),
     SAD("Triste", false),
     LOW_ENERGY("Énergie basse", false),
 }
