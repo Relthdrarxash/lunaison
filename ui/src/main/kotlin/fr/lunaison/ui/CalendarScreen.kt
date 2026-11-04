@@ -44,6 +44,7 @@ import fr.lunaison.core.designsystem.SectionTitle
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import fr.lunaison.core.model.tr
 
 private enum class DayMark { PERIOD, SPOTTING, PREDICTED, NONE }
 
@@ -68,14 +69,14 @@ fun CalendarScreen(state: AppState, onDay: (LocalDate) -> Unit) {
     }
 
     Page {
-        PageTitle("Calendrier", subtitle = "Touchez un jour passé pour le remplir.")
+        PageTitle(tr("Calendrier", "Calendar"), subtitle = tr("Touchez un jour passé pour le remplir.", "Tap a past day to fill it in."))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { monthText = month.minusMonths(1).toString() }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Mois précédent")
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = tr("Mois précédent", "Previous month"))
             }
             Text(Format.monthYear(month.atDay(1)), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
             IconButton(onClick = { monthText = month.plusMonths(1).toString() }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Mois suivant")
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = tr("Mois suivant", "Next month"))
             }
         }
 
@@ -97,7 +98,7 @@ private fun MonthGrid(
     val colors = MaterialTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(Modifier.fillMaxWidth()) {
-            listOf("L", "M", "M", "J", "V", "S", "D").forEach {
+            tr("LMMJVSD", "MTWTFSS").map { it.toString() }.forEach {
                 Text(
                     it,
                     style = MaterialTheme.typography.labelMedium,
@@ -140,13 +141,13 @@ private fun DayCell(date: LocalDate, today: LocalDate, mark: DayMark, logged: Bo
     val description = buildString {
         append(Format.weekday(date))
         when (mark) {
-            DayMark.PERIOD -> append(", règles")
-            DayMark.SPOTTING -> append(", traces")
-            DayMark.PREDICTED -> append(", règles probables")
+            DayMark.PERIOD -> append(tr(", règles", ", period"))
+            DayMark.SPOTTING -> append(tr(", traces", ", spotting"))
+            DayMark.PREDICTED -> append(tr(", règles probables", ", likely period"))
             DayMark.NONE -> Unit
         }
-        if (logged && mark == DayMark.NONE) append(", journée notée")
-        if (date == today) append(", aujourd'hui")
+        if (logged && mark == DayMark.NONE) append(tr(", journée notée", ", day logged"))
+        if (date == today) append(tr(", aujourd'hui", ", today"))
     }
     var modifier = Modifier
         .fillMaxWidth()
@@ -183,9 +184,9 @@ private fun DayCell(date: LocalDate, today: LocalDate, mark: DayMark, logged: Bo
 private fun Legend() {
     val colors = MaterialTheme.colorScheme
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
-        LegendItem("Règles") { Surface(color = colors.secondary, shape = CircleShape, modifier = Modifier.size(16.dp)) {} }
-        LegendItem("Traces") { Surface(color = colors.secondaryContainer, shape = CircleShape, modifier = Modifier.size(16.dp)) {} }
-        LegendItem("Prévues") {
+        LegendItem(tr("Règles", "Period")) { Surface(color = colors.secondary, shape = CircleShape, modifier = Modifier.size(16.dp)) {} }
+        LegendItem(tr("Traces", "Spotting")) { Surface(color = colors.secondaryContainer, shape = CircleShape, modifier = Modifier.size(16.dp)) {} }
+        LegendItem(tr("Prévues", "Predicted")) {
             Box(Modifier.size(16.dp).border(BorderStroke(2.dp, colors.secondary), CircleShape))
         }
     }
@@ -202,21 +203,21 @@ private fun LegendItem(label: String, swatch: @Composable () -> Unit) {
 @Composable
 private fun History(state: CycleState.Known) {
     val cycles = state.cycles.filter { it.isPlausible }.takeLast(6).reversed()
-    SectionTitle("Vos cycles")
+    SectionTitle(tr("Vos cycles", "Your cycles"))
     LunaCard {
         if (cycles.isEmpty()) {
-            Text("Dès que vous aurez noté deux débuts de règles, vos cycles apparaîtront ici.", style = MaterialTheme.typography.bodyMedium)
+            Text(tr("Dès que vous aurez noté deux débuts de règles, vos cycles apparaîtront ici.", "Once you have logged the start of two periods, your cycles will appear here."), style = MaterialTheme.typography.bodyMedium)
         } else {
             Text(
-                "Votre cycle dure en général ${Format.days(state.stats.cycleLength)}, et vos règles ${Format.days(state.stats.periodLength)}.",
+                tr("Votre cycle dure en général ${Format.days(state.stats.cycleLength)}, et vos règles ${Format.days(state.stats.periodLength)}.", "Your cycle usually lasts ${Format.days(state.stats.cycleLength)}, and your period ${Format.days(state.stats.periodLength)}."),
                 style = MaterialTheme.typography.bodyLarge,
             )
             cycles.forEach { cycle ->
                 val period = state.periods.firstOrNull { it.start == cycle.start }
-                val periodText = period?.let { ", règles de ${Format.days(it.length)}" }.orEmpty()
-                Bullet("Depuis le ${Format.dayMonth(cycle.start)} : ${Format.days(cycle.length)}$periodText")
+                val periodText = period?.let { tr(", règles de ${Format.days(it.length)}", ", period of ${Format.days(it.length)}") }.orEmpty()
+                Bullet(tr("Depuis le ${Format.dayMonth(cycle.start)} : ${Format.days(cycle.length)}$periodText", "From ${Format.dayMonth(cycle.start)}: ${Format.days(cycle.length)}$periodText"))
             }
-            Muted("Un écart de quelques jours d'un cycle à l'autre est normal.")
+            Muted(tr("Un écart de quelques jours d'un cycle à l'autre est normal.", "A difference of a few days from one cycle to the next is normal."))
         }
     }
 }

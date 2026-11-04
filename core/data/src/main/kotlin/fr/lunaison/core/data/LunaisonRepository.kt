@@ -14,13 +14,17 @@ import fr.lunaison.core.model.Symptom
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.LocalTime
+import fr.lunaison.core.model.tr
 
 /** Messagerie utilisée pour le partage. L'appli ne fait que préparer le message. */
-enum class PartnerChannel(val label: String) {
-    SMS("SMS"),
-    WHATSAPP("WhatsApp"),
-    SIGNAL("Signal"),
-    OTHER("Autre appli"),
+enum class PartnerChannel(private val fr: String, private val en: String) {
+    SMS("SMS", "SMS"),
+    WHATSAPP("WhatsApp", "WhatsApp"),
+    SIGNAL("Signal", "Signal"),
+    OTHER("Autre appli", "Another app"),
+    ;
+
+    val label: String get() = tr(fr, en)
 }
 
 data class Partner(val name: String, val phone: String?, val channel: PartnerChannel)
@@ -69,7 +73,7 @@ class LunaisonRepository(private val dao: LunaisonDao) {
 
     /** Export lisible par un tableur. Rien ne quitte le téléphone sans que la personne choisisse où l'enregistrer. */
     suspend fun exportCsv(): String = buildString {
-        appendLine("date;flux;douleur;symptomes;humeurs;note")
+        appendLine(tr("date;flux;douleur;symptomes;humeurs;note", "date;flow;pain;symptoms;moods;note"))
         logsOnce().forEach { log ->
             appendLine(
                 listOf(
