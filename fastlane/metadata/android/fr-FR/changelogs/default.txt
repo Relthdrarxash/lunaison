@@ -1,0 +1,1 @@
+Première version : saisie des journées, prévisions, conseils par phase, fiches sourcées, rappels et partage par messagerie.
