@@ -26,3 +26,9 @@ include(":core:content")
 // Socle Android.
 include(":core:data")
 include(":core:designsystem")
+
+// Écrans.
+include(":ui")
+
+// Captures d'écran de la documentation et de la fiche Play, générées par la CI (non embarqué).
+include(":screenshots")

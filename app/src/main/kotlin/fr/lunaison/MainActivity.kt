@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
         val repository = (application as LunaisonApplication).repository
         setContent {
             LunaisonTheme {
-                LunaisonApp(repository)
+                LunaisonApp(repository, BuildConfig.VERSION_NAME)
             }
         }
     }
