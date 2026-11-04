@@ -23,7 +23,8 @@ def inline(text: str) -> str:
         if not url.startswith("http"):
             url = "https://github.com/Relthdrarxash/lunaison/blob/HEAD/documentation/" + url
         return f'<a href="{html.escape(url)}">{label}</a>'
-    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", link, text)
+    # Une adresse peut contenir des parenthèses, comme certains DOI : un niveau est accepté.
+    text = re.sub(r"\[([^\]]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)", link, text)
     text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
     text = re.sub(r"\*(.+?)\*", r"<em>\1</em>", text)
     text = re.sub(r"`(.+?)`", r"<code>\1</code>", text)
@@ -39,8 +40,15 @@ def convert(md: str) -> tuple[str, str]:
         if line.startswith("# "):
             title = line[2:].strip()
             out.append(f"<h1>{inline(title)}</h1>")
-        elif line.startswith("## "):
-            out.append(f"<h2>{inline(line[3:].strip())}</h2>")
+        elif line.startswith("## ") or line.startswith("### "):
+            level = 2 if line.startswith("## ") else 3
+            text = line[level + 1:].strip()
+            anchor = re.search(r"\s*\{#([\w-]+)\}$", text)
+            attr = ""
+            if anchor:
+                text = text[:anchor.start()]
+                attr = f' id="{anchor.group(1)}"'
+            out.append(f"<h{level}{attr}>{inline(text)}</h{level}>")
         elif line.startswith("|"):
             rows = []
             while i < len(lines) and lines[i].startswith("|"):
