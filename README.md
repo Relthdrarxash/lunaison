@@ -9,6 +9,8 @@ Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans 
 - **Noter ses journées** : flux, douleur (décrite par son effet), symptômes, humeurs, note personnelle. Tout est facultatif, et on peut remplir un jour oublié.
 - **Prévoir les règles** : une date estimée et une plage plausible, calculées à partir des derniers cycles. La plage se resserre à mesure que l'historique grandit.
 - **Comprendre la phase en cours** : ce qui se passe, ce qui aide, et ce qui revient chez soi pendant cette phase d'après les cycles précédents.
+- **Voir ce que disent ses cycles** : durée habituelle, justesse des prévisions, ce qui revient pendant une phase et combien de jours avant les règles, bilan de chaque cycle terminé. Calculé sur le téléphone, jamais avant deux cycles complets.
+- **Un conseil sourcé par jour** : il change chaque jour selon la phase, et répond en priorité à ce qui a été noté.
 - **Repérer ce qui mérite un avis médical** : douleurs fortes répétées, règles de plus de 8 jours, règles abondantes répétées, cycles hors des repères, saignements entre les règles, absence de règles. Jamais un diagnostic.
 - **Lire des fiches sourcées** : cycle, douleurs, alimentation, syndrome prémenstruel, quand consulter, choc toxique, limites des prévisions, fiche pour l'entourage.
 - **Rappels** : avant les règles et pour noter sa journée, discrets sur l'écran verrouillé.
