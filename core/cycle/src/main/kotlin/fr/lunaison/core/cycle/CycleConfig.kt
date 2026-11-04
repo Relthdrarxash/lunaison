@@ -47,6 +47,33 @@ object CycleConfig {
     const val LONG_ABSENCE_DAYS = 90
 
     /** Durée normale d'un cycle : 24 à 38 jours chez l'adulte (FIGO, 2018), 21 à 45 jours à l'adolescence (ACOG, 2015). */
+    // ---- Statistiques personnelles (choix de conception, voir documentation/sources.md) ----
+
+    /**
+     * Cycles nécessaires avant d'affirmer qu'un symptôme revient ou de résumer ses cycles.
+     * Le même seuil que les critères cliniques du syndrome prémenstruel, qui demandent un suivi
+     * au jour le jour sur au moins deux cycles.
+     */
+    const val MIN_CYCLES_FOR_STATS = 2
+
+    /** Un symptôme n'est lié à une phase que s'il y est au moins deux fois plus fréquent qu'en dehors. */
+    const val PATTERN_ENRICHMENT = 2.0
+
+    /** En dessous de ce nombre de jours renseignés hors de la phase, la comparaison n'est pas possible. */
+    const val PATTERN_MIN_DAYS_OUTSIDE = 5
+
+    /** Prévisions passées nécessaires avant d'annoncer l'écart habituel entre prévision et règles. */
+    const val MIN_CHECKED_PREDICTIONS = 3
+
+    /** Écart, en jours, en dessous duquel un cycle est « dans vos habitudes ». */
+    const val USUAL_TOLERANCE = 2
+
+    /** Le bilan du cycle terminé reste visible pendant les premiers jours du cycle suivant. */
+    const val RECAP_DAYS = 7
+
+    /** Horizon, en jours, de la ligne qui annonce la phase suivante. */
+    const val ANTICIPATION_DAYS = 4
+
     fun normalCycleRange(ageGroup: AgeGroup): IntRange = when (ageGroup) {
         AgeGroup.ADULT -> 24..38
         AgeGroup.UNDER_18 -> 21..45

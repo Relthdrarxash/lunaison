@@ -94,6 +94,10 @@ fun openLink(context: Context, url: String) {
 
 object Links {
     const val PRIVACY = "https://relthdrarxash.github.io/lunaison/confidentialite.html"
+    const val SOURCES = "https://relthdrarxash.github.io/lunaison/references.html"
+
+    /** Ancre de la fiche sur la page des sources, au format de documentation/sources.md. */
+    fun sourcesOf(articleId: String) = "$SOURCES#fiche-$articleId"
     const val SOURCE = "https://github.com/Relthdrarxash/lunaison"
     const val CONTACT = "mailto:pilmil.studio@proton.me"
 }
