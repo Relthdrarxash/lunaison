@@ -1,0 +1,27 @@
+Lunaison suit votre cycle menstruel sans rien savoir de vous : pas de compte, pas de publicité, pas de traceur, et pas même d'accès à Internet. Tout reste sur votre téléphone.
+
+NOTER EN QUELQUES SECONDES
+Flux, douleur, symptômes, humeur et une note si vous le souhaitez. Tout est facultatif, et un jour oublié se remplit plus tard.
+
+DES PRÉVISIONS HONNÊTES
+Lunaison estime vos prochaines règles à partir de vos derniers cycles et affiche une plage de dates probable, qui se resserre à mesure que vous notez des cycles.
+
+COMPRENDRE CHAQUE PHASE
+Ce qui se passe dans votre corps, ce qui aide, et ce qui revient chez vous pendant cette phase d'après vos cycles précédents.
+
+DES FICHES SOURCÉES
+Cycle, douleurs, alimentation, syndrome prémenstruel, quand consulter, choc toxique : chaque fiche cite les études sur lesquelles elle s'appuie.
+
+SAVOIR QUAND CONSULTER
+Douleurs fortes répétées, règles de plus de 8 jours, cycles hors des repères, saignements entre les règles : Lunaison vous le signale, sans jamais poser de diagnostic.
+
+DES RAPPELS DISCRETS
+Avant vos règles et pour noter vos journées. Sur l'écran verrouillé, seul le nom de l'appli s'affiche.
+
+PRÉVENIR SON OU SA PARTENAIRE
+Pour les 18 ans et plus : un message prêt à envoyer par SMS, WhatsApp ou Signal, que vous relisez et envoyez vous-même. Rien ne part automatiquement.
+
+VOS DONNÉES VOUS APPARTIENNENT
+Export au format tableur et effacement complet en un geste. Lunaison est libre (GPL-3.0) : son code est public.
+
+Lunaison n'est ni un dispositif médical ni une méthode de contraception.

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,6 +32,12 @@ import androidx.compose.ui.unit.dp
 /** Colonne de page défilante, avec les marges communes. */
 @Composable
 fun Page(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    // La surface fixe la couleur du texte, y compris hors de la barre de navigation (démarrage, thème sombre).
+    Surface(color = MaterialTheme.colorScheme.background) { PageColumn(modifier, content) }
+}
+
+@Composable
+private fun PageColumn(modifier: Modifier, content: @Composable ColumnScope.() -> Unit) {
     Column(
         modifier = modifier
             .fillMaxSize()
