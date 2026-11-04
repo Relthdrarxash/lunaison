@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Croissant de lune crème, centré dans la zone sûre de l'icône adaptative. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFBF5F2"
+        android:pathData="M60,32 A23,23 0 1,0 76,64 A18,18 0 1,1 60,32 Z" />
+    <path
+        android:fillColor="#FFE39A8F"
+        android:pathData="M71,38 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+</vector>
