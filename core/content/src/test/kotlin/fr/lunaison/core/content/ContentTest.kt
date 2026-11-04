@@ -105,4 +105,31 @@ class ContentTest {
         assertTrue(lines.none { '—' in it })
         assertTrue('—' !in InsightTexts.HOW_IT_WORKS && '—' !in InsightTexts.NOTHING_YET)
     }
+
+    /**
+     * Les sources ne sont pas affichées dans l'appli : elles sont sur le site, généré depuis documentation/sources.md.
+     * Ce test garde les deux alignés. En cas d'échec, compléter sources.md puis lancer scripts/site-sources.py.
+     */
+    @Test
+    fun `la page des sources liste chaque fiche et chaque conseil avec leurs sources`() {
+        val doc = java.io.File("../../documentation/sources.md").readText()
+
+        fun section(anchor: String): String {
+            val start = doc.indexOf("{#$anchor}")
+            assertTrue(start >= 0, "Ancre manquante dans sources.md : $anchor")
+            val end = doc.indexOf("\n#", start).let { if (it < 0) doc.length else it }
+            return doc.substring(start, end)
+        }
+
+        Articles.all.filter { it.sources.isNotEmpty() }.forEach { article ->
+            val section = section("fiche-${article.id}")
+            article.sources.forEach { assertTrue(it.url in section, "Fiche ${article.id} : source absente de sources.md, ${it.label}") }
+        }
+        PhaseGuides.all.flatMap { it.tips }.forEach { tip ->
+            val row = doc.lines().firstOrNull { it.startsWith("| ${tip.text} |") }
+            assertNotNull(row, "Conseil absent de sources.md : ${tip.text}")
+            tip.sources.forEach { assertTrue(it.url in row, "Source absente pour : ${tip.text}") }
+            if (tip.sources.isEmpty()) assertTrue("Sans étude" in row, "Conseil sans étude non signalé : ${tip.text}")
+        }
+    }
 }

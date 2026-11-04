@@ -45,6 +45,111 @@ Chaque affirmation de santé de l'appli renvoie à l'une de ces références. El
 - Quelques conseils du jour relèvent du bon sens ou de l'usage de l'appli : prévoir une protection en fin de cycle, alléger les jours chargés, parler à un médecin si le moral s'effondre avant les règles, noter son humeur, ajouter des règles oubliées, faire un test de grossesse en cas de retard. Ils sont marqués `withoutStudy` dans [`PhaseGuides.kt`](../core/content/src/main/kotlin/fr/lunaison/core/content/PhaseGuides.kt) ; un test vérifie que tous les autres citent une source.
 - Les seuils des signaux (deux règles sur les trois dernières avec des douleurs fortes, trois jours abondants ou plus) sont des choix prudents de l'appli, pas des critères cliniques. Ils servent à suggérer un avis, jamais à poser un diagnostic.
 
+## Sources par fiche
+
+Dans l'appli, chaque fiche renvoie vers cette partie, sans liste de références dans le texte.
+
+### Comprendre son cycle {#fiche-cycle}
+
+- [Bull JR et al., 2019](https://doi.org/10.1038/s41746-019-0152-7)
+- [Munro MG et al. (FIGO), 2018](https://doi.org/10.1002/ijgo.12666)
+- [ACOG n° 651, 2015](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2015/12/menstruation-in-girls-and-adolescents-using-the-menstrual-cycle-as-a-vital-sign)
+
+### Soulager les douleurs de règles {#fiche-douleurs}
+
+- [Marjoribanks J et al., 2015](https://doi.org/10.1002/14651858.CD001751.pub3)
+- [Jo J et Lee SH, 2018](https://doi.org/10.1038/s41598-018-34303-z)
+- [Armour M et al., 2019](https://doi.org/10.1002/14651858.CD004142.pub4)
+- [Daily JW et al., 2015](https://pubmed.ncbi.nlm.nih.gov/26177393/)
+- [ACOG n° 760, 2018](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/12/dysmenorrhea-and-endometriosis-in-the-adolescent)
+
+### Alimentation et règles {#fiche-alimentation}
+
+- [EFSA, 2015](https://www.efsa.europa.eu/en/efsajournal/pub/4254)
+- [Mohammadi MM et al., 2022](https://pubmed.ncbi.nlm.nih.gov/35059756/)
+- [Thys-Jacobs S et al., 1998](https://doi.org/10.1016/S0002-9378(98)70377-1)
+- [Daily JW et al., 2015](https://pubmed.ncbi.nlm.nih.gov/26177393/)
+
+### Le syndrome prémenstruel {#fiche-spm}
+
+- [Thys-Jacobs S et al., 1998](https://doi.org/10.1016/S0002-9378(98)70377-1)
+- [Armour M et al., 2019](https://doi.org/10.1002/14651858.CD004142.pub4)
+
+### Quand consulter {#fiche-consulter}
+
+- [Munro MG et al. (FIGO), 2018](https://doi.org/10.1002/ijgo.12666)
+- [Manuel MSD](https://www.msdmanuals.com/professional/multimedia/table/normal-menstrual-parameters)
+- [ACOG n° 651, 2015](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2015/12/menstruation-in-girls-and-adolescents-using-the-menstrual-cycle-as-a-vital-sign)
+- [Kvaskoff M (Inserm), 2024](https://doi.org/10.1051/qsp/2024048)
+- [ACOG n° 760, 2018](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/12/dysmenorrhea-and-endometriosis-in-the-adolescent)
+
+### Protections et choc toxique {#fiche-protections}
+
+- [Anses, 2025](https://www.anses.fr/fr/content/protections-intimes-composition-et-choc-toxique-toutes-nos-recommandations)
+
+### Ce que les prévisions peuvent dire {#fiche-previsions}
+
+- [Bull JR et al., 2019](https://doi.org/10.1038/s41746-019-0152-7)
+- [Trussell J, 2011](https://doi.org/10.1016/j.contraception.2011.01.021)
+
+## Sources des conseils du jour
+
+L'accueil affiche un conseil par jour, sans sa source. Les voici toutes, phase par phase.
+
+### Règles {#conseils-regles}
+
+| Conseil | Source |
+|---|---|
+| La chaleur sur le bas du ventre soulage autant qu'un anti-inflammatoire dans les études. Attention aux brûlures : jamais de chaleur trop forte directement sur la peau. | [Jo J et Lee SH, 2018](https://doi.org/10.1038/s41598-018-34303-z) |
+| Un anti-inflammatoire comme l'ibuprofène soulage mieux que le paracétamol, surtout pris dès le début des douleurs. Respectez la notice. | [Marjoribanks J et al., 2015](https://doi.org/10.1002/14651858.CD001751.pub3) |
+| Une douleur qui vous empêche de faire vos activités n'est pas à supporter : elle mérite un avis médical. | [ACOG n° 760, 2018](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/12/dysmenorrhea-and-endometriosis-in-the-adolescent) |
+| Les règles font perdre du fer. Légumineuses, viande ou poisson, avec une source de vitamine C comme un agrume ou un kiwi, aident à le compenser. | [EFSA, 2015](https://www.efsa.europa.eu/en/efsajournal/pub/4254) |
+| Le thé et le café gênent l'absorption du fer : mieux vaut les prendre à distance des repas. | [EFSA, 2015](https://www.efsa.europa.eu/en/efsajournal/pub/4254) |
+| Si vous changez de protection en moins de trois heures, ou si vous voyez des caillots de plus de 2,5 cm, parlez-en à un professionnel de santé. | [Manuel MSD](https://www.msdmanuals.com/professional/multimedia/table/normal-menstrual-parameters) |
+| Tampon ou coupe : respectez la durée de port indiquée sur la notice. Pour la nuit, une serviette ou une culotte menstruelle évite de la dépasser. | [Anses, 2025](https://www.anses.fr/fr/content/protections-intimes-composition-et-choc-toxique-toutes-nos-recommandations) |
+| Quelques petits essais suggèrent que le gingembre en poudre réduit la douleur les premiers jours. Les preuves sont faibles. | [Daily JW et al., 2015](https://pubmed.ncbi.nlm.nih.gov/26177393/) |
+
+### Phase folliculaire {#conseils-folliculaire}
+
+| Conseil | Source |
+|---|---|
+| Une activité physique régulière, environ trois séances par semaine, peut réduire les douleurs des règles suivantes. Les études sont modestes, mais le risque est faible. | [Armour M et al., 2019](https://doi.org/10.1002/14651858.CD004142.pub4) |
+| Marche, natation, yoga : l'effet sur les douleurs de règles a été observé avec des activités variées. Choisissez celle qui vous convient. | [Armour M et al., 2019](https://doi.org/10.1002/14651858.CD004142.pub4) |
+| Les poissons gras, les noix et l'huile de colza apportent des oméga-3, qui ont un peu réduit les douleurs de règles dans plusieurs essais. | [Mohammadi MM et al., 2022](https://pubmed.ncbi.nlm.nih.gov/35059756/) |
+| Après des règles abondantes, des repas riches en fer aident à refaire ses réserves. Un complément ne se prend que sur avis médical. | [EFSA, 2015](https://www.efsa.europa.eu/en/efsajournal/pub/4254) |
+| Le cycle de 28 jours est une moyenne : dans une étude de plus de 600 000 cycles, seuls 13 % duraient exactement 28 jours. | [Bull JR et al., 2019](https://doi.org/10.1038/s41746-019-0152-7) |
+| Notez votre humeur et votre énergie quelques jours : Lunaison vous montrera ce qui revient vraiment d'un cycle à l'autre. | Sans étude : bon sens ou usage de l’appli |
+
+### Autour de l'ovulation {#conseils-ovulation}
+
+| Conseil | Source |
+|---|---|
+| Cette période est estimée à partir de vos règles, avec une marge d'erreur : elle ne permet pas d'éviter une grossesse. | [Trussell J, 2011](https://doi.org/10.1016/j.contraception.2011.01.021) |
+| L'ovulation n'a pas lieu au 14e jour pour tout le monde : elle arrive en général 12 à 13 jours avant les règles suivantes. | [Bull JR et al., 2019](https://doi.org/10.1038/s41746-019-0152-7) |
+| La durée du cycle varie en moyenne de 2 à 3 jours d'un mois à l'autre, même chez une personne régulière. L'estimation de l'ovulation varie d'autant. | [Bull JR et al., 2019](https://doi.org/10.1038/s41746-019-0152-7) |
+| Les méthodes fondées sur le calendrier du cycle échouent souvent : jusqu'à environ une personne sur quatre tombe enceinte en un an. Un centre de santé sexuelle peut vous aider à choisir une contraception. | [Trussell J, 2011](https://doi.org/10.1016/j.contraception.2011.01.021) |
+| Une activité physique régulière peut réduire les douleurs des règles à venir. Il n'est jamais trop tard dans le cycle pour s'y mettre. | [Armour M et al., 2019](https://doi.org/10.1002/14651858.CD004142.pub4) |
+
+### Phase lutéale {#conseils-luteale}
+
+| Conseil | Source |
+|---|---|
+| Produits laitiers, eaux riches en calcium ou amandes : un apport suffisant en calcium a réduit les symptômes prémenstruels dans un essai. | [Thys-Jacobs S et al., 1998](https://doi.org/10.1016/S0002-9378(98)70377-1) |
+| Si vos règles sont douloureuses, un anti-inflammatoire marche mieux pris dès les premières douleurs : prévoyez-en un à portée de main. | [Marjoribanks J et al., 2015](https://doi.org/10.1002/14651858.CD001751.pub3) |
+| Une activité physique régulière peut aussi atténuer les douleurs des règles qui arrivent. | [Armour M et al., 2019](https://doi.org/10.1002/14651858.CD004142.pub4) |
+| Les oméga-3 des poissons gras, des noix ou de l'huile de colza ont un peu réduit les douleurs de règles dans plusieurs essais. | [Mohammadi MM et al., 2022](https://pubmed.ncbi.nlm.nih.gov/35059756/) |
+| Si les jours qui viennent s'annoncent chargés, allégez ce qui peut l'être, ou prévenez votre entourage. | Sans étude : bon sens ou usage de l’appli |
+| Si ces jours-là votre moral s'effondre ou si l'anxiété abîme vos relations, parlez-en à un médecin : une forme sévère du syndrome prémenstruel se soigne. | Sans étude : bon sens ou usage de l’appli |
+| Vos règles sont attendues dans une plage de dates : gardez une protection sur vous les derniers jours. | Sans étude : bon sens ou usage de l’appli |
+
+### Règles en retard {#conseils-retard}
+
+| Conseil | Source |
+|---|---|
+| Si elles ont commencé et que vous l'avez oublié, ajoutez-les dans le calendrier. | Sans étude : bon sens ou usage de l’appli |
+| Si une grossesse est possible, un test urinaire est en général fiable dès maintenant. | Sans étude : bon sens ou usage de l’appli |
+| Sans règles depuis plus de trois mois, demandez un avis médical. | [ACOG n° 651, 2015](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2015/12/menstruation-in-girls-and-adolescents-using-the-menstrual-cycle-as-a-vital-sign) |
+
 ## Choix de conception
 
 Certains s'appuient sur une des références ci-dessus, d'autres sur le bon sens. Aucun n'a été évalué dans l'appli elle-même, et ils peuvent changer si les retours montrent qu'ils gênent.

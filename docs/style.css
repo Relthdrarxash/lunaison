@@ -91,6 +91,8 @@ a { color: var(--link); text-underline-offset: 3px; }
 .prose th, .prose td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .prose th { color: var(--text-muted); font-weight: 600; }
 .prose td:first-child { min-width: 18em; }
+.prose td:last-child { min-width: 7.5em; }
+@media (max-width: 560px) { .prose td:first-child { min-width: 0; } .prose th, .prose td { padding: 10px 8px; } }
 
 .site-footer { border-top: 1px solid var(--line); margin-top: 48px; padding: 24px 0; color: var(--text-muted); font-size: 1rem; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 16px; }
