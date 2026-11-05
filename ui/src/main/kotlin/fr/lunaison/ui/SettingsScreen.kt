@@ -10,6 +10,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -84,6 +87,7 @@ fun SettingsScreen(
     val reminders = settings.reminders
     var confirmErase by rememberSaveable { mutableStateOf(false) }
     var showPinSetup by rememberSaveable { mutableStateOf(false) }
+    var showImportSourceDialog by rememberSaveable { mutableStateOf(false) }
     var importResultMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var showPasswordDialog by rememberSaveable { mutableStateOf(false) }
     var passwordInput by rememberSaveable { mutableStateOf("") }
@@ -339,8 +343,8 @@ fun SettingsScreen(
             LunaButton(tr("Bilan de santé pour un soignant", "Health report for a clinician"), onClick = onHealthReport, style = LunaButtonStyle.Outlined)
             LunaButton(tr("Exporter (tableur)", "Export (spreadsheet)"), onClick = { exporter.launch("lunaison.csv") }, style = LunaButtonStyle.Outlined)
             LunaButton(
-                tr("Importer des données (CSV, sauvegarde Calendrier)", "Import data (CSV, Calendar backup)"),
-                onClick = { importer.launch(arrayOf("*/*")) },
+                tr("Importer des données", "Import data"),
+                onClick = { showImportSourceDialog = true },
                 style = LunaButtonStyle.Outlined,
             )
             importResultMessage?.let { msg ->
@@ -394,6 +398,84 @@ fun SettingsScreen(
                 }) { Text(tr("Effacer", "Erase")) }
             },
             dismissButton = { TextButton(onClick = { confirmErase = false }) { Text(tr("Annuler", "Cancel")) } },
+        )
+    }
+
+    if (showImportSourceDialog) {
+        AlertDialog(
+            onDismissRequest = { showImportSourceDialog = false },
+            title = { Text(tr("Importer des données", "Import data")) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        tr(
+                            "De quelle application souhaitez-vous récupérer votre historique ?",
+                            "Which app do you want to import your history from?",
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Card(
+                        onClick = {
+                            showImportSourceDialog = false
+                            importer.launch(arrayOf("application/zip", "application/json", "application/octet-stream", "*/*"))
+                        },
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(
+                                tr("Calendrier des règles", "Period Calendar"),
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                            Text(
+                                tr(
+                                    "Archive .zip (chiffrée par mot de passe) ou export .json de l'application.",
+                                    ".zip archive (password-protected) or .json export from the app.",
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
+                    Card(
+                        onClick = {
+                            showImportSourceDialog = false
+                            importer.launch(arrayOf("text/*", "text/comma-separated-values", "application/csv", "*/*"))
+                        },
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(
+                                tr("Lunaison ou tableur (CSV)", "Lunaison or spreadsheet (CSV)"),
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                            Text(
+                                tr(
+                                    "Fichier .csv de sauvegarde exporté depuis Lunaison ou un tableur.",
+                                    ".csv backup file exported from Lunaison or a spreadsheet.",
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
+                    Text(
+                        tr(
+                            "D'autres applications (Clue, Flo...) seront ajoutées dans les prochaines mises à jour.",
+                            "Other applications (Clue, Flo...) will be added in upcoming updates.",
+                        ),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showImportSourceDialog = false }) {
+                    Text(tr("Annuler", "Cancel"))
+                }
+            },
         )
     }
 
