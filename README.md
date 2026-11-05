@@ -94,7 +94,7 @@ Tests : `./gradlew test`. Construction : `./gradlew :app:assembleDebug`.
 
 ## Pistes envisagées
 
-Les fonctions étudiées mais pas encore réalisées, comme l'import de l'historique depuis Clue ou Flo, sont décrites dans [documentation/pistes.md](documentation/pistes.md).
+Les fonctions étudiées mais pas encore réalisées, comme l'import de l'historique depuis d'autres applications, sont décrites dans [documentation/pistes.md](documentation/pistes.md).
 
 ## Contact et licence
 
