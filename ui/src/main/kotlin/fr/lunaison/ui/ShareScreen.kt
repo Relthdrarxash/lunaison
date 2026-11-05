@@ -265,20 +265,25 @@ private fun QrSyncSection(
                 }
                 Muted(tr("Ouvrez Lunaison > Partager > Scanner un QR Code sur le téléphone de votre partenaire.", "Open Lunaison > Share > Scan a QR Code on your partner's phone."))
             }
+            val shareBody = remember(known, encoded) {
+                tr(
+                    "Voici mon suivi Lunaison (${Format.nextPeriod(known)}) Pour afficher mes estimations sur ton téléphone, colle ce message dans Lunaison > Partager > Scanner ou coller un code : $encoded",
+                    "Here is my Lunaison update (${Format.nextPeriod(known)}) To view my estimates on your phone, paste this message in Lunaison > Share > Scan or paste a code: $encoded",
+                )
+            }
+            if (partner != null) {
+                LunaButton(
+                    tr("Envoyer le code via ${partner.channel.label}", "Send code via ${partner.channel.label}"),
+                    onClick = { ShareLauncher.send(context, partner, shareBody) },
+                    style = LunaButtonStyle.Outlined,
+                    icon = Icons.AutoMirrored.Filled.Send,
+                )
+            }
             LunaButton(
-                tr("Exporter le code par SMS", "Export code by SMS"),
-                onClick = {
-                    val smsBody = tr(
-                        "Voici mon suivi Lunaison (${Format.nextPeriod(known)}) Pour afficher mes estimations sur ton téléphone, colle ce message dans Lunaison > Partager > Scanner ou coller un code : $encoded",
-                        "Here is my Lunaison update (${Format.nextPeriod(known)}) To view my estimates on your phone, paste this message in Lunaison > Share > Scan or paste a code: $encoded",
-                    )
-                    if (partner != null) {
-                        ShareLauncher.send(context, partner.copy(channel = PartnerChannel.SMS), smsBody)
-                    } else {
-                        ShareLauncher.sendSms(context, smsBody)
-                    }
-                },
-                style = LunaButtonStyle.Outlined,
+                if (partner != null) tr("Partager autrement (SMS, messagerie…)", "Share another way (SMS, messaging…)")
+                else tr("Partager le code (SMS, messagerie…)", "Share code (SMS, messaging…)"),
+                onClick = { ShareLauncher.shareAny(context, shareBody) },
+                style = if (partner != null) LunaButtonStyle.Quiet else LunaButtonStyle.Outlined,
                 icon = Icons.AutoMirrored.Filled.Send,
             )
         }
@@ -347,13 +352,8 @@ object ShareLauncher {
         }
     }
 
-    fun sendSms(context: Context, text: String) {
-        val smsIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:")).putExtra("sms_body", text)
-        try {
-            context.startActivity(smsIntent)
-        } catch (_: ActivityNotFoundException) {
-            context.startActivity(Intent.createChooser(plainText(text), null))
-        }
+    fun shareAny(context: Context, text: String) {
+        context.startActivity(Intent.createChooser(plainText(text), null))
     }
 
     private fun plainText(text: String) = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
