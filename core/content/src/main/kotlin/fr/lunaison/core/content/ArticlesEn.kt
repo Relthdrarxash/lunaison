@@ -167,7 +167,7 @@ internal object ArticlesEn {
                 listOf(
                     "With your doctor, a midwife or a gynecologist, if you notice:",
                     "pain that stops you from doing your activities or does not respond to anti-inflammatories;",
-                    "periods that last more than 8 days, or so heavy that you change your pad, tampon or cup in less than three hours, or with clots larger than 2.5 cm (1 inch);",
+                    "periods that last more than 8 days, or so heavy that you need to change your pad or tampon every 1 to 2 hours, or with clots larger than about 2.5 cm (1 inch);",
                     "cycles regularly shorter than 24 days or longer than 38 days in adults (21 and 45 days in teenagers);",
                     "more than three months without a period, outside of pregnancy;",
                     "bleeding between periods or after sex;",
@@ -190,7 +190,7 @@ internal object ArticlesEn {
                 ),
             ),
         ),
-        sources = listOf(Sources.FIGO_2018, Sources.MSD_PARAMETERS, Sources.ACOG_ADOLESCENTS_2015, Sources.ENDOMETRIOSIS_2024, Sources.ACOG_DYSMENORRHEA_2018),
+        sources = listOf(Sources.FIGO_2018, Sources.MSD_PARAMETERS, Sources.NHS_HEAVY_PERIODS, Sources.ACOG_ADOLESCENTS_2015, Sources.ENDOMETRIOSIS_2024, Sources.ACOG_DYSMENORRHEA_2018),
     )
 
     val protection = Article(
