@@ -1,0 +1,4 @@
+• Direct import from "Period Calendar" app (encrypted zip or JSON).
+• Endometriosis tracking: 4 new clinical symptoms (dyspareunia, bowel/urinary pain, radiating pain) and dedicated clinical report section.
+• New guide in "Learn": endometriosis indicators (the 5 "Ds"), diagnosis pathway, and everyday relief options.
+• UI polish: streamlined side-by-side action buttons on Home and Settings, stable chip selectors.

@@ -92,6 +92,10 @@ enum class Symptom(
     BRAIN_FOG("Brouillard mental", "Brain fog", "Mgła mózgowa", "Туман у голові", "Niebla mental", "Konzentrationsprobleme"),
     CRAMPS("Crampes", "Cramps", "Skurcze", "Спазми", "Cólicos", "Krämpfe"),
     DIZZINESS("Vertiges", "Dizziness", "Zawroty głowy", "Запаморочення", "Mareos", "Schwindel"),
+    DYSPAREUNIA("Douleurs aux rapports", "Pain during sex", "Ból przy stosunku", "Біль під час сексу", "Dolor en las relaciones", "Schmerzen beim Sex"),
+    DIGESTIVE_PAIN("Douleur défécation / transit", "Painful bowel movement", "Ból przy wypróżnianiu", "Біль під час дефекації", "Dolor al defecar", "Schmerzen beim Stuhlgang"),
+    URINARY_PAIN("Douleur en urinant", "Painful urination", "Ból przy mikcji", "Біль при сечовипусканні", "Dolor al orinar", "Schmerzen beim Wasserlassen"),
+    RADIATING_PAIN("Douleurs irradiantes (dos/jambes)", "Radiating pain (back/legs)", "Ból promieniujący", "Біль, що віддає у ноги/спину", "Dolor irradiado", "Ausstrahlende Schmerzen"),
     ;
 
     val label: String get() = tr(fr, en, pl, uk, es, de)
