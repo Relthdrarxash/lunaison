@@ -193,7 +193,12 @@ private fun MainScaffold(state: AppState, actions: Actions, versionName: String)
                 )
             }
             composable(Tab.CALENDAR.route) {
-                CalendarScreen(state = state, onDay = { navController.navigate("jour/$it") }, onInsights = { navController.navigate("cycles") })
+                CalendarScreen(
+                    state = state,
+                    onDay = { navController.navigate("jour/$it") },
+                    onInsights = { navController.navigate("cycles") },
+                    onHealthReport = { navController.navigate("bilan") },
+                )
             }
             composable(Tab.LEARN.route) {
                 LearnScreen(onArticle = { navController.navigate("fiche/$it") })

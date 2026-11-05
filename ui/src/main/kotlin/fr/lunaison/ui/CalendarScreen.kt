@@ -42,6 +42,8 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.lunaison.core.cycle.CycleState
+import fr.lunaison.core.designsystem.LunaButton
+import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import java.time.DayOfWeek
@@ -52,7 +54,12 @@ import fr.lunaison.core.model.tr
 private enum class DayMark { PERIOD, SPOTTING, PREDICTED, NONE }
 
 @Composable
-fun CalendarScreen(state: AppState, onDay: (LocalDate) -> Unit, onInsights: () -> Unit = {}) {
+fun CalendarScreen(
+    state: AppState,
+    onDay: (LocalDate) -> Unit,
+    onInsights: () -> Unit = {},
+    onHealthReport: () -> Unit = {},
+) {
     var monthText by rememberSaveable { mutableStateOf(YearMonth.from(state.today).toString()) }
     val month = YearMonth.parse(monthText)
     val known = state.cycle as? CycleState.Known
@@ -73,7 +80,20 @@ fun CalendarScreen(state: AppState, onDay: (LocalDate) -> Unit, onInsights: () -
 
     Page {
         PageTitle(tr("Calendrier", "Calendar"), subtitle = tr("Touchez un jour pour le noter ou le modifier.", "Tap a day to log or edit it."))
-        TextButton(onClick = onInsights) { Text(tr("Analyse de mes cycles", "My cycle insights"), style = MaterialTheme.typography.labelLarge) }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            LunaButton(
+                tr("Analyse des cycles", "Cycle insights", "Analiza cykli", "Аналіз циклів", "Análisis de ciclos", "Zyklusanalyse"),
+                onClick = onInsights,
+                style = LunaButtonStyle.Quiet,
+                modifier = Modifier.weight(1f),
+            )
+            LunaButton(
+                tr("Bilan soignant", "Health report", "Raport medyczny", "Медичний звіт", "Informe médico", "Arztbericht"),
+                onClick = onHealthReport,
+                style = LunaButtonStyle.Quiet,
+                modifier = Modifier.weight(1f),
+            )
+        }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { monthText = month.minusMonths(1).toString() }) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = tr("Mois précédent", "Previous month"))
