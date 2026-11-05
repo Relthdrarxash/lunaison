@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -22,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -118,7 +120,7 @@ private fun MonthGrid(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 for (column in 0 until 7) {
                     val index = row * 7 + column - offset
-                    Box(Modifier.weight(1f).aspectRatio(1f), contentAlignment = Alignment.Center) {
+                    Box(Modifier.weight(1f).heightIn(min = 48.dp).aspectRatio(1f), contentAlignment = Alignment.Center) {
                         if (index in 0 until month.lengthOfMonth()) {
                             val date = first.plusDays(index.toLong())
                             DayCell(date, today, markOf(date), date in logged, onDay)
@@ -157,7 +159,7 @@ private fun DayCell(date: LocalDate, today: LocalDate, mark: DayMark, logged: Bo
         .clip(CircleShape)
     if (mark == DayMark.PREDICTED) modifier = modifier.border(BorderStroke(2.dp, colors.secondary), CircleShape)
     if (date == today) modifier = modifier.border(BorderStroke(2.dp, colors.primary), CircleShape)
-    if (clickable) modifier = modifier.clickable { onDay(date) }
+    if (clickable) modifier = modifier.minimumInteractiveComponentSize().clickable { onDay(date) }
     modifier = modifier.clearAndSetSemantics {
         contentDescription = description
         if (clickable) {
