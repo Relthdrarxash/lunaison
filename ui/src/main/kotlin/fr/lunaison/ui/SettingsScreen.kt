@@ -54,6 +54,7 @@ fun SettingsScreen(
     val reminders = settings.reminders
     var confirmErase by rememberSaveable { mutableStateOf(false) }
     var showPinSetup by rememberSaveable { mutableStateOf(false) }
+    var importResultCount by rememberSaveable { mutableStateOf<Int?>(null) }
 
     val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
     fun ensureNotifications() {
@@ -69,6 +70,15 @@ fun SettingsScreen(
             scope.launch {
                 val csv = actions.exportCsv()
                 context.contentResolver.openOutputStream(uri)?.use { it.write(csv.toByteArray()) }
+            }
+        }
+    }
+
+    val importer = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            scope.launch {
+                val text = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }.orEmpty()
+                importResultCount = actions.importCsv(text)
             }
         }
     }
@@ -167,6 +177,16 @@ fun SettingsScreen(
                 onChange = { on -> actions.updateSettings { it.copy(showFertility = on) } },
             )
             SwitchRow(
+                tr("Suivre les signes d'ovulation (glaire cervicale, température)", "Track ovulation signs (cervical mucus, temperature)"),
+                checked = settings.trackOvulationSigns,
+                onChange = { on -> actions.updateSettings { it.copy(trackOvulationSigns = on) } },
+            )
+            SwitchRow(
+                tr("Cycles naturellement irréguliers (périménopause, SOPK…)", "Naturally irregular cycles (perimenopause, PCOS…)"),
+                checked = settings.irregularCyclesMode,
+                onChange = { on -> actions.updateSettings { it.copy(irregularCyclesMode = on) } },
+            )
+            SwitchRow(
                 tr("Mettre les prévisions en pause (grossesse, allaitement, contraception)", "Pause predictions (pregnancy, breastfeeding, contraception)"),
                 checked = settings.pausePredictions,
                 onChange = { on -> actions.updateSettings { it.copy(pausePredictions = on) } },
@@ -201,6 +221,14 @@ fun SettingsScreen(
             Text(tr("Tout est enregistré sur ce téléphone, nulle part ailleurs. Lunaison n'a pas accès à Internet et ne fait pas de sauvegarde dans le nuage.", "Everything is saved on this phone, nowhere else. Lunaison has no Internet access and makes no cloud backup."), style = MaterialTheme.typography.bodyMedium)
             LunaButton(tr("Bilan de santé pour un soignant", "Health report for a clinician"), onClick = onHealthReport, style = LunaButtonStyle.Outlined)
             LunaButton(tr("Exporter (tableur)", "Export (spreadsheet)"), onClick = { exporter.launch("lunaison.csv") }, style = LunaButtonStyle.Outlined)
+            LunaButton(
+                tr("Importer une sauvegarde (CSV)", "Import a backup (CSV)"),
+                onClick = { importer.launch(arrayOf("text/*", "application/csv", "*/*")) },
+                style = LunaButtonStyle.Outlined,
+            )
+            importResultCount?.let { count ->
+                Muted(tr("$count journées importées.", "$count days imported."))
+            }
             LunaButton(tr("Tout effacer", "Erase everything"), onClick = { confirmErase = true }, style = LunaButtonStyle.Quiet, icon = Icons.Filled.Delete)
         }
 

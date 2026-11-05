@@ -241,6 +241,8 @@ private fun TodaySummary(log: DayLog, medicationLabel: String = "") {
             val label = medicationLabel.trim().ifBlank { tr("contraception ou traitement", "contraception or medication") }
             add(tr("Pris aujourd'hui : $label", "Taken today: $label"))
         }
+        log.mucus?.let { add(tr("Glaire : ${it.label.lowercase()}", "Mucus: ${it.label.lowercase()}")) }
+        log.basalTemperature?.let { add(tr("Température : ${"%.1f".format(java.util.Locale.FRENCH, it)} °C", "Temperature: ${"%.1f".format(java.util.Locale.ENGLISH, it)} °C")) }
     }
     LunaCard {
         Text(tr("Noté aujourd'hui", "Logged today"), style = MaterialTheme.typography.titleMedium)
