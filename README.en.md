@@ -94,7 +94,7 @@ Tests: `./gradlew test`. Build: `./gradlew :app:assembleDebug`.
 
 ## Ideas being considered
 
-Features that have been studied but not yet built, such as importing your history from Clue or Flo, are described in [documentation/pistes.md](documentation/pistes.md) (in French).
+Features that have been studied but not yet built, such as importing your history from other apps, are described in [documentation/pistes.md](documentation/pistes.md) (in French).
 
 ## Contact and license
 
