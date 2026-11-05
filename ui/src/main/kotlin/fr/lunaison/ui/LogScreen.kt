@@ -111,6 +111,22 @@ fun LogScreen(
             )
         }
 
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            val medName = state.settings.reminders.medicationLabel.trim()
+            val chipLabel = if (medName.isNotEmpty()) {
+                tr("Pris aujourd'hui ($medName)", "Taken today ($medName)")
+            } else {
+                tr("Pris aujourd'hui", "Taken today")
+            }
+            SectionTitle(tr("Contraception ou traitement", "Contraception or medication"))
+            ChoiceChips(
+                options = listOf(true),
+                label = { chipLabel },
+                isSelected = { draft.medicationTaken },
+                onToggle = { draft = draft.copy(medicationTaken = !draft.medicationTaken) },
+            )
+        }
+
         OutlinedTextField(
             value = draft.note,
             onValueChange = { draft = draft.copy(note = it.take(500)) },

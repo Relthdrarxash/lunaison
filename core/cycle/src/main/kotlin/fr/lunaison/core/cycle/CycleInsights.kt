@@ -54,6 +54,19 @@ data class Anticipation(val phase: Phase, val inDays: Int, val pattern: PhasePat
 /** Moment d'apparition d'un symptôme ou d'une humeur avant les règles. */
 data class Onset(val label: String, val daysBefore: Int, val cycles: Int)
 
+/** Synthèse complète des cycles pour une consultation médicale. */
+data class HealthReport(
+    val generatedOn: LocalDate,
+    val lastPeriodStart: LocalDate,
+    val dayOfCycle: Int,
+    val overview: CycleOverview?,
+    val recentPeriods: List<Period>,
+    val phasePatterns: List<PhasePattern>,
+    val alerts: List<AlertKind>,
+    val spottingCountLast90Days: Int,
+    val medicationDaysLast30Days: Int,
+)
+
 /**
  * Statistiques personnelles, calculées sur le téléphone à partir de ce qui a été noté.
  * Elles décrivent, sans interpréter : pas de diagnostic, des comptes plutôt que des pourcentages,
@@ -157,6 +170,31 @@ object CycleInsights {
 
         return pattern.symptoms.mapNotNull { (symptom, _) -> onset(symptom.label) { symptom in it.symptoms } } +
             pattern.moods.mapNotNull { (mood, _) -> onset(mood.label) { mood in it.moods } }
+    }
+
+    /** Schémas corporels et d'humeur sur les quatre phases du cycle. */
+    fun allPhasePatterns(logs: List<DayLog>, state: CycleState.Known): List<PhasePattern> =
+        listOf(Phase.MENSTRUAL, Phase.FOLLICULAR, Phase.OVULATION, Phase.LUTEAL)
+            .map { PhasePatterns.compute(logs, state, it) }
+            .filter { !it.isEmpty }
+
+    /** Construit le bilan de santé synthétique à montrer ou partager en consultation. */
+    fun healthReport(logs: List<DayLog>, state: CycleState.Known, ageGroup: AgeGroup): HealthReport {
+        val overview = overview(logs, state, ageGroup)
+        val alerts = CycleAlerts.evaluate(state, ageGroup)
+        val cutoff90 = state.today.minusDays(90)
+        val cutoff30 = state.today.minusDays(30)
+        return HealthReport(
+            generatedOn = state.today,
+            lastPeriodStart = state.lastStart,
+            dayOfCycle = state.dayOfCycle,
+            overview = overview,
+            recentPeriods = state.periods.takeLast(CycleConfig.CYCLES_FOR_PREDICTION),
+            phasePatterns = allPhasePatterns(logs, state),
+            alerts = alerts,
+            spottingCountLast90Days = state.spotting.count { !it.isBefore(cutoff90) },
+            medicationDaysLast30Days = logs.count { !it.date.isBefore(cutoff30) && !it.date.isAfter(state.today) && it.medicationTaken },
+        )
     }
 
     private fun withinReferences(lengths: List<Int>, ageGroup: AgeGroup): Boolean {

@@ -26,18 +26,26 @@ import fr.lunaison.core.cycle.CycleOverview
 import fr.lunaison.core.cycle.CycleState
 import fr.lunaison.core.cycle.Phase
 import fr.lunaison.core.cycle.PhasePatterns
+import fr.lunaison.core.designsystem.LunaButton
+import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.tr
 
 /** « Mes cycles » : ce que les données notées disent, calculé sur le téléphone. */
 @Composable
-fun InsightsScreen(state: AppState, onBack: () -> Unit, onArticle: (String) -> Unit) {
+fun InsightsScreen(
+    state: AppState,
+    onBack: () -> Unit,
+    onArticle: (String) -> Unit,
+    onHealthReport: () -> Unit = {},
+) {
     val cycle = state.cycle as? CycleState.Known
     val ageGroup = state.settings.baseline.ageGroup
     val overview = remember(state.logs, cycle) { cycle?.let { CycleInsights.overview(state.logs, it, ageGroup) } }
     val onsets = remember(state.logs, cycle) { cycle?.let { CycleInsights.onsets(state.logs, it) }.orEmpty() }
     val duringPeriod = remember(state.logs, cycle) { cycle?.let { PhasePatterns.compute(state.logs, it, Phase.MENSTRUAL) } }
+    val phasePatterns = remember(state.logs, cycle) { cycle?.let { CycleInsights.allPhasePatterns(state.logs, it) }.orEmpty() }
     val context = LocalContext.current
 
     Page {
@@ -48,6 +56,12 @@ fun InsightsScreen(state: AppState, onBack: () -> Unit, onArticle: (String) -> U
             Muted(InsightTexts.HOW_IT_WORKS)
             return@Page
         }
+
+        LunaButton(
+            tr("Bilan de santé pour un soignant", "Health report for a clinician"),
+            onClick = onHealthReport,
+            style = LunaButtonStyle.Outlined,
+        )
 
         SectionTitle(tr("Durée de vos cycles", "Length of your cycles"))
         LunaCard {
@@ -75,6 +89,26 @@ fun InsightsScreen(state: AppState, onBack: () -> Unit, onArticle: (String) -> U
                 Text(tr("Lors de vos dernières règles, vous avez souvent noté :", "During your recent periods, you often logged:"), style = MaterialTheme.typography.bodyMedium)
                 duringPeriod.symptoms.forEach { (s, n) -> Bullet(tr("${s.label} (${n} cycles sur ${duringPeriod.cycles})", "${s.label} (${n} of ${duringPeriod.cycles} cycles)")) }
                 duringPeriod.moods.forEach { (m, n) -> Bullet(tr("${m.label} (${n} cycles sur ${duringPeriod.cycles})", "${m.label} (${n} of ${duringPeriod.cycles} cycles)")) }
+            }
+        }
+
+        if (phasePatterns.isNotEmpty()) {
+            SectionTitle(tr("Votre cycle, phase par phase", "Your cycle, phase by phase"))
+            phasePatterns.forEach { pattern ->
+                LunaCard {
+                    Text(Format.phaseName(pattern.phase), style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        tr("Revenu lors de vos derniers cycles pendant cette phase :", "Observed across your recent cycles during this phase:"),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    pattern.symptoms.forEach { (s, n) ->
+                        Bullet(tr("${s.label} ($n cycles sur ${pattern.cycles})", "${s.label} ($n of ${pattern.cycles} cycles)"))
+                    }
+                    pattern.moods.forEach { (m, n) ->
+                        Bullet(tr("Humeur : ${m.label.lowercase()} ($n cycles sur ${pattern.cycles})", "Mood: ${m.label.lowercase()} ($n of ${pattern.cycles} cycles)"))
+                    }
+                }
             }
         }
 

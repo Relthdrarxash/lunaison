@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,22 +29,31 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.core.content.ContextCompat
 import fr.lunaison.core.cycle.LogReminderMode
+import fr.lunaison.core.data.AppSettings
 import fr.lunaison.core.designsystem.ChoiceChips
 import fr.lunaison.core.designsystem.LunaButton
 import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.AgeGroup
+import fr.lunaison.core.model.ThemePalette
 import kotlinx.coroutines.launch
 import fr.lunaison.core.model.tr
 
 @Composable
-fun SettingsScreen(state: AppState, actions: Actions, versionName: String, onArticle: (String) -> Unit) {
+fun SettingsScreen(
+    state: AppState,
+    actions: Actions,
+    versionName: String,
+    onArticle: (String) -> Unit,
+    onHealthReport: () -> Unit = {},
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val settings = state.settings
     val reminders = settings.reminders
     var confirmErase by rememberSaveable { mutableStateOf(false) }
+    var showPinSetup by rememberSaveable { mutableStateOf(false) }
 
     val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
     fun ensureNotifications() {
@@ -108,6 +118,31 @@ fun SettingsScreen(state: AppState, actions: Actions, versionName: String, onArt
                     onPlus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(logReminderTime = time.plusHours(1))) } },
                 )
             }
+            SwitchRow(
+                tr("Rappel quotidien (contraception ou traitement)", "Daily reminder (contraception or medication)"),
+                checked = reminders.medicationReminder,
+                onChange = { on ->
+                    if (on) ensureNotifications()
+                    actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationReminder = on)) }
+                },
+            )
+            if (reminders.medicationReminder) {
+                val medTime = reminders.medicationReminderTime
+                Stepper(
+                    label = tr("À ${medTime.hour} h", "At ${medTime.hour}:00"),
+                    onMinus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationReminderTime = medTime.minusHours(1))) } },
+                    onPlus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationReminderTime = medTime.plusHours(1))) } },
+                )
+                OutlinedTextField(
+                    value = reminders.medicationLabel,
+                    onValueChange = { text ->
+                        actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationLabel = text.take(40))) }
+                    },
+                    label = { Text(tr("Nom du traitement ou contraceptif (facultatif)", "Medication or contraceptive name (optional)")) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             Muted(tr("Sur l'écran verrouillé, les notifications n'affichent que « Lunaison ».", "On the lock screen, notifications only show \"Lunaison\"."))
         }
 
@@ -126,11 +161,45 @@ fun SettingsScreen(state: AppState, actions: Actions, versionName: String, onArt
                 },
             )
             Muted(tr("Elle règle les repères de cycle normal et l'accès au partage.", "It sets the normal cycle ranges and access to sharing."))
+            SwitchRow(
+                tr("Afficher la fenêtre fertile estimée", "Show estimated fertile window"),
+                checked = settings.showFertility,
+                onChange = { on -> actions.updateSettings { it.copy(showFertility = on) } },
+            )
+            SwitchRow(
+                tr("Mettre les prévisions en pause (grossesse, allaitement, contraception)", "Pause predictions (pregnancy, breastfeeding, contraception)"),
+                checked = settings.pausePredictions,
+                onChange = { on -> actions.updateSettings { it.copy(pausePredictions = on) } },
+            )
+        }
+
+        SectionTitle(tr("Apparence et sécurité", "Appearance and security"))
+        LunaCard {
+            Text(tr("Palette de couleurs", "Color palette"), style = MaterialTheme.typography.titleSmall)
+            ChoiceChips(
+                options = ThemePalette.entries,
+                label = { it.label },
+                isSelected = { it == settings.themePalette },
+                onToggle = { palette -> actions.updateSettings { it.copy(themePalette = palette) } },
+            )
+            SwitchRow(
+                tr("Verrouiller l'application par code à 4 chiffres", "Lock the app with a 4-digit PIN"),
+                checked = settings.pinHash != null,
+                onChange = { on ->
+                    if (on) {
+                        showPinSetup = true
+                    } else {
+                        actions.updateSettings { it.copy(pinHash = null) }
+                    }
+                },
+            )
+            Muted(tr("Quand le code est activé, l'aperçu de l'application est également masqué dans le sélecteur d'applications récentes.", "When the PIN is enabled, the app preview is also hidden in the recent apps switcher."))
         }
 
         SectionTitle(tr("Mes données", "My data"))
         LunaCard {
             Text(tr("Tout est enregistré sur ce téléphone, nulle part ailleurs. Lunaison n'a pas accès à Internet et ne fait pas de sauvegarde dans le nuage.", "Everything is saved on this phone, nowhere else. Lunaison has no Internet access and makes no cloud backup."), style = MaterialTheme.typography.bodyMedium)
+            LunaButton(tr("Bilan de santé pour un soignant", "Health report for a clinician"), onClick = onHealthReport, style = LunaButtonStyle.Outlined)
             LunaButton(tr("Exporter (tableur)", "Export (spreadsheet)"), onClick = { exporter.launch("lunaison.csv") }, style = LunaButtonStyle.Outlined)
             LunaButton(tr("Tout effacer", "Erase everything"), onClick = { confirmErase = true }, style = LunaButtonStyle.Quiet, icon = Icons.Filled.Delete)
         }
@@ -144,6 +213,16 @@ fun SettingsScreen(state: AppState, actions: Actions, versionName: String, onArt
             TextButton(onClick = { openLink(context, Links.SOURCE) }) { Text(tr("Code source", "Source code")) }
             TextButton(onClick = { openLink(context, Links.CONTACT) }) { Text(tr("Nous écrire", "Contact us")) }
         }
+    }
+
+    if (showPinSetup) {
+        PinSetupDialog(
+            onSavePin = { pin ->
+                showPinSetup = false
+                actions.updateSettings { it.copy(pinHash = AppSettings.hashPin(pin)) }
+            },
+            onDismiss = { showPinSetup = false },
+        )
     }
 
     if (confirmErase) {

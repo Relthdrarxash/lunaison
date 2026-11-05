@@ -54,6 +54,10 @@ class ContentTest {
             PhaseGuides.all.flatMap { listOf(it.name, it.whatHappens) + it.tips.map { tip -> tip.text } } +
             AlertKind.entries.flatMap { listOf(it.title, it.message) } +
             ShareKind.entries.flatMap { listOf(it.label, ShareMessages.text(it, CycleState.Unknown)) } +
+            Phase.entries.flatMap {
+                val g = ShareMessages.partnerGuide(it)
+                listOf(g.phaseTitle, g.whatPartnerShouldKnow) + g.supportTips
+            } +
             Flow.entries.map { it.label } + Symptom.entries.map { it.label } + Mood.entries.map { it.label } +
             Pain.entries.flatMap { listOf(it.label, it.description) } +
             InsightTexts.recapLines(recap) + InsightTexts.HOW_IT_WORKS + InsightTexts.NOTHING_YET

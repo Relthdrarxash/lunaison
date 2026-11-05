@@ -16,9 +16,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,11 +64,21 @@ fun LunaisonApp(repository: LunaisonRepository, versionName: String) {
         }
     }
     val scope = rememberCoroutineScope()
+    var unlocked by rememberSaveable { mutableStateOf(false) }
 
     val currentLogs = logs
     val currentSettings = settings
     if (currentLogs == null || currentSettings == null) {
         Box(Modifier.fillMaxSize())
+        return
+    }
+
+    val expectedPinHash = currentSettings.pinHash
+    if (expectedPinHash != null && !unlocked) {
+        PinUnlockScreen(
+            expectedHash = expectedPinHash,
+            onUnlocked = { unlocked = true },
+        )
         return
     }
 
@@ -151,6 +164,7 @@ private fun MainScaffold(state: AppState, actions: Actions, versionName: String)
                     onShare = { navController.navigate("partage") },
                     onCalendar = { navController.openTab(Tab.CALENDAR.route) },
                     onInsights = { navController.navigate("cycles") },
+                    onBreathe = { navController.navigate("respirer") },
                 )
             }
             composable(Tab.CALENDAR.route) {
@@ -160,7 +174,13 @@ private fun MainScaffold(state: AppState, actions: Actions, versionName: String)
                 LearnScreen(onArticle = { navController.navigate("fiche/$it") })
             }
             composable(Tab.SETTINGS.route) {
-                SettingsScreen(state = state, actions = actions, versionName = versionName, onArticle = { navController.navigate("fiche/$it") })
+                SettingsScreen(
+                    state = state,
+                    actions = actions,
+                    versionName = versionName,
+                    onArticle = { navController.navigate("fiche/$it") },
+                    onHealthReport = { navController.navigate("bilan") },
+                )
             }
             composable(
                 "jour/{date}?debut={debut}",
@@ -182,7 +202,21 @@ private fun MainScaffold(state: AppState, actions: Actions, versionName: String)
                 ArticleScreen(id = entry.arguments?.getString("id").orEmpty(), onBack = { navController.popBackStack() })
             }
             composable("cycles") {
-                InsightsScreen(state = state, onBack = { navController.popBackStack() }, onArticle = { navController.navigate("fiche/$it") })
+                InsightsScreen(
+                    state = state,
+                    onBack = { navController.popBackStack() },
+                    onArticle = { navController.navigate("fiche/$it") },
+                    onHealthReport = { navController.navigate("bilan") },
+                )
+            }
+            composable("bilan") {
+                HealthReportScreen(
+                    state = state,
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable("respirer") {
+                BreathingScreen(onBack = { navController.popBackStack() })
             }
             composable("partage") {
                 ShareScreen(

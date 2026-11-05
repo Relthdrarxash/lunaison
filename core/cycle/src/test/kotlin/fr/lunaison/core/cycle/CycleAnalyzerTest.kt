@@ -122,6 +122,16 @@ class CycleAnalyzerTest {
         val state = known(CycleAnalyzer.analyze(logs, null, start.plusDays(33)))
         assertEquals(Phase.LATE, state.phase)
         assertEquals(5, state.daysLate)
+        assertTrue(state.possiblePregnancyHint)
+    }
+
+    @Test
+    fun `fenetre fertile et date d'ovulation estimees`() {
+        val logs = history(28, 28, 28)
+        val start = D0.plusDays(84)
+        val state = known(CycleAnalyzer.analyze(logs, null, start.plusDays(15)))
+        assertEquals(start.plusDays(15), state.ovulationDate)
+        assertTrue(state.inFertileWindow)
     }
 
     @Test
@@ -220,5 +230,14 @@ class ReminderPlannerTest {
     fun `rappel de saisie autour des regles seulement par defaut`() {
         val state = CycleAnalyzer.analyze(logs, null, start.plusDays(12))
         assertFalse(ReminderPlanner.shouldRemindToLog(state, ReminderSettings(), start.plusDays(12), alreadyLogged = false))
+    }
+
+    @Test
+    fun `rappel quotidien de contraception ou traitement`() {
+        val settings = ReminderSettings(medicationReminder = true, medicationReminderTime = LocalTime.of(9, 0))
+        val at = ReminderPlanner.nextMedicationReminder(settings, LocalDateTime.of(start, LocalTime.of(8, 0)))
+        assertEquals(LocalDateTime.of(start, LocalTime.of(9, 0)), at)
+        assertTrue(ReminderPlanner.shouldRemindMedication(settings, medicationTakenToday = false))
+        assertFalse(ReminderPlanner.shouldRemindMedication(settings, medicationTakenToday = true))
     }
 }
