@@ -1,4 +1,4 @@
-• Partage partenaire par QR code hors-ligne (génération et scan intégrés) et conseils par phase.
-• Bilan de consultation (3 ou 6 mois), import/export CSV et widget d'écran d'accueil.
-• Options : fenêtre fertile, signes d'ovulation (glaire, température), mode cycles irréguliers / périménopause, mode pause.
-• Rappel quotidien (contraception ou traitement), respiration guidée 1 min, 4 thèmes de couleur et code PIN à 4 chiffres.
+• Courbe vectorielle des hormones sur 28j et schémas interactifs des 4 phases et de l'anatomie interne dans « Comprendre ».
+• Guide interactif contraception : explications sur l'impact de la pilule, stérilet cuivre, stérilet hormonal et implant sur les saignements.
+• Réorganisation thématique des fiches santé et repères pour les adolescentes.
+• Amélioration ergonomique : cerclage des boutons respirer et partager, animations douces des rappels et pastilles fixes pour les thèmes.
