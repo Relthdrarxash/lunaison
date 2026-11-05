@@ -20,6 +20,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -119,12 +123,23 @@ fun HomeScreen(
             )
             val followed = state.settings.followedPartner
             val followedCycle = state.followedPartnerCycle
+            var showPartnerScanner by rememberSaveable { mutableStateOf(false) }
             if (followed != null && followedCycle != null) {
                 PartnerSnapshotCard(
                     snapshot = followed,
                     cycle = followedCycle,
-                    onRescan = onShare,
+                    onRescan = { showPartnerScanner = true },
                     onRemove = { actions.updateSettings { it.copy(followedPartner = null) } },
+                )
+            }
+            if (showPartnerScanner) {
+                QrScannerDialog(
+                    existingPartner = followed,
+                    onScanned = { scanned ->
+                        showPartnerScanner = false
+                        actions.updateSettings { it.copy(followedPartner = scanned) }
+                    },
+                    onDismiss = { showPartnerScanner = false },
                 )
             }
         }

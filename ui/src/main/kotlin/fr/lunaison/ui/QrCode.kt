@@ -123,6 +123,7 @@ fun QrCodeBox(
 fun QrScannerDialog(
     onScanned: (PartnerSnapshot) -> Unit,
     onDismiss: () -> Unit,
+    existingPartner: PartnerSnapshot? = null,
 ) {
     val context = LocalContext.current
     var hasCameraPermission by remember {
@@ -132,6 +133,10 @@ fun QrScannerDialog(
     }
     var pastedCode by rememberSaveable { mutableStateOf("") }
     var pasteError by rememberSaveable { mutableStateOf(false) }
+
+    val deliver: (PartnerSnapshot) -> Unit = { decoded ->
+        onScanned(existingPartner?.mergeWith(decoded) ?: decoded)
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         hasCameraPermission = granted
@@ -145,17 +150,29 @@ fun QrScannerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(tr("Scanner ou coller un code", "Scan or paste a code")) },
+        title = {
+            Text(
+                if (existingPartner != null) {
+                    tr("Mettre à jour le cycle de ${existingPartner.partnerName}", "Update ${existingPartner.partnerName}'s cycle")
+                } else {
+                    tr("Scanner ou coller un code", "Scan or paste a code")
+                },
+            )
+        },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (hasCameraPermission) {
                     Text(
-                        tr("Visez le QR Code affiché dans Lunaison sur le téléphone de votre partenaire :", "Point at the QR Code shown in Lunaison on your partner's phone:"),
+                        if (existingPartner != null) {
+                            tr("Scannez le QR Code de mise à jour affiché sur le téléphone de ${existingPartner.partnerName} :", "Scan the update QR Code shown on ${existingPartner.partnerName}'s phone:")
+                        } else {
+                            tr("Visez le QR Code affiché dans Lunaison sur le téléphone de votre partenaire :", "Point at the QR Code shown in Lunaison on your partner's phone:")
+                        },
                         style = MaterialTheme.typography.bodySmall,
                     )
                     CameraQrPreview(
                         onCodeDetected = { raw ->
-                            PartnerSnapshot.decode(raw)?.let(onScanned)
+                            PartnerSnapshot.decode(raw)?.let(deliver)
                         },
                     )
                 } else {
@@ -169,7 +186,7 @@ fun QrScannerDialog(
                     onValueChange = {
                         pastedCode = it
                         pasteError = false
-                        PartnerSnapshot.decode(it)?.let(onScanned)
+                        PartnerSnapshot.decode(it)?.let(deliver)
                     },
                     label = { Text(tr("Ou coller le SMS / code LUNA1:...", "Or paste SMS / LUNA1:... code")) },
                     isError = pasteError,
@@ -188,10 +205,10 @@ fun QrScannerDialog(
                 TextButton(
                     onClick = {
                         val decoded = PartnerSnapshot.decode(pastedCode)
-                        if (decoded != null) onScanned(decoded) else pasteError = true
+                        if (decoded != null) deliver(decoded) else pasteError = true
                     },
                 ) {
-                    Text(tr("Importer", "Import"))
+                    Text(if (existingPartner != null) tr("Mettre à jour", "Update") else tr("Importer", "Import"))
                 }
             }
         },

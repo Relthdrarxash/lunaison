@@ -270,5 +270,18 @@ class ReminderPlannerTest {
         val partnerState = known(CycleAnalyzer.analyze(decodedFromSms.toDayLogs(), decodedFromSms.toBaseline(), start.plusDays(10)))
         assertEquals(11, partnerState.dayOfCycle)
         assertEquals(start.plusDays(28), partnerState.next.start)
+
+        // Mise à jour par QR Code au début du cycle suivant (un seul cycle transmis dans le QR de mise à jour).
+        val nextStart = start.plusDays(29)
+        val updateQr = PartnerSnapshot(
+            partnerName = "Camille",
+            sharedAt = nextStart,
+            periods = listOf(PartnerPeriod(nextStart, 5)),
+            usualCycleLength = 28,
+            showFertility = true,
+        ).encode()
+        val merged = snapshot.mergeWith(assertNotNull(PartnerSnapshot.decode(updateQr)))
+        assertEquals(5, merged.periods.size)
+        assertEquals(nextStart, merged.periods.last().start)
     }
 }
