@@ -4,4 +4,5 @@
     <string name="reminders_channel">Нагадування</string>
     <string name="reminders_channel_description">Сповіщення про наступну менструацію та нагадування про запис дня</string>
     <string name="widget_description">Дискретний індикатор дня та фази циклу</string>
+    <string name="nfc_sync_description">Синхронізація циклу Lunaison</string>
 </resources>
