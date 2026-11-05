@@ -199,6 +199,9 @@ fun SettingsScreen(
                     )
                 }
             }
+            TextButton(onClick = { onArticle("contraception") }) {
+                Text(tr("Comprendre l'impact de ma contraception sur mes règles", "Understand how my contraception affects my periods"))
+            }
             Muted(tr("Sur l'écran verrouillé, les notifications n'affichent que « Lunaison ».", "On the lock screen, notifications only show \"Lunaison\"."))
         }
 

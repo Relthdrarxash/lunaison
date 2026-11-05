@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,12 +16,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -79,6 +88,14 @@ fun LearnScreen(onArticle: (String) -> Unit) {
 
         // Catégorie 1 : Le cycle et les hormones
         SectionTitle(tr("Le cycle et les hormones", "The cycle and hormones"))
+        LunaCard(modifier = Modifier.clickable(role = Role.Button) { onArticle("contraception") }) {
+            Text(tr("Contraception & règles : ce qui change", "Contraception & periods: what changes"), style = MaterialTheme.typography.titleMedium)
+            Text(
+                tr("Pilule, stérilet au cuivre ou hormonal, implant : pourquoi les saignements sont différents et comment ils fonctionnent.", "Pill, copper or hormonal IUD, implant: why bleeding differs and how it works."),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         val cycleArticles = Articles.all.filter { it.id in listOf("cycle", "previsions") }
         cycleArticles.forEach { article ->
             ArticleCard(article, onArticle)
@@ -112,6 +129,10 @@ private fun ArticleCard(article: Article, onArticle: (String) -> Unit) {
 
 @Composable
 fun ArticleScreen(id: String, onBack: () -> Unit) {
+    if (id == "contraception") {
+        ContraceptionGuideScreen(onBack = onBack)
+        return
+    }
     val article = Articles.byId(id)
     val context = LocalContext.current
     Page {
@@ -141,6 +162,296 @@ fun ArticleScreen(id: String, onBack: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+/** Types de contraception avec leur logique physiologique. */
+enum class ContraceptiveMethod(private val fr: String, private val en: String) {
+    COMBINED_PILL("Pilule combinée", "Combined pill"),
+    COPPER_IUD("Stérilet cuivre", "Copper IUD"),
+    IMPLANT_OR_PROGESTIN("Implant / Pilule continue", "Implant / Mini-pill"),
+    HORMONAL_IUD("Stérilet hormonal", "Hormonal IUD"),
+    NATURAL("Cycle naturel / Préservatif", "Natural cycle / Condoms"),
+    ;
+
+    val label: String get() = tr(fr, en)
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun ContraceptionGuideScreen(onBack: () -> Unit) {
+    var selectedMethod by rememberSaveable { mutableStateOf(ContraceptiveMethod.COMBINED_PILL) }
+    val context = LocalContext.current
+
+    Page {
+        PageTitle(
+            tr("Contraception & règles", "Contraception & periods"),
+            onBack = onBack,
+            subtitle = tr("Comprendre vos saignements selon votre méthode.", "Understand your bleeding depending on your method."),
+        )
+
+        LunaCard {
+            Text(
+                tr("Sélectionnez votre moyen de contraception pour voir son fonctionnement :", "Select your contraceptive method to see how it works:"),
+                style = MaterialTheme.typography.titleSmall,
+            )
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                ContraceptiveMethod.entries.forEach { method ->
+                    val isSelected = method == selectedMethod
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { selectedMethod = method },
+                        label = {
+                            Text(
+                                method.label,
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier.padding(vertical = 10.dp),
+                            )
+                        },
+                        leadingIcon = if (isSelected) {
+                            { Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                        } else null,
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        ),
+                    )
+                }
+            }
+        }
+
+        // Fiche détaillée mise en valeur pour la méthode sélectionnée
+        SectionTitle(tr("Votre méthode : ${selectedMethod.label}", "Your method: ${selectedMethod.label}"))
+        when (selectedMethod) {
+            ContraceptiveMethod.COMBINED_PILL -> CombinedPillDetailsCard()
+            ContraceptiveMethod.COPPER_IUD -> CopperIudDetailsCard()
+            ContraceptiveMethod.IMPLANT_OR_PROGESTIN -> ImplantDetailsCard()
+            ContraceptiveMethod.HORMONAL_IUD -> HormonalIudDetailsCard()
+            ContraceptiveMethod.NATURAL -> NaturalDetailsCard()
+        }
+
+        SectionTitle(tr("Toutes les méthodes en résumé", "All methods overview"))
+        ContraceptionComparisonCard()
+
+        TextButton(onClick = { openLink(context, "https://www.questionsexualite.fr/choisir-sa-contraception") }) {
+            Text(
+                tr("Guides officiels de Santé publique France (QuestionSexualité.fr)", "Official public health guidance (in French)"),
+                style = MaterialTheme.typography.bodySmall,
+                textDecoration = TextDecoration.Underline,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CombinedPillDetailsCard() {
+    LunaCard {
+        Text(
+            tr("Ce que sont vos saignements : des hémorragies de privation", "What your bleeding is: withdrawal bleeding"),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(
+            tr(
+                "Sous pilule combinée (œstrogène + progestatif), vous n'avez pas de véritables règles. La pilule bloque l'ovulation. Les saignements lors de la semaine de pause (ou des comprimés placebo) sont déclenchés artificiellement par l'arrêt temporaire des hormones de synthèse.",
+                "Under a combined pill, you do not have genuine menstrual periods. The pill stops ovulation. Bleeding during the 7-day pill-free break is artificially triggered by the temporary drop in hormones.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            tr("Enchaîner sans pause :", "Taking packs back-to-back:"),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            tr(
+                "Enchaîner deux plaquettes sans pause de 7 jours supprime tout saignement. C'est médicalement sans danger et validé par les sociétés savantes (OMS, HAS) : le sang ne s'accumule nulle part.",
+                "Taking active pill packs consecutively without a break suppresses bleeding entirely. It is safe according to WHO/HAS medical guidelines: blood does not build up anywhere.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            tr("Dans Lunaison :", "In Lunaison:"),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            tr(
+                "Vous pouvez noter vos prises quotidiennes et vos saignements. Les prévisions de cycle naturel (ovulation estimée) n'ont pas de valeur sous pilule combinée puisque c'est le calendrier de la plaquette qui fait foi.",
+                "You can log daily intake and bleeding. Natural cycle forecasts (estimated ovulation) are not biologically applicable under the combined pill as the pack schedule dictates bleeding.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
+private fun CopperIudDetailsCard() {
+    LunaCard {
+        Text(
+            tr("Ce que sont vos saignements : de vraies règles naturelles", "What your bleeding is: genuine natural periods"),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(
+            tr(
+                "Le stérilet au cuivre (DIU cuivre) est 100 % sans hormone. Votre cycle biologique naturel, vos variations hormonales et votre ovulation se poursuivent exactement comme d'habitude.",
+                "The copper IUD is 100% hormone-free. Your natural cycle, hormonal variations and ovulation proceed normally.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            tr("L'inflammation bénigne et les flux abondants :", "Benign inflammation and heavy bleeding:"),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            tr(
+                "Le cuivre diffuse de petites quantités d'ions cuivre qui provoquent une réaction inflammatoire locale bénigne de l'endomètre (spermicide). C'est pour cela que les règles sont souvent plus abondantes, plus longues et plus douloureuses les 3 à 6 premiers mois.",
+                "Copper releases ions causing a localized, benign inflammatory response in the endometrium (spermicidal). This is why periods are frequently heavier, longer and more crampy during the first 3 to 6 months.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            tr("Vigilance fer et anémie :", "Iron monitoring and fatigue:"),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            tr(
+                "Des règles très abondantes entraînent une perte de fer. Privilégiez les aliments riches en fer et parlez-en à un soignant pour un bilan sanguin (ferritine) si vous ressentez une grande fatigue ou des vertiges.",
+                "Heavier periods increase iron loss. Favor iron-rich foods and ask your clinician for a ferritin blood test if you experience unusual fatigue or dizziness.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
+private fun ImplantDetailsCard() {
+    LunaCard {
+        Text(
+            tr("Ce que sont vos saignements : un endomètre au repos complet", "What your bleeding is: resting endometrium"),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(
+            tr(
+                "L'implant et la pilule progestative continue (ex. désogestrel) diffusent un progestatif en continu, sans aucune interruption. L'ovulation est le plus souvent bloquée et la muqueuse utérine reste très fine.",
+                "The implant and progestin-only pill continuously release progestin without breaks. Ovulation is mostly suppressed and the uterine lining remains very thin.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            tr("Disparition des règles ou saignements irréguliers :", "No periods or irregular spotting:"),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            tr(
+                "Environ une femme sur trois n'a plus du tout de saignements (aménorrhée). C'est totalement normal et sans danger pour la fertilité future. D'autres personnes connaissent de petits saignements légers et anarchiques (spotting).",
+                "About one in three women stops having periods entirely. This is completely normal and safe for future fertility. Others experience light, irregular spotting.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            tr("Dans Lunaison :", "In Lunaison:"),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            tr(
+                "Le mode « Mettre les prévisions en pause » dans les réglages est idéal si vos règles ont disparu, pour continuer à noter vos symptômes sans alertes de retard inutiles.",
+                "The \"Pause predictions\" mode in settings is ideal if your periods have stopped, allowing you to log symptoms without unneeded late period alerts.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
+private fun HormonalIudDetailsCard() {
+    LunaCard {
+        Text(
+            tr("Ce que sont vos saignements : des flux fortement diminués", "What your bleeding is: significantly reduced bleeding"),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(
+            tr(
+                "Le stérilet hormonal (DIU au lévonorgestrel) agit localement dans l'utérus. L'endomètre ne s'épaissit quasiment plus chaque mois. Les règles deviennent très légères, courtes, et disparaissent souvent complètement après 6 à 12 mois.",
+                "The hormonal IUD acts locally inside the uterus. The endometrium barely thickens. Periods become very light, short, and frequently disappear entirely after 6 to 12 months.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            tr("Les premiers mois :", "The first few months:"),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            tr(
+                "Des petits saignements de repérage (spotting) fréquents sont courants au cours des premières semaines, le temps que la muqueuse s'adapte à l'action locale du progestatif.",
+                "Frequent light spotting is common in the first weeks while the uterine lining adjusts to the localized progestin.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
+private fun NaturalDetailsCard() {
+    LunaCard {
+        Text(
+            tr("Ce que sont vos saignements : un cycle naturel et spontané", "What your bleeding is: a spontaneous natural cycle"),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(
+            tr(
+                "Sans contraception hormonale ni DIU (préservatifs, méthode barrière, symptothermie ou pas de contraception), votre cycle est gouverné par vos propres hormones. Les règles surviennent environ 14 jours après une ovulation naturelle.",
+                "Without hormonal contraception or an IUD (condoms, barrier methods, symptothermy, or no contraception), your cycle is governed by your own hormones. Periods arrive ~14 days after natural ovulation.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            tr("Dans Lunaison :", "In Lunaison:"),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            tr(
+                "Les calculs de durée habituelle, la fenêtre fertile estimée, les analyses de phases et le suivi de la glaire cervicale ou de la température s'appliquent pleinement à votre profil.",
+                "Usual duration calculations, estimated fertile windows, phase patterns and mucus/temperature tracking fully apply to your biological profile.",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
+private fun ContraceptionComparisonCard() {
+    LunaCard {
+        ComparisonRow(
+            title = tr("Pilule combinée", "Combined pill"),
+            summary = tr("Hémorragie de privation (pas de vraie règle). Pas d'ovulation. Possibilité d'enchaîner.", "Withdrawal bleeding (not real period). No ovulation. Can take back-to-back."),
+        )
+        ComparisonRow(
+            title = tr("Stérilet cuivre", "Copper IUD"),
+            summary = tr("Vraies règles naturelles. Règles souvent plus abondantes et crampes au début (inflammation locale bénigne). Surveiller le fer.", "Natural periods. Frequently heavier flow & cramps initially (benign local inflammation). Watch iron."),
+        )
+        ComparisonRow(
+            title = tr("Implant / Pilule continue", "Implant / Mini-pill"),
+            summary = tr("Endomètre au repos. Règles souvent absentes (aménorrhée sans danger) ou spotting irrégulier.", "Resting endometrium. Often no periods (safe amenorrhea) or irregular spotting."),
+        )
+        ComparisonRow(
+            title = tr("Stérilet hormonal", "Hormonal IUD"),
+            summary = tr("Action locale. Diminution drastique des règles, disparition fréquente au bout d'un an.", "Local action. Drastic flow reduction, often complete cessation after one year."),
+        )
+    }
+}
+
+@Composable
+private fun ComparisonRow(title: String, summary: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Text(title, style = MaterialTheme.typography.titleSmall)
+        Text(summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
