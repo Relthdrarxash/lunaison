@@ -8,15 +8,16 @@ Lunaison is a free Android app, open source (GPL-3.0), with no ads, no trackers 
 
 ## What the app does
 
-- **Log your days**: flow, pain (described by its effect), symptoms, moods, a personal note. Everything is optional, and a forgotten day can be filled in later.
-- **Forecast periods**: an estimated date and a plausible range, calculated from your recent cycles. The range narrows as your history grows.
-- **Understand the current phase**: what is happening, what helps, and what tends to come back for you during this phase based on your previous cycles.
-- **Spot what deserves medical advice**: repeated severe pain, periods longer than 8 days, repeated heavy periods, cycles outside the usual range, bleeding between periods, missing periods. Never a diagnosis.
+- **Log your days**: flow, pain (described by its effect), symptoms, moods, contraception or medication taken, and a personal note. Everything is optional, and a forgotten day can be filled in later.
+- **Forecast periods and pause when needed**: an estimated date and a plausible range calculated from your recent cycles, with an option to display the estimated fertile window and a toggle to pause predictions (pregnancy, breastfeeding, continuous contraception).
+- **Understand the current phase and all four phases**: what is happening, what helps, and what tends to come back for you across each of the four phases based on your previous cycles.
+- **See what your cycles show and generate a clinician health report**: usual length, accuracy of forecasts, patterns by phase, review of each completed cycle, and a complete exportable summary for a medical consultation (FIGO/ACOG reference status, pain days, spotting, medication).
+- **One referenced tip a day and guided breathing**: the daily tip changes according to the phase and responds first to what you logged; a guided abdominal breathing exercise (4 s / 6 s) helps ease cramps or premenstrual tension.
+- **Spot what deserves medical advice**: repeated severe pain, periods longer than 8 days, repeated heavy periods, cycles outside the usual range, bleeding between periods, missing periods, extended delay. Never a diagnosis.
 - **Read referenced guides**: the cycle, pain, food, premenstrual syndrome, when to see a doctor, toxic shock, limits of forecasts, a guide for partners and family.
-- **Reminders**: before your period and to log your day, discreet on the lock screen.
-- **See what your cycles show**: usual length, accuracy of forecasts, what comes back during a phase and how many days before your period, a review of each completed cycle. Calculated on the phone, never before two complete cycles.
-- **One referenced tip a day**: it changes each day according to the phase, and responds first to what you have logged.
-- **Share with a partner** (18 and over): the app prepares a message and opens SMS, WhatsApp, Signal or another app. The person taps Send themselves: nothing is sent automatically.
+- **Discreet reminders**: before your period, to log your day, or daily for contraception or medication, always neutral on the lock screen ("Lunaison").
+- **Share with a partner, by message or QR Code** (18 and over): ready-to-send messages, concrete support tips for your partner, and serverless estimate sharing via **QR Code** (displayed and scanned right inside the app) or Android's native share menu (SMS, Signal, WhatsApp…).
+- **Customization, PIN lock and home screen widget**: 4 color palettes (light and dark), optional 4-digit PIN lock (hiding the preview in recent apps), and a discreet home screen widget.
 
 Lunaison is **neither a medical device nor a method of contraception**.
 

@@ -8,15 +8,16 @@ Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans 
 
 ## Ce que fait l'appli
 
-- **Noter ses journées** : flux, douleur (décrite par son effet), symptômes, humeurs, note personnelle. Tout est facultatif, et on peut remplir un jour oublié.
-- **Prévoir les règles** : une date estimée et une plage plausible, calculées à partir des derniers cycles. La plage se resserre à mesure que l'historique grandit.
-- **Comprendre la phase en cours** : ce qui se passe, ce qui aide, et ce qui revient chez soi pendant cette phase d'après les cycles précédents.
-- **Voir ce que disent ses cycles** : durée habituelle, justesse des prévisions, ce qui revient pendant une phase et combien de jours avant les règles, bilan de chaque cycle terminé. Calculé sur le téléphone, jamais avant deux cycles complets.
-- **Un conseil sourcé par jour** : il change chaque jour selon la phase, et répond en priorité à ce qui a été noté.
-- **Repérer ce qui mérite un avis médical** : douleurs fortes répétées, règles de plus de 8 jours, règles abondantes répétées, cycles hors des repères, saignements entre les règles, absence de règles. Jamais un diagnostic.
+- **Noter ses journées** : flux, douleur (décrite par son effet), symptômes, humeurs, prise de contraception ou de traitement, note personnelle. Tout est facultatif, et on peut remplir un jour oublié.
+- **Prévoir les règles et mettre en pause si besoin** : une date estimée et une plage plausible, calculées à partir des derniers cycles, avec option pour afficher la fenêtre fertile estimée et possibilité de mettre les prévisions en pause (grossesse, allaitement, contraception continue).
+- **Comprendre la phase en cours et ses quatre phases** : ce qui se passe, ce qui aide, et ce qui revient chez soi pendant chacune des quatre phases d'après les cycles précédents.
+- **Voir ce que disent ses cycles et générer un bilan pour un soignant** : durée habituelle, justesse des prévisions, motifs par phase, bilan de chaque cycle terminé et synthèse complète exportable pour une consultation médicale (repères FIGO/ACOG, douleurs, saignements hors règles, traitements).
+- **Un conseil sourcé par jour et un exercice de respiration guidée** : le conseil change chaque jour selon la phase et répond en priorité à ce qui a été noté ; un exercice de respiration abdominale (4 s / 6 s) aide à relâcher les crampes ou la tension prémenstruelle.
+- **Repérer ce qui mérite un avis médical** : douleurs fortes répétées, règles de plus de 8 jours, règles abondantes répétées, cycles hors des repères, saignements entre les règles, absence de règles, retard prolongé. Jamais un diagnostic.
 - **Lire des fiches sourcées** : cycle, douleurs, alimentation, syndrome prémenstruel, quand consulter, choc toxique, limites des prévisions, fiche pour l'entourage.
-- **Rappels** : avant les règles et pour noter sa journée, discrets sur l'écran verrouillé.
-- **Partager avec un ou une partenaire** (18 ans et plus) : l'appli prépare un message et ouvre SMS, WhatsApp, Signal ou une autre appli. C'est la personne qui appuie sur Envoyer : rien ne part automatiquement.
+- **Rappels discrets** : avant les règles, pour noter sa journée, ou chaque jour pour sa contraception ou son traitement, toujours neutres sur l'écran verrouillé (« Lunaison »).
+- **Partager avec un ou une partenaire, par message ou par QR Code** (18 ans et plus) : préparation de messages dans la messagerie choisie, repères et conseils de soutien concrets pour le ou la partenaire, et partage décentralisé des estimations par **QR Code** (affiché et scanné directement dans l'appli) ou par le menu de partage d'Android (SMS, Signal, WhatsApp…), sans aucun serveur.
+- **Personnalisation, code PIN et widget d'accueil** : 4 palettes de couleurs (clair et sombre), verrouillage facultatif par code à 4 chiffres (avec masquage dans les applications récentes) et widget d'accueil discret.
 
 Lunaison n'est **ni un dispositif médical ni une méthode de contraception**.
 
