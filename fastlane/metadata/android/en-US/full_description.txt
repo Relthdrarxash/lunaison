@@ -1,0 +1,27 @@
+Lunaison tracks your menstrual cycle without knowing anything about you: no account, no ads, no trackers, not even Internet access. Everything stays on your phone.
+
+LOG IN A FEW SECONDS
+Flow, pain, symptoms, mood and a note if you like. Everything is optional, and a forgotten day can be filled in later.
+
+HONEST FORECASTS
+Lunaison estimates your next period from your recent cycles and shows a likely range of dates, which narrows as you log more cycles.
+
+UNDERSTAND EACH PHASE
+What is happening in your body, what helps, and what tends to come back for you during this phase based on your previous cycles.
+
+REFERENCED GUIDES
+Your cycle, pain, food, premenstrual syndrome, when to see a doctor, toxic shock: each guide cites the studies it relies on.
+
+KNOW WHEN TO SEE A DOCTOR
+Repeated severe pain, periods longer than 8 days, cycles outside the usual range, bleeding between periods: Lunaison points it out, without ever making a diagnosis.
+
+DISCREET REMINDERS
+Before your period and to log your days. On the lock screen, only the app name is shown.
+
+LET YOUR PARTNER KNOW
+For people aged 18 and over: a message ready to send by SMS, WhatsApp or Signal, which you review and send yourself. Nothing is sent automatically.
+
+YOUR DATA BELONGS TO YOU
+Spreadsheet export and complete erasure in one tap. Lunaison is free and open source (GPL-3.0): its code is public.
+
+Lunaison is neither a medical device nor a method of contraception.

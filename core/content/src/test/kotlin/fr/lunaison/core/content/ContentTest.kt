@@ -6,14 +6,46 @@ import fr.lunaison.core.cycle.CycleRecord
 import fr.lunaison.core.cycle.CycleState
 import fr.lunaison.core.cycle.Phase
 import fr.lunaison.core.model.DayLog
+import fr.lunaison.core.model.Flow
+import fr.lunaison.core.model.Language
+import fr.lunaison.core.model.Mood
 import fr.lunaison.core.model.Pain
+import fr.lunaison.core.model.Symptom
 import java.time.LocalDate
+import java.util.Locale
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class ContentTest {
+
+    private val initialLocale = Locale.getDefault()
+
+    @AfterTest
+    fun restoreLocale() = Locale.setDefault(initialLocale)
+
+    private fun setLanguage(language: Language) {
+        Locale.setDefault(if (language == Language.FR) Locale.FRENCH else Locale.ENGLISH)
+        assertEquals(language, Language.current())
+    }
+
+    /** Exécute [block] dans chacune des langues de l'appli. */
+    private fun eachLanguage(block: (Language) -> Unit) {
+        Language.entries.forEach { language ->
+            setLanguage(language)
+            block(language)
+        }
+    }
+
+    private val recap = CycleRecap(
+        record = CycleRecord(LocalDate.of(2026, 10, 1), length = 32, periodLength = 5, painDays = 2, expectedLength = 29),
+        usualLength = 28,
+        withinReferences = true,
+        usualPainDays = 1,
+    )
 
     private fun allTexts(): List<String> =
         Articles.all.flatMap { article ->
@@ -21,33 +53,65 @@ class ContentTest {
         } +
             PhaseGuides.all.flatMap { listOf(it.name, it.whatHappens) + it.tips.map { tip -> tip.text } } +
             AlertKind.entries.flatMap { listOf(it.title, it.message) } +
-            ShareKind.entries.map { ShareMessages.text(it, CycleState.Unknown) }
+            ShareKind.entries.flatMap { listOf(it.label, ShareMessages.text(it, CycleState.Unknown)) } +
+            Flow.entries.map { it.label } + Symptom.entries.map { it.label } + Mood.entries.map { it.label } +
+            Pain.entries.flatMap { listOf(it.label, it.description) } +
+            InsightTexts.recapLines(recap) + InsightTexts.HOW_IT_WORKS + InsightTexts.NOTHING_YET
 
     @Test
-    fun `aucun tiret cadratin dans les textes`() {
+    fun `aucun tiret cadratin dans les textes`() = eachLanguage {
         val offending = allTexts().filter { '—' in it }
         assertTrue(offending.isEmpty(), "Tirets cadratins : $offending")
     }
 
     @Test
-    fun `chaque fiche de sante cite au moins une source`() {
+    fun `aucun texte vide`() = eachLanguage { language ->
+        assertTrue(allTexts().none { it.isBlank() }, "Texte vide en $language")
+    }
+
+    @Test
+    fun `chaque conseil et chaque phase sont traduits`() {
+        PhaseGuides.all.forEach { guide ->
+            guide.tips.forEach { assertNotEquals(it.fr, it.en, "Conseil non traduit : ${it.fr}") }
+            assertTrue(guide.allTexts.none { it.isBlank() })
+        }
+        setLanguage(Language.FR)
+        val frNames = PhaseGuides.all.map { it.name }
+        setLanguage(Language.EN)
+        assertTrue(frNames.zip(PhaseGuides.all.map { it.name }).none { (fr, en) -> fr == en })
+    }
+
+    @Test
+    fun `chaque fiche de sante cite au moins une source`() = eachLanguage {
         val unsourced = Articles.all.filter { it.sources.isEmpty() && it.id != "entourage" }
         assertTrue(unsourced.isEmpty(), "Fiches sans source : ${unsourced.map { it.id }}")
     }
 
     @Test
-    fun `les identifiants de fiches sont uniques`() {
+    fun `les identifiants de fiches sont uniques`() = eachLanguage {
         assertEquals(Articles.all.size, Articles.all.map { it.id }.toSet().size)
     }
 
     @Test
-    fun `chaque signal et chaque phase renvoient vers une fiche existante`() {
+    fun `chaque signal et chaque phase renvoient vers une fiche existante`() = eachLanguage {
         AlertKind.entries.forEach { assertNotNull(Articles.byId(it.articleId), "Fiche manquante pour ${it.name}") }
         Phase.entries.forEach { assertNotNull(Articles.byId(PhaseGuides.forPhase(it).articleId), "Fiche manquante pour $it") }
     }
 
     @Test
-    fun `toutes les sources sont des liens https`() {
+    fun `les deux langues ont les memes fiches, sections et sources`() {
+        val fr = Articles.forLanguage(Language.FR)
+        val en = Articles.forLanguage(Language.EN)
+        assertEquals(fr.map { it.id }, en.map { it.id })
+        fr.zip(en).forEach { (a, b) ->
+            assertEquals(a.sources, b.sources, "Sources différentes pour ${a.id}")
+            assertEquals(a.sections.map { it.paragraphs.size }, b.sections.map { it.paragraphs.size }, "Structure différente pour ${a.id}")
+            assertNotEquals(a.title, b.title, "Fiche ${a.id} non traduite")
+        }
+    }
+
+    @Test
+    fun `toutes les sources sont des liens https`() = eachLanguage {
         Sources.all.forEach { assertTrue(it.url.startsWith("https://"), it.label) }
         val cited = (Articles.all.flatMap { it.sources } + PhaseGuides.all.flatMap { g -> g.tips.flatMap { it.sources } }).toSet()
         assertTrue(Sources.all.toSet().containsAll(cited), "Une source citée manque à la liste générale")
@@ -61,7 +125,7 @@ class ContentTest {
     @Test
     fun `chaque conseil cite une source ou se declare sans etude`() {
         val unsourced = PhaseGuides.all.flatMap { it.tips }.filter { it.sources.isEmpty() && !it.withoutStudy }
-        assertTrue(unsourced.isEmpty(), "Conseils sans source : ${unsourced.map { it.text }}")
+        assertTrue(unsourced.isEmpty(), "Conseils sans source : ${unsourced.map { it.fr }}")
     }
 
     @Test
@@ -87,28 +151,27 @@ class ContentTest {
         (0 until 10).forEach { offset ->
             val date = today.plusDays(offset.toLong())
             val tip = assertNotNull(DailyTip.pick(PhaseGuides.menstrual, date, log.copy(date = date)))
-            assertTrue(Pain.SEVERE in tip.pain, tip.text)
+            assertTrue(Pain.SEVERE in tip.pain, tip.fr)
         }
     }
 
     @Test
     fun `phrases du bilan sans tiret cadratin et avec les bons comptes`() {
-        val recap = CycleRecap(
-            record = CycleRecord(LocalDate.of(2026, 10, 1), length = 32, periodLength = 5, painDays = 2, expectedLength = 29),
-            usualLength = 28,
-            withinReferences = true,
-            usualPainDays = 1,
-        )
-        val lines = InsightTexts.recapLines(recap)
-        assertEquals("Il a duré 32 jours, 4 jours de plus que d'habitude (28).", lines[0])
-        assertEquals("Vos règles sont arrivées 3 jours après la date estimée.", lines[2])
-        assertTrue(lines.none { '—' in it })
-        assertTrue('—' !in InsightTexts.HOW_IT_WORKS && '—' !in InsightTexts.NOTHING_YET)
+        setLanguage(Language.FR)
+        val fr = InsightTexts.recapLines(recap)
+        assertEquals("Il a duré 32 jours, 4 jours de plus que d'habitude (28).", fr[0])
+        assertEquals("Vos règles sont arrivées 3 jours après la date estimée.", fr[2])
+        setLanguage(Language.EN)
+        val en = InsightTexts.recapLines(recap)
+        assertEquals("It lasted 32 days, 4 days longer than usual (28).", en[0])
+        assertEquals("Your period arrived 3 days after the estimated date.", en[2])
+        assertTrue((fr + en).none { '—' in it })
     }
 
     /**
      * Les sources ne sont pas affichées dans l'appli : elles sont sur le site, généré depuis documentation/sources.md.
-     * Ce test garde les deux alignés. En cas d'échec, compléter sources.md puis lancer scripts/site-sources.py.
+     * Ce test garde les deux alignés, à partir des textes français. En cas d'échec, compléter sources.md puis lancer
+     * scripts/site-sources.py.
      */
     @Test
     fun `la page des sources liste chaque fiche et chaque conseil avec leurs sources`() {
@@ -121,15 +184,15 @@ class ContentTest {
             return doc.substring(start, end)
         }
 
-        Articles.all.filter { it.sources.isNotEmpty() }.forEach { article ->
+        Articles.forLanguage(Language.FR).filter { it.sources.isNotEmpty() }.forEach { article ->
             val section = section("fiche-${article.id}")
             article.sources.forEach { assertTrue(it.url in section, "Fiche ${article.id} : source absente de sources.md, ${it.label}") }
         }
         PhaseGuides.all.flatMap { it.tips }.forEach { tip ->
-            val row = doc.lines().firstOrNull { it.startsWith("| ${tip.text} |") }
-            assertNotNull(row, "Conseil absent de sources.md : ${tip.text}")
-            tip.sources.forEach { assertTrue(it.url in row, "Source absente pour : ${tip.text}") }
-            if (tip.sources.isEmpty()) assertTrue("Sans étude" in row, "Conseil sans étude non signalé : ${tip.text}")
+            val row = doc.lines().firstOrNull { it.startsWith("| ${tip.fr} |") }
+            assertNotNull(row, "Conseil absent de sources.md : ${tip.fr}")
+            tip.sources.forEach { assertTrue(it.url in row, "Source absente pour : ${tip.fr}") }
+            if (tip.sources.isEmpty()) assertTrue("Sans étude" in row, "Conseil sans étude non signalé : ${tip.fr}")
         }
     }
 }

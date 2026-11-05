@@ -1,5 +1,7 @@
 package fr.lunaison.core.content
 
+import fr.lunaison.core.model.Language
+
 data class Section(val heading: String, val paragraphs: List<String>)
 
 data class Article(
@@ -10,8 +12,20 @@ data class Article(
     val sources: List<Source>,
 )
 
-/** Fiches de la rubrique « Comprendre ». Vouvoiement, phrases courtes, une idée par phrase, pas de tiret cadratin. */
+/** Fiches de la rubrique « Comprendre », dans la langue de l'appli. */
 object Articles {
+    val all: List<Article> get() = forLanguage(Language.current())
+
+    fun forLanguage(language: Language): List<Article> = when (language) {
+        Language.FR -> ArticlesFr.all
+        Language.EN -> ArticlesEn.all
+    }
+
+    fun byId(id: String): Article? = all.firstOrNull { it.id == id }
+}
+
+/** Fiches en français. Vouvoiement, phrases courtes, une idée par phrase, pas de tiret cadratin. */
+internal object ArticlesFr {
 
     val cycle = Article(
         id = "cycle",
@@ -287,6 +301,4 @@ object Articles {
     )
 
     val all: List<Article> = listOf(cycle, pain, pms, food, consult, protection, predictions, partners)
-
-    fun byId(id: String): Article? = all.firstOrNull { it.id == id }
 }

@@ -31,6 +31,7 @@ import fr.lunaison.core.model.Mood
 import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.Symptom
 import java.time.LocalDate
+import fr.lunaison.core.model.tr
 
 /**
  * Saisie d'une journée : tout est facultatif et se fait sans clavier, sauf la note.
@@ -52,10 +53,10 @@ fun LogScreen(
     }
 
     Page {
-        PageTitle("Ma journée", onBack = onBack)
+        PageTitle(tr("Ma journée", "My day"), onBack = onBack)
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { date = date.minusDays(1) }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Jour précédent")
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = tr("Jour précédent", "Previous day"))
             }
             Text(
                 Format.relativeDay(date, state.today),
@@ -64,23 +65,23 @@ fun LogScreen(
                 modifier = Modifier.weight(1f),
             )
             IconButton(onClick = { date = date.plusDays(1) }, enabled = date.isBefore(state.today)) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Jour suivant")
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = tr("Jour suivant", "Next day"))
             }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionTitle("Règles")
+            SectionTitle(tr("Règles", "Period"))
             ChoiceChips(
                 options = Flow.entries,
                 label = { it.label },
                 isSelected = { draft.flow == it },
                 onToggle = { draft = draft.copy(flow = if (draft.flow == it) null else it) },
             )
-            Muted("Des traces seules ne comptent pas comme le début des règles.")
+            Muted(tr("Des traces seules ne comptent pas comme le début des règles.", "Spotting alone does not count as the start of a period."))
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionTitle("Douleur")
+            SectionTitle(tr("Douleur", "Pain"))
             ChoiceChips(
                 options = Pain.entries,
                 label = { it.label },
@@ -91,7 +92,7 @@ fun LogScreen(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionTitle("Symptômes")
+            SectionTitle(tr("Symptômes", "Symptoms"))
             ChoiceChips(
                 options = Symptom.entries,
                 label = { it.label },
@@ -101,7 +102,7 @@ fun LogScreen(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionTitle("Humeur")
+            SectionTitle(tr("Humeur", "Mood"))
             ChoiceChips(
                 options = Mood.entries,
                 label = { it.label },
@@ -113,12 +114,12 @@ fun LogScreen(
         OutlinedTextField(
             value = draft.note,
             onValueChange = { draft = draft.copy(note = it.take(500)) },
-            label = { Text("Note personnelle (facultatif)") },
+            label = { Text(tr("Note personnelle (facultatif)", "Personal note (optional)")) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 2,
         )
 
-        LunaButton("Enregistrer", onClick = { onSave(draft) }, icon = Icons.Filled.Check)
+        LunaButton(tr("Enregistrer", "Save"), onClick = { onSave(draft) }, icon = Icons.Filled.Check)
     }
 }
 

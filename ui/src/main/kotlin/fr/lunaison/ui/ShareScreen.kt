@@ -35,6 +35,7 @@ import fr.lunaison.core.designsystem.LunaButton
 import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
+import fr.lunaison.core.model.tr
 
 /**
  * Partage avec un ou une partenaire. L'appli prépare un message et ouvre la messagerie choisie ;
@@ -43,9 +44,9 @@ import fr.lunaison.core.designsystem.SectionTitle
 @Composable
 fun ShareScreen(state: AppState, actions: Actions, onBack: () -> Unit, onArticle: (String) -> Unit) {
     Page {
-        PageTitle("Partager", onBack = onBack)
+        PageTitle(tr("Partager", "Share"), onBack = onBack)
         if (!state.settings.isAdult) {
-            Text("Le partage avec un ou une partenaire est réservé aux personnes de 18 ans et plus.", style = MaterialTheme.typography.bodyLarge)
+            Text(tr("Le partage avec un ou une partenaire est réservé aux personnes de 18 ans et plus.", "Sharing with a partner is only available to people aged 18 and over."), style = MaterialTheme.typography.bodyLarge)
             return@Page
         }
         val partner = state.settings.partner
@@ -63,12 +64,12 @@ fun ShareScreen(state: AppState, actions: Actions, onBack: () -> Unit, onArticle
             Composer(state, partner, onEdit = { editing = true }, onRemove = { actions.updateSettings { it.copy(partner = null) } })
         }
         LunaCard {
-            Text("Ce qui est partagé", style = MaterialTheme.typography.titleMedium)
-            Bullet("Seulement le message que vous voyez, quand vous l'envoyez.")
-            Bullet("Rien n'est envoyé automatiquement, et Lunaison ne garde aucune trace de l'envoi.")
-            Bullet("Le message reste dans l'historique de votre messagerie, comme tout autre message.")
+            Text(tr("Ce qui est partagé", "What is shared"), style = MaterialTheme.typography.titleMedium)
+            Bullet(tr("Seulement le message que vous voyez, quand vous l'envoyez.", "Only the message you see, when you send it."))
+            Bullet(tr("Rien n'est envoyé automatiquement, et Lunaison ne garde aucune trace de l'envoi.", "Nothing is sent automatically, and Lunaison keeps no record of what you send."))
+            Bullet(tr("Le message reste dans l'historique de votre messagerie, comme tout autre message.", "The message stays in your messaging history, like any other message."))
         }
-        TextButton(onClick = { onArticle("entourage") }) { Text("Une fiche à faire lire à votre entourage") }
+        TextButton(onClick = { onArticle("entourage") }) { Text(tr("Une fiche à faire lire à votre entourage", "A guide for the people around you")) }
     }
 }
 
@@ -96,9 +97,9 @@ private fun PartnerForm(initial: Partner?, onSave: (Partner) -> Unit, onCancel: 
         }
     }
 
-    SectionTitle("À qui écrire ?")
+    SectionTitle(tr("À qui écrire ?", "Who to write to?"))
     LunaButton(
-        "Choisir dans mes contacts",
+        tr("Choisir dans mes contacts", "Choose from my contacts"),
         onClick = {
             try {
                 picker.launch(Intent(Intent.ACTION_PICK).setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE))
@@ -109,16 +110,16 @@ private fun PartnerForm(initial: Partner?, onSave: (Partner) -> Unit, onCancel: 
         style = LunaButtonStyle.Outlined,
         icon = Icons.Filled.Person,
     )
-    OutlinedTextField(name, { name = it.take(40) }, label = { Text("Prénom") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+    OutlinedTextField(name, { name = it.take(40) }, label = { Text(tr("Prénom", "First name")) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
     OutlinedTextField(
         phone,
         { phone = it.take(25) },
-        label = { Text("Numéro de téléphone") },
+        label = { Text(tr("Numéro de téléphone", "Phone number")) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
     )
-    SectionTitle("Par quelle messagerie ?")
+    SectionTitle(tr("Par quelle messagerie ?", "Which messaging app?"))
     ChoiceChips(
         options = PartnerChannel.entries,
         label = { it.label },
@@ -127,18 +128,18 @@ private fun PartnerForm(initial: Partner?, onSave: (Partner) -> Unit, onCancel: 
     )
     Muted(
         when (channel) {
-            PartnerChannel.SMS -> "Lunaison ouvre la conversation SMS avec le message prêt."
-            PartnerChannel.WHATSAPP -> "Lunaison ouvre la conversation WhatsApp avec le message prêt. Le numéro doit être au format international, par exemple +33 6…"
-            PartnerChannel.SIGNAL -> "Lunaison ouvre Signal avec le message prêt ; vous choisissez la conversation."
-            PartnerChannel.OTHER -> "Lunaison ouvre le menu de partage d'Android ; vous choisissez l'appli et la conversation."
+            PartnerChannel.SMS -> tr("Lunaison ouvre la conversation SMS avec le message prêt.", "Lunaison opens the text conversation with the message ready.")
+            PartnerChannel.WHATSAPP -> tr("Lunaison ouvre la conversation WhatsApp avec le message prêt. Le numéro doit être au format international, par exemple +33 6…", "Lunaison opens the WhatsApp conversation with the message ready. The number must be in international format, for example +44 7…")
+            PartnerChannel.SIGNAL -> tr("Lunaison ouvre Signal avec le message prêt ; vous choisissez la conversation.", "Lunaison opens Signal with the message ready; you choose the conversation.")
+            PartnerChannel.OTHER -> tr("Lunaison ouvre le menu de partage d'Android ; vous choisissez l'appli et la conversation.", "Lunaison opens the Android share menu; you choose the app and the conversation.")
         },
     )
     LunaButton(
-        "Enregistrer",
+        tr("Enregistrer", "Save"),
         onClick = { onSave(Partner(name.trim(), phone.trim().ifBlank { null }, channel)) },
         enabled = name.isNotBlank() && (phone.isNotBlank() || channel == PartnerChannel.SIGNAL || channel == PartnerChannel.OTHER),
     )
-    if (onCancel != null) LunaButton("Annuler", onClick = onCancel, style = LunaButtonStyle.Quiet)
+    if (onCancel != null) LunaButton(tr("Annuler", "Cancel"), onClick = onCancel, style = LunaButtonStyle.Quiet)
 }
 
 @Composable
@@ -148,7 +149,7 @@ private fun Composer(state: AppState, partner: Partner, onEdit: () -> Unit, onRe
     var kind by rememberSaveable { mutableStateOf(suggestions.first()) }
     var text by rememberSaveable(kind) { mutableStateOf(ShareMessages.text(kind, state.cycle)) }
 
-    SectionTitle("Message pour ${partner.name}")
+    SectionTitle(tr("Message pour ${partner.name}", "Message for ${partner.name}"))
     ChoiceChips(
         options = suggestions,
         label = { it.label },
@@ -158,18 +159,18 @@ private fun Composer(state: AppState, partner: Partner, onEdit: () -> Unit, onRe
     OutlinedTextField(
         value = text,
         onValueChange = { text = it.take(500) },
-        label = { Text("Vous pouvez modifier le texte") },
+        label = { Text(tr("Vous pouvez modifier le texte", "You can edit the text")) },
         modifier = Modifier.fillMaxWidth(),
         minLines = 3,
     )
     LunaButton(
-        "Ouvrir ${partner.channel.label}",
+        tr("Ouvrir ${partner.channel.label}", "Open ${partner.channel.label}"),
         onClick = { ShareLauncher.send(context, partner, text) },
         icon = Icons.AutoMirrored.Filled.Send,
     )
-    Muted("Vous relirez le message dans ${partner.channel.label} avant de l'envoyer.")
-    TextButton(onClick = onEdit) { Text("Changer de contact ou de messagerie") }
-    TextButton(onClick = onRemove) { Text("Ne plus partager") }
+    Muted(tr("Vous relirez le message dans ${partner.channel.label} avant de l'envoyer.", "You will review the message in ${partner.channel.label} before sending it."))
+    TextButton(onClick = onEdit) { Text(tr("Changer de contact ou de messagerie", "Change contact or messaging app")) }
+    TextButton(onClick = onRemove) { Text(tr("Ne plus partager", "Stop sharing")) }
 }
 
 /** Prépare le message et ouvre la messagerie. Aucune autorisation : c'est la messagerie qui envoie. */

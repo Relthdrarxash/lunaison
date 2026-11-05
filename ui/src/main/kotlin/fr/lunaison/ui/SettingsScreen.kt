@@ -35,6 +35,7 @@ import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.AgeGroup
 import kotlinx.coroutines.launch
+import fr.lunaison.core.model.tr
 
 @Composable
 fun SettingsScreen(state: AppState, actions: Actions, versionName: String, onArticle: (String) -> Unit) {
@@ -63,12 +64,12 @@ fun SettingsScreen(state: AppState, actions: Actions, versionName: String, onArt
     }
 
     Page {
-        PageTitle("Réglages")
+        PageTitle(tr("Réglages", "Settings"))
 
-        SectionTitle("Rappels")
+        SectionTitle(tr("Rappels", "Reminders"))
         LunaCard {
             SwitchRow(
-                "Prévenir avant mes règles",
+                tr("Prévenir avant mes règles", "Notify me before my period"),
                 checked = reminders.periodReminder,
                 onChange = { on ->
                     if (on) ensureNotifications()
@@ -78,19 +79,19 @@ fun SettingsScreen(state: AppState, actions: Actions, versionName: String, onArt
             if (reminders.periodReminder) {
                 val days = reminders.periodReminderDaysBefore
                 Stepper(
-                    label = if (days == 0) "Le jour même" else "${Format.days(days)} avant",
+                    label = if (days == 0) tr("Le jour même", "On the day") else tr("${Format.days(days)} avant", "${Format.days(days)} before"),
                     onMinus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(periodReminderDaysBefore = (days - 1).coerceAtLeast(0))) } },
                     onPlus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(periodReminderDaysBefore = (days + 1).coerceAtMost(7))) } },
                 )
             }
-            Text("Rappel pour noter ma journée", style = MaterialTheme.typography.titleSmall)
+            Text(tr("Rappel pour noter ma journée", "Reminder to log my day"), style = MaterialTheme.typography.titleSmall)
             ChoiceChips(
                 options = LogReminderMode.entries,
                 label = {
                     when (it) {
-                        LogReminderMode.OFF -> "Jamais"
-                        LogReminderMode.AROUND_PERIOD -> "Autour des règles"
-                        LogReminderMode.DAILY -> "Tous les jours"
+                        LogReminderMode.OFF -> tr("Jamais", "Never")
+                        LogReminderMode.AROUND_PERIOD -> tr("Autour des règles", "Around my period")
+                        LogReminderMode.DAILY -> tr("Tous les jours", "Every day")
                     }
                 },
                 isSelected = { it == reminders.logReminder },
@@ -102,20 +103,20 @@ fun SettingsScreen(state: AppState, actions: Actions, versionName: String, onArt
             if (reminders.logReminder != LogReminderMode.OFF) {
                 val time = reminders.logReminderTime
                 Stepper(
-                    label = "À ${time.hour} h",
+                    label = tr("À ${time.hour} h", "At ${time.hour}:00"),
                     onMinus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(logReminderTime = time.minusHours(1))) } },
                     onPlus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(logReminderTime = time.plusHours(1))) } },
                 )
             }
-            Muted("Sur l'écran verrouillé, les notifications n'affichent que « Lunaison ».")
+            Muted(tr("Sur l'écran verrouillé, les notifications n'affichent que « Lunaison ».", "On the lock screen, notifications only show \"Lunaison\"."))
         }
 
-        SectionTitle("Mon cycle")
+        SectionTitle(tr("Mon cycle", "My cycle"))
         LunaCard {
-            Text("Tranche d'âge", style = MaterialTheme.typography.titleSmall)
+            Text(tr("Tranche d'âge", "Age group"), style = MaterialTheme.typography.titleSmall)
             ChoiceChips(
                 options = AgeGroup.entries,
-                label = { if (it == AgeGroup.UNDER_18) "Moins de 18 ans" else "18 ans ou plus" },
+                label = { if (it == AgeGroup.UNDER_18) tr("Moins de 18 ans", "Under 18") else tr("18 ans ou plus", "18 or over") },
                 isSelected = { it == settings.baseline.ageGroup },
                 onToggle = { group ->
                     actions.updateSettings {
@@ -124,39 +125,39 @@ fun SettingsScreen(state: AppState, actions: Actions, versionName: String, onArt
                     }
                 },
             )
-            Muted("Elle règle les repères de cycle normal et l'accès au partage.")
+            Muted(tr("Elle règle les repères de cycle normal et l'accès au partage.", "It sets the normal cycle ranges and access to sharing."))
         }
 
-        SectionTitle("Mes données")
+        SectionTitle(tr("Mes données", "My data"))
         LunaCard {
-            Text("Tout est enregistré sur ce téléphone, nulle part ailleurs. Lunaison n'a pas accès à Internet et ne fait pas de sauvegarde dans le nuage.", style = MaterialTheme.typography.bodyMedium)
-            LunaButton("Exporter (tableur)", onClick = { exporter.launch("lunaison.csv") }, style = LunaButtonStyle.Outlined)
-            LunaButton("Tout effacer", onClick = { confirmErase = true }, style = LunaButtonStyle.Quiet, icon = Icons.Filled.Delete)
+            Text(tr("Tout est enregistré sur ce téléphone, nulle part ailleurs. Lunaison n'a pas accès à Internet et ne fait pas de sauvegarde dans le nuage.", "Everything is saved on this phone, nowhere else. Lunaison has no Internet access and makes no cloud backup."), style = MaterialTheme.typography.bodyMedium)
+            LunaButton(tr("Exporter (tableur)", "Export (spreadsheet)"), onClick = { exporter.launch("lunaison.csv") }, style = LunaButtonStyle.Outlined)
+            LunaButton(tr("Tout effacer", "Erase everything"), onClick = { confirmErase = true }, style = LunaButtonStyle.Quiet, icon = Icons.Filled.Delete)
         }
 
-        SectionTitle("À propos")
+        SectionTitle(tr("À propos", "About"))
         LunaCard {
             Text("Lunaison $versionName", style = MaterialTheme.typography.titleSmall)
-            Text("Libre (GPL-3.0), gratuit, sans publicité ni traceur. Ce n'est ni un dispositif médical ni une méthode de contraception.", style = MaterialTheme.typography.bodySmall)
-            TextButton(onClick = { onArticle("previsions") }) { Text("Ce que les prévisions peuvent dire") }
-            TextButton(onClick = { openLink(context, Links.PRIVACY) }) { Text("Politique de confidentialité") }
-            TextButton(onClick = { openLink(context, Links.SOURCE) }) { Text("Code source") }
-            TextButton(onClick = { openLink(context, Links.CONTACT) }) { Text("Nous écrire") }
+            Text(tr("Libre (GPL-3.0), gratuit, sans publicité ni traceur. Ce n'est ni un dispositif médical ni une méthode de contraception.", "Free and open source (GPL-3.0), no ads, no trackers. It is neither a medical device nor a method of contraception."), style = MaterialTheme.typography.bodySmall)
+            TextButton(onClick = { onArticle("previsions") }) { Text(tr("Ce que les prévisions peuvent dire", "What predictions can tell you")) }
+            TextButton(onClick = { openLink(context, Links.PRIVACY) }) { Text(tr("Politique de confidentialité", "Privacy policy")) }
+            TextButton(onClick = { openLink(context, Links.SOURCE) }) { Text(tr("Code source", "Source code")) }
+            TextButton(onClick = { openLink(context, Links.CONTACT) }) { Text(tr("Nous écrire", "Contact us")) }
         }
     }
 
     if (confirmErase) {
         AlertDialog(
             onDismissRequest = { confirmErase = false },
-            title = { Text("Tout effacer ?") },
-            text = { Text("Toutes vos journées et vos réglages seront supprimés de ce téléphone. Ce n'est pas réversible.") },
+            title = { Text(tr("Tout effacer ?", "Erase everything?")) },
+            text = { Text(tr("Toutes vos journées et vos réglages seront supprimés de ce téléphone. Ce n'est pas réversible.", "All your days and settings will be deleted from this phone. This cannot be undone.")) },
             confirmButton = {
                 TextButton(onClick = {
                     confirmErase = false
                     actions.eraseAll()
-                }) { Text("Effacer") }
+                }) { Text(tr("Effacer", "Erase")) }
             },
-            dismissButton = { TextButton(onClick = { confirmErase = false }) { Text("Annuler") } },
+            dismissButton = { TextButton(onClick = { confirmErase = false }) { Text(tr("Annuler", "Cancel")) } },
         )
     }
 }
