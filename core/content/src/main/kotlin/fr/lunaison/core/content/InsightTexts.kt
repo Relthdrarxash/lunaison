@@ -48,7 +48,7 @@ object InsightTexts {
                 )
             },
         )
-        recap.record.periodLength?.let { add(tr("Ses règles ont duré ${days(it)}.", "Its period lasted ${days(it)}.")) }
+        recap.record.periodLength?.let { add(tr("Ses règles ont duré ${days(it)}.", "The period lasted ${days(it)}.")) }
         recap.record.predictionError?.let { error ->
             add(
                 when {
