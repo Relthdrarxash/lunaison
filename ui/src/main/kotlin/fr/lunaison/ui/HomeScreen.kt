@@ -62,7 +62,7 @@ fun HomeScreen(
                 Text(tr("Dès que Lunaison connaît le début de vos dernières règles, il estime les suivantes.", "As soon as Lunaison knows when your last period started, it estimates the next ones."), style = MaterialTheme.typography.bodyMedium)
                 LunaButton(tr("Ouvrir le calendrier", "Open the calendar"), onClick = onCalendar)
             }
-            is CycleState.Known -> CycleCard(cycle)
+            is CycleState.Known -> CycleCard(cycle, onArticle)
         }
 
         // Actions du jour.
@@ -117,7 +117,7 @@ fun HomeScreen(
         if (cycle is CycleState.Known) {
             PhaseCard(state, cycle, onArticle)
             if (cycle.stats.completedCycles >= CycleConfig.MIN_CYCLES_FOR_STATS) {
-                LunaButton("Mes cycles", onClick = onInsights, style = LunaButtonStyle.Quiet, icon = Icons.Filled.DateRange)
+                LunaButton(tr("Mes cycles", "My cycles"), onClick = onInsights, style = LunaButtonStyle.Quiet, icon = Icons.Filled.DateRange)
             }
         }
     }
@@ -126,17 +126,17 @@ fun HomeScreen(
 @Composable
 private fun RecapCard(recap: CycleRecap, onInsights: () -> Unit, onDismiss: () -> Unit) {
     LunaCard {
-        Text("Votre cycle qui vient de finir", style = MaterialTheme.typography.titleMedium)
+        Text(tr("Votre cycle qui vient de finir", "Your cycle that just ended"), style = MaterialTheme.typography.titleMedium)
         InsightTexts.recapLines(recap).forEach { Bullet(it) }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            TextButton(onClick = onDismiss) { Text("Masquer") }
-            TextButton(onClick = onInsights) { Text("Mes cycles") }
+            TextButton(onClick = onDismiss) { Text(tr("Masquer", "Hide")) }
+            TextButton(onClick = onInsights) { Text(tr("Mes cycles", "My cycles")) }
         }
     }
 }
 
 @Composable
-private fun CycleCard(cycle: CycleState.Known) {
+private fun CycleCard(cycle: CycleState.Known, onArticle: (String) -> Unit) {
     val phaseName = Format.phaseName(cycle.phase)
     LunaCard(container = MaterialTheme.colorScheme.primaryContainer) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -163,6 +163,11 @@ private fun CycleCard(cycle: CycleState.Known) {
             Text(Format.range(cycle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
         }
         Text(Format.confidence(cycle.stats.confidence), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+        if (!cycle.inPeriod && cycle.daysLate == 0) {
+            TextButton(onClick = { onArticle("previsions") }) {
+                Text(tr("Pourquoi cette plage ?", "Why this range?"), color = MaterialTheme.colorScheme.onPrimaryContainer)
+            }
+        }
     }
 }
 
