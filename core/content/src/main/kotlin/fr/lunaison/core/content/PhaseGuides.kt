@@ -102,9 +102,9 @@ object PhaseGuides {
                 listOf(Sources.EFSA_IRON_2015),
             ),
             Tip(
-                "Si vous changez de protection en moins de trois heures, ou si vous voyez des caillots de plus de 2,5 cm, parlez-en à un professionnel de santé.",
-                "If you need to change your pad, tampon or cup in less than three hours, or if you see clots larger than 2.5 cm (1 inch), talk to a health professional.",
-                listOf(Sources.MSD_PARAMETERS),
+                "Si vous devez changer de protection toutes les 1 à 2 heures, ou vider votre coupe plus souvent que prévu, ou si vous perdez des caillots de plus de 2,5 cm environ, parlez-en à un professionnel de santé.",
+                "If you need to change your pad or tampon every 1 to 2 hours, or empty your cup more often than recommended, or if you pass clots larger than about 2.5 cm (1 inch), talk to a health professional.",
+                listOf(Sources.NHS_HEAVY_PERIODS),
                 flow = setOf(Flow.HEAVY),
             ),
             Tip(
