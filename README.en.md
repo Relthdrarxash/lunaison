@@ -2,35 +2,68 @@
 
 [Français](README.md) · **English**
 
+[![CI](https://github.com/Relthdrarxash/lunaison/actions/workflows/ci.yml/badge.svg)](https://github.com/Relthdrarxash/lunaison/actions/workflows/ci.yml)
+
 A free and open source menstrual cycle tracker, with no account. To log your periods, symptoms and mood, understand what is happening in each phase, know when your next period is coming, and let your partner know if you wish.
 
 Lunaison is a free Android app, open source (GPL-3.0), with no ads, no trackers and **no Internet access**. Everything stays on the phone.
 
+**[Lunaison website](https://relthdrarxash.github.io/lunaison/en/)** · **[Download APK](https://github.com/Relthdrarxash/lunaison/releases/latest)** · [For health professionals](https://relthdrarxash.github.io/lunaison/en/professionals.html) · [Medical evidence](https://relthdrarxash.github.io/lunaison/en/evidence.html) · [Privacy](https://relthdrarxash.github.io/lunaison/en/privacy.html)
+
 ## What the app does
 
-- **Log your days**: flow, pain (described by its effect), symptoms (including pelvic pain, hot flashes, night sweats and brain fog), moods, contraception or medication taken, optional ovulation signs (cervical mucus and keypad-free basal temperature), and a personal note. Everything is optional, and a forgotten day can be filled in later.
-- **Forecast periods and pause when needed**: an estimated date and a plausible range calculated from your recent cycles, with an option to display the estimated fertile window, a **naturally irregular cycles mode** (perimenopause, PCOS, postpartum), and a toggle to pause predictions (pregnancy, breastfeeding, continuous contraception).
-- **Understand the current phase and all four phases**: what is happening, what helps, and what tends to come back for you across each of the four phases based on your previous cycles.
-- **See what your cycles show and generate a clinician health report**: usual length, accuracy of forecasts, patterns by phase, review of each completed cycle, and a complete exportable summary for a medical consultation (FIGO/ACOG reference status, pain days, spotting, medication).
-- **One referenced tip a day and guided breathing**: the daily tip changes according to the phase and responds first to what you logged; a guided abdominal breathing exercise (4 s / 6 s) helps ease cramps or premenstrual tension.
-- **Spot what deserves medical advice**: repeated severe pain, periods longer than 8 days, repeated heavy periods, cycles outside the usual range, bleeding between periods, missing periods, extended delay. Never a diagnosis.
+- **Log your days in a few seconds**: flow, pain (described by its effect), symptoms (8 common symptoms shown by default, plus 4 specialized symptoms for pelvic pain and perimenopause), moods, contraception or medication taken, optional ovulation signs (cervical mucus and keypad-free basal temperature), and a personal note. Everything is optional, and a forgotten day can be filled in later.
+- **Forecast periods and adapt to every life stage**: an estimated date and a plausible range calculated from your last six cycles, with an option to display the estimated fertile window, a **naturally irregular cycles mode** (perimenopause, PCOS, postpartum), and a toggle to pause predictions (pregnancy, breastfeeding, continuous contraception).
+- **Understand the current phase and all four phases**: what is happening in the body, what helps, and what tends to come back for you across each of the four phases based on your previous cycles.
+- **Generate a one-page clinician health report**: median length and regularity of the last 6 cycles (FIGO/ACOG reference ranges), bleeding duration, moderate/severe pain days, spotting and recurring symptoms, ready to show or share during a medical appointment.
+- **One referenced tip a day and 1-minute guided breathing**: the daily tip changes according to the phase and responds first to what you logged; a guided abdominal breathing exercise (4 s / 6 s) helps ease cramps or premenstrual tension.
+- **Spot what deserves medical advice**: repeated severe pain, periods longer than 8 days, repeated heavy periods (NHS indicators), cycles outside the usual range, bleeding between periods, missing periods, extended delay. Never a diagnosis.
 - **Read referenced guides**: the cycle, pain, food, premenstrual syndrome, when to see a doctor, toxic shock, limits of forecasts, a guide for partners and family.
 - **Discreet reminders**: before your period, to log your day, or daily for contraception or medication, always neutral on the lock screen ("Lunaison").
-- **Share with a partner, by message or QR Code** (18 and over): ready-to-send messages, concrete support tips for your partner, and serverless estimate sharing via **QR Code** (displayed and scanned right inside the app) or Android's native share menu (SMS, Signal, WhatsApp…).
+- **Share with a partner, by message or offline QR Code** (18 and over): ready-to-send messages, concrete support tips for your partner, and serverless estimate sharing via **QR Code** (displayed and scanned right inside the app) or Android's native share menu (SMS, Signal, WhatsApp…).
 - **Customization, PIN lock and home screen widget**: 4 color palettes (light and dark), optional 4-digit PIN lock (hiding the preview in recent apps), and a discreet home screen widget.
 
 Lunaison is **neither a medical device nor a method of contraception**.
 
-The app sticks to what is necessary. What it does not say itself, where its reference ranges come from and why it is built this way, is explained in [Sources and design choices](https://relthdrarxash.github.io/lunaison/references.html) (in French).
+## Preview
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/captures/en/accueil.png" width="220" alt="Home: cycle phase, estimated next period, daily tip and Log today button"><br>Home</td>
+    <td align="center"><img src="docs/captures/en/journee.png" width="220" alt="My day: chips for flow, pain, symptoms and mood"><br>My day</td>
+    <td align="center"><img src="docs/captures/en/calendrier.png" width="220" alt="Monthly calendar of periods and logged days"><br>Calendar</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/captures/en/comprendre.png" width="220" alt="Understand: cycle report, four phases and referenced medical guides"><br>Understand</td>
+    <td align="center"><img src="docs/captures/en/fiche_douleurs.png" width="220" alt="Referenced guide on painful periods with evidence levels and citations"><br>Referenced guide</td>
+    <td align="center"><img src="docs/captures/en/partage.png" width="220" alt="Partner sharing by message or offline QR Code"><br>Partner sharing</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/captures/en/reglages.png" width="220" alt="Settings: theme, discreet reminders, cycle options and CSV export"><br>Settings</td>
+    <td align="center"><img src="docs/captures/en/accueil_sombre.png" width="220" alt="Home in warm dark theme"><br>Dark theme</td>
+    <td align="center"><img src="docs/captures/en/bienvenue.png" width="220" alt="Welcome screen with no account creation"><br>Welcome</td>
+  </tr>
+</table>
+
+Screenshots are generated automatically from the screen code on every change.
+
+## What Lunaison refuses to do
+
+- **No Internet permission**: the Android manifest requests zero network access. Your period dates, symptoms and notes can never leave your phone unless you export them yourself.
+- **No subscription or paywalled features**: perimenopause mode, clinician summaries, ovulation signs and partner sharing are all included for free.
+- **No medical chatbot or alarmist pop-ups**: an extended delay or unusual symptom is explained calmly with its medical references, without red warning screens or upsells.
+- **No streaks to maintain**: skipping a few days is normal.
 
 ## Why Lunaison is free
 
-Lunaison grew out of my partner's need: to track her cycle more easily, and to let me support her day to day. Existing apps often keep their useful features behind a subscription, or fund themselves with their users' data, even though it is some of the most intimate data there is. Lunaison does the opposite: it is free, open source, works without the Internet and keeps everything on the phone. Sharing with a partner goes through the phone's messaging app, when the person decides, and never contains fertility data.
+Lunaison grew out of my partner's need: to track her cycle more easily, and to let me support her day to day. Existing apps often keep their useful features behind a subscription, or fund themselves with their users' data, even though it is some of the most intimate data there is. Lunaison does the opposite: it is free, open source, works without the Internet and keeps everything on the phone.
+
+The app sticks to what is necessary. What it does not say itself, where its reference ranges come from and why it is built this way, is explained in [What the studies say](https://relthdrarxash.github.io/lunaison/en/evidence.html).
 
 ## Privacy
 
 - No Internet permission, no third-party SDK, no account.
-- Cloud backup and automatic transfer turned off: health data does not leave the phone. Spreadsheet CSV export and **CSV backup import** are available in the settings.
+- Cloud backup turned off: health data never passes through any server. Direct device-to-device transfer (Android 12+) is supported, along with spreadsheet CSV export and **CSV backup import** in the settings.
 - The system contact picker gives access only to the chosen contact, with no permission on the address book.
 - Complete erasure in one tap.
 
@@ -41,25 +74,31 @@ Kotlin, Jetpack Compose, Material 3, Room, WorkManager. minSdk 26, targetSdk 36.
 The app is in French and English, following the phone's language. Every text is written in both languages side by side (the `tr` function in `:core:model`), so that no translation can go missing; the guides have one file per language, checked by the tests.
 
 ```
-:app                 Screens, navigation, reminders, sharing
+:app                 Screens, navigation, reminders, widget
+:ui                  UI components (Home, My day, Calendar, Understand, Share, Settings)
 :core:model          Logged day: flow, pain, symptoms, moods; app language (pure Kotlin)
 :core:cycle          Engine: period detection, forecast, phases, alerts, reminders (pure Kotlin, tested)
 :core:content        Guides, advice for each phase, share messages, sources (pure Kotlin, tested)
-:core:data           Local Room database and single repository
-:core:designsystem   Theme, Atkinson Hyperlegible font, accessible components
+:core:data           Local Room database, non-destructive migrations and single repository
+:core:designsystem   Theme, 4 WCAG AA palettes, Atkinson Hyperlegible font, accessible components
 ```
 
-The engine's rules and their references are in [`CycleConfig.kt`](core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt). The sources for the content and the design choices are in [documentation/sources.md](documentation/sources.md) (in French), published on the website as [Sources and design choices](https://relthdrarxash.github.io/lunaison/references.html). After a change, regenerate the page with `python3 scripts/site-sources.py`.
+The engine's rules and their references are in [`CycleConfig.kt`](core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt). The sources for the content and the design choices are in [documentation/sources.md](documentation/sources.md), published on the website as [What the studies say](https://relthdrarxash.github.io/lunaison/en/evidence.html).
 
 Tests: `./gradlew test`. Build: `./gradlew :app:assembleDebug`.
+
+## From the same studio (Pilmil Studio)
+
+- **[Sommelle](https://github.com/Relthdrarxash/sommelle)**: 6-to-8-week CBT-I insomnia support app, free, open source and offline.
+- **[Respire](https://github.com/Relthdrarxash/respire)**: a short breathing pause before the apps you open on autopilot, with a Reels & Shorts filter.
 
 ## Ideas being considered
 
 Features that have been studied but not yet built, such as importing your history from Clue or Flo, are described in [documentation/pistes.md](documentation/pistes.md) (in French).
 
-## Contact
+## Contact and license
 
-pilmil.studio@proton.me
+Contact: [pilmil.studio@proton.me](mailto:pilmil.studio@proton.me). Distributed under the [GNU GPL v3.0](LICENSE) license.
 
 ## A note on development
 
