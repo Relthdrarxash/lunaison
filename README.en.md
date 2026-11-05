@@ -12,13 +12,14 @@ Lunaison is a free Android app, open source (GPL-3.0), with no ads, no trackers 
 
 ## What the app does
 
-- **Log your days in a few seconds**: flow, pain (described by its effect), symptoms (8 common symptoms shown by default, plus 4 specialized symptoms for pelvic pain and perimenopause), moods, contraception or medication taken, optional ovulation signs (cervical mucus and keypad-free basal temperature), and a personal note. Everything is optional, and a forgotten day can be filled in later.
+- **Log your days in a few seconds**: flow, pain (described by its effect), symptoms (8 common symptoms shown by default, plus clinical symptoms for pelvic pain, endometriosis and perimenopause), moods, contraception or medication taken, optional ovulation signs (cervical mucus and keypad-free basal temperature), and a personal note. **Recent 7-day strip on home screen** to quickly view recent logs and fill in a forgotten day in one tap.
 - **Forecast periods and adapt to every life stage**: an estimated date and a plausible range calculated from your last six cycles, with an option to display the estimated fertile window, a **naturally irregular cycles mode** (perimenopause, PCOS, postpartum), and a toggle to pause predictions (pregnancy, breastfeeding, continuous contraception).
 - **Understand the current phase and all four phases**: what is happening in the body, what helps, and what tends to come back for you across each of the four phases based on your previous cycles.
-- **Generate a one-page clinician health report**: median length and regularity of the last 6 cycles (FIGO/ACOG reference ranges), bleeding duration, moderate/severe pain days, spotting and recurring symptoms, ready to show or share during a medical appointment.
+- **Generate a one-page clinician health report**: accessible in 1 tap from Calendar or Settings. Median length and regularity of the last 6 cycles (FIGO/ACOG reference ranges), bleeding duration, moderate/severe pain days, spotting, **90-day pain and endometriosis indicators (the 5 "Ds")** and recurring symptoms, ready to show or share during a medical appointment.
 - **One referenced tip a day and 1-minute guided breathing**: the daily tip changes according to the phase and responds first to what you logged; a guided abdominal breathing exercise (4 s / 6 s) helps ease cramps or premenstrual tension.
 - **Spot what deserves medical advice**: repeated severe pain, periods longer than 8 days, repeated heavy periods (NHS indicators), cycles outside the usual range, bleeding between periods, missing periods, extended delay. Never a diagnosis.
-- **Read referenced guides**: the cycle, pain, food, premenstrual syndrome, when to see a doctor, toxic shock, limits of forecasts, a guide for partners and family.
+- **Read referenced guides**: the cycle, pain, food, premenstrual syndrome, when to see a doctor, contraception, **endometriosis, PCOS, adenomyosis, perimenopause**, limits of forecasts, a guide for partners and family.
+- **Serverless data migration & import**: direct import of backups from the popular *Period Calendar* app (password-protected ZIP or JSON) and Lunaison CSV files, parsed and decrypted locally on device without sending a single byte to any server.
 - **Discreet reminders**: before your period, to log your day, or daily for contraception or medication, always neutral on the lock screen ("Lunaison").
 - **Share with a partner, by message or offline QR Code** (18 and over): ready-to-send messages, concrete support tips for your partner, and serverless estimate sharing via **QR Code** (displayed and scanned right inside the app) or Android's native share menu (SMS, Signal, WhatsApp…).
 - **Customization, PIN lock and home screen widget**: 4 color palettes (light and dark), optional 4-digit PIN lock (hiding the preview in recent apps), and a discreet home screen widget.
@@ -63,7 +64,7 @@ The app sticks to what is necessary. What it does not say itself, where its refe
 ## Privacy
 
 - No Internet permission, no third-party SDK, no account.
-- Cloud backup turned off: health data never passes through any server. Direct device-to-device transfer (Android 12+) is supported, along with spreadsheet CSV export and **CSV backup import** in the settings.
+- Cloud backup turned off: health data never passes through any server. Direct device-to-device transfer (Android 12+) is supported, along with spreadsheet CSV export and **direct backup import (Lunaison CSV or password-protected Period Calendar archives)**, processed 100% locally.
 - The system contact picker gives access only to the chosen contact, with no permission on the address book.
 - Complete erasure in one tap.
 

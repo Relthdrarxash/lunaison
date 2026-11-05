@@ -12,13 +12,14 @@ Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans 
 
 ## Ce que fait l'appli
 
-- **Noter ses journées en quelques secondes** : flux, douleur (décrite par son effet), symptômes (8 symptômes courants affichés par défaut, plus 4 symptômes dédiés aux douleurs pelviennes et à la périménopause), humeurs, prise de contraception ou de traitement, signes d'ovulation facultatifs (glaire cervicale et température basale sans clavier), note personnelle. Tout est facultatif, et on peut remplir un jour oublié.
+- **Noter ses journées en quelques secondes** : flux, douleur (décrite par son effet), symptômes (8 symptômes courants affichés par défaut, plus symptômes cliniques dédiés aux douleurs pelviennes, à l'endométriose et à la périménopause), humeurs, prise de contraception ou de traitement, signes d'ovulation facultatifs (glaire cervicale et température basale sans clavier), note personnelle. **Ruban des 7 derniers jours sur l'accueil** pour visualiser ses journées récentes et compléter un jour oublié en un tap.
 - **Prévoir les règles et s'adapter à chaque étape de vie** : une date estimée et une plage plausible calculées sur les six derniers cycles, avec option pour afficher la fenêtre fertile estimée, mode **cycles naturellement irréguliers** (périménopause, SOPK, post-partum) et possibilité de mettre les prévisions en pause (grossesse, allaitement, contraception continue).
 - **Comprendre la phase en cours et les quatre phases** : ce qui se passe dans le corps, ce qui aide, et ce qui revient chez soi pendant chacune des quatre phases d'après les cycles précédents.
-- **Générer un bilan sur une page pour un soignant** : durée médiane et régularité des 6 derniers cycles (repères FIGO/ACOG), durée des règles, jours de douleur modérée ou forte, saignements hors règles et symptômes récurrents, prêt à montrer ou partager en consultation.
+- **Générer un bilan sur une page pour un soignant** : accessible en un tap depuis l'onglet Calendrier ou les réglages. Durée médiane et régularité des 6 derniers cycles (repères FIGO/ACOG), durée des règles, jours de douleur modérée ou forte, saignements hors règles, **repères douleurs et endométriose sur 90 jours (les 5 « D »)** et symptômes récurrents, prêt à montrer ou partager en consultation.
 - **Un conseil sourcé par jour et une minute de respiration guidée** : le conseil change chaque jour selon la phase et répond en priorité à ce qui a été noté ; un exercice de respiration abdominale (4 s / 6 s) aide à relâcher les crampes ou la tension prémenstruelle.
 - **Repérer ce qui mérite un avis médical** : douleurs fortes répétées, règles de plus de 8 jours, règles abondantes répétées (repères du NHS), cycles hors des repères, saignements entre les règles, absence de règles, retard prolongé. Jamais un diagnostic.
-- **Lire des fiches sourcées** : cycle, douleurs, alimentation, syndrome prémenstruel, quand consulter, choc toxique, limites des prévisions, fiche pour l'entourage.
+- **Lire des fiches sourcées** : cycle, douleurs, alimentation, syndrome prémenstruel, quand consulter, contraception, **endométriose, SOPK, adénomyose, périménopause**, limites des prévisions, fiche pour l'entourage.
+- **Migration et import de données sans serveur** : import direct des sauvegardes de l'application *Calendrier des règles* (archives ZIP protégées par mot de passe ou JSON) et fichiers CSV Lunaison, analysés et reconstitués en local sans envoyer le moindre octet sur Internet.
 - **Rappels discrets** : avant les règles, pour noter sa journée, ou chaque jour pour sa contraception ou son traitement, toujours neutres sur l'écran verrouillé (« Lunaison »).
 - **Partager avec un ou une partenaire, par message ou par QR Code** (18 ans et plus) : préparation de messages dans la messagerie choisie, conseils de soutien concrets pour le ou la partenaire, et partage direct des estimations par **QR Code** (affiché et scanné dans l'appli) ou par le menu de partage d'Android (SMS, Signal, WhatsApp…), d'un téléphone à l'autre sans passer par un serveur.
 - **Personnalisation, code PIN et widget d'accueil** : 4 palettes de couleurs (clair et sombre), verrouillage facultatif par code à 4 chiffres (avec masquage dans les applications récentes) et widget d'accueil discret.
@@ -63,7 +64,7 @@ L'appli reste au strict nécessaire. Ce qu'elle ne dit pas elle-même, d'où vie
 ## Vie privée
 
 - Aucune permission Internet, aucun SDK tiers, aucun compte.
-- Sauvegarde dans le nuage désactivée : les données de santé ne passent par aucun serveur. Le transfert direct vers un nouveau téléphone (Android 12 et plus) reste possible, ainsi que l'export et l'**import de sauvegarde CSV** dans les réglages.
+- Sauvegarde dans le nuage désactivée : les données de santé ne passent par aucun serveur. Le transfert direct vers un nouveau téléphone (Android 12 et plus) reste possible, ainsi que l'export et l'**import direct de sauvegardes (fichiers CSV Lunaison ou archives chiffrées de l'application Calendrier des règles)**, traité 100 % localement.
 - Le sélecteur de contacts du système donne accès au seul contact choisi, sans autorisation sur le carnet d'adresses.
 - Effacement complet en un geste.
 

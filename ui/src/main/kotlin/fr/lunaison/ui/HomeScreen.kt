@@ -1,10 +1,13 @@
 package fr.lunaison.ui
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,9 +40,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.lunaison.core.content.DailyTip
@@ -58,6 +63,7 @@ import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.DayLog
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -146,6 +152,12 @@ fun HomeScreen(
             }
             return@Page
         }
+
+        RecentDaysStrip(
+            today = state.today,
+            state = state,
+            onDayClick = { date -> onLog(date, false) },
+        )
 
         when {
             paused -> LunaCard(container = MaterialTheme.colorScheme.primaryContainer) {
@@ -443,14 +455,14 @@ private fun UpcomingForecastCard(cycle: CycleState.Known) {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
                     color = if (f.inLikelyPeriod) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                    modifier = Modifier.width(112.dp),
+                    modifier = Modifier.width(118.dp),
                 ) {
                     Column(
                         Modifier.padding(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        Text(Format.weekday(f.date).take(4), style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center)
+                        Text(Format.dayOfWeek(f.date), style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center)
                         Text(Format.dayMonth(f.date), style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
                         Text("J${f.dayOfCycle}", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
                         Text(Format.phaseName(f.phase), style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 1)
@@ -723,6 +735,94 @@ private fun SetupOwnCycleDialog(
             },
         ) {
             DatePicker(state = datePickerState)
+        }
+    }
+}
+
+/** Ruban des 7 derniers jours sur l'accueil permettant de visualiser et noter les jours récents en 1 tap. */
+@Composable
+private fun RecentDaysStrip(
+    today: LocalDate,
+    state: AppState,
+    onDayClick: (LocalDate) -> Unit,
+) {
+    val days = remember(today) { (6 downTo 0).map { today.minusDays(it.toLong()) } }
+    val colors = MaterialTheme.colorScheme
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        days.forEach { date ->
+            val isToday = date == today
+            val log = state.logFor(date)
+            val hasBleeding = log.flow?.isBleeding == true
+            val hasOtherLog = !log.isEmpty && !hasBleeding
+
+            val shortWeekday = when (date.dayOfWeek) {
+                DayOfWeek.MONDAY -> tr("L", "M", "P", "П", "L", "M")
+                DayOfWeek.TUESDAY -> tr("M", "T", "W", "В", "M", "D")
+                DayOfWeek.WEDNESDAY -> tr("M", "W", "Ś", "С", "X", "M")
+                DayOfWeek.THURSDAY -> tr("J", "T", "C", "Ч", "J", "D")
+                DayOfWeek.FRIDAY -> tr("V", "F", "P", "П", "V", "F")
+                DayOfWeek.SATURDAY -> tr("S", "S", "S", "С", "S", "S")
+                DayOfWeek.SUNDAY -> tr("D", "S", "N", "Н", "D", "S")
+            }
+
+            val containerColor = when {
+                isToday -> colors.primaryContainer
+                hasBleeding -> colors.secondaryContainer.copy(alpha = 0.7f)
+                hasOtherLog -> colors.surfaceVariant.copy(alpha = 0.7f)
+                else -> colors.surfaceVariant.copy(alpha = 0.35f)
+            }
+            val contentColor = when {
+                isToday -> colors.onPrimaryContainer
+                hasBleeding -> colors.onSecondaryContainer
+                else -> colors.onSurfaceVariant
+            }
+
+            Surface(
+                onClick = { onDayClick(date) },
+                shape = RoundedCornerShape(12.dp),
+                color = containerColor,
+                border = if (isToday) BorderStroke(1.5.dp, colors.primary) else null,
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 52.dp)
+                    .semantics { contentDescription = Format.weekday(date) },
+            ) {
+                Column(
+                    modifier = Modifier.padding(vertical = 5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(1.dp),
+                ) {
+                    Text(
+                        shortWeekday,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = contentColor.copy(alpha = 0.75f),
+                    )
+                    Text(
+                        date.dayOfMonth.toString(),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = contentColor,
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(5.dp)
+                            .background(
+                                color = when {
+                                    hasBleeding -> colors.secondary
+                                    hasOtherLog -> colors.primary
+                                    else -> Color.Transparent
+                                },
+                                shape = CircleShape,
+                            ),
+                    )
+                }
+            }
         }
     }
 }

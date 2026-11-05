@@ -1,17 +1,12 @@
-# Pistes envisagées
-
-Fonctions étudiées mais pas encore réalisées. Rien ici n'est promis ni daté.
+# Pistes et réalisations
 
 ## Importer l'historique depuis d'autres applications
 
-Pour qu'une personne qui change d'application garde ses années de données. L'import se ferait entièrement sur le téléphone, à partir d'un fichier d'export (CSV ou JSON), sans connexion ni envoi vers aucun serveur.
+- **Réalisé en v1.4.0** : import local sans serveur depuis l'application *Calendrier des règles* (Simple Design Ltd), compatible avec les archives ZIP chiffrées par mot de passe (ZipCrypto) et les fichiers JSON bruts, ainsi qu'import/export CSV Lunaison.
+- **Pistes futures** : prise en charge d'autres formats d'export (Clue, Flo, Drip) si des spécifications d'export exploitables sont disponibles.
 
-**Prérequis technique :**
-Un format d'échange documenté ou des spécifications d'export standardisées (dates ISO, libellés de flux, symptômes) pour écrire et tester un import fiable et sans perte.
-
-**Principes à respecter :**
+**Principes respectés :**
 
 - import facultatif, lancé par la personne, depuis un fichier qu'elle choisit (sélecteur de documents Android, sans autorisation de stockage) ;
-- aperçu avant import : nombre de jours et de règles reconnus, période couverte ;
-- ce qui n'a pas d'équivalent dans Lunaison est ignoré et signalé, jamais inventé ;
-- les journées déjà notées dans Lunaison ne sont pas écrasées sans confirmation.
+- traitement 100 % local sur l'appareil, sans connexion ni envoi vers aucun serveur ;
+- ce qui n'a pas d'équivalent dans Lunaison est ignoré et signalé, jamais inventé.
