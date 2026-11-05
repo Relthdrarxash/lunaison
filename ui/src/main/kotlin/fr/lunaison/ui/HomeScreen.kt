@@ -117,6 +117,16 @@ fun HomeScreen(
                 style = LunaButtonStyle.Quiet,
                 icon = Icons.Filled.Share,
             )
+            val followed = state.settings.followedPartner
+            val followedCycle = state.followedPartnerCycle
+            if (followed != null && followedCycle != null) {
+                PartnerSnapshotCard(
+                    snapshot = followed,
+                    cycle = followedCycle,
+                    onRescan = onShare,
+                    onRemove = { actions.updateSettings { it.copy(followedPartner = null) } },
+                )
+            }
         }
 
         if (!paused && (cycle as? CycleState.Known)?.possiblePregnancyHint == true) {
