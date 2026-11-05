@@ -28,7 +28,7 @@ class ContentTest {
     fun restoreLocale() = Locale.setDefault(initialLocale)
 
     private fun setLanguage(language: Language) {
-        Locale.setDefault(if (language == Language.FR) Locale.FRENCH else Locale.ENGLISH)
+        Locale.setDefault(Locale.forLanguageTag(language.code))
         assertEquals(language, Language.current())
     }
 

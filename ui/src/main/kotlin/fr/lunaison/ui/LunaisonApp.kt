@@ -42,14 +42,23 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-private enum class Tab(val route: String, private val fr: String, private val en: String, val icon: ImageVector) {
-    HOME("accueil", "Aujourd'hui", "Today", Icons.Filled.Home),
-    CALENDAR("calendrier", "Calendrier", "Calendar", Icons.Filled.DateRange),
-    LEARN("comprendre", "Comprendre", "Learn", Icons.Filled.Info),
-    SETTINGS("reglages", "Réglages", "Settings", Icons.Filled.Settings),
+private enum class Tab(
+    val route: String,
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+    val icon: ImageVector,
+) {
+    HOME("accueil", "Aujourd'hui", "Today", "Dzisiaj", "Сьогодні", "Hoy", "Heute", Icons.Filled.Home),
+    CALENDAR("calendrier", "Calendrier", "Calendar", "Kalendarz", "Календар", "Calendario", "Kalender", Icons.Filled.DateRange),
+    LEARN("comprendre", "Comprendre", "Learn", "Wiedza", "Довідник", "Aprender", "Wissen", Icons.Filled.Info),
+    SETTINGS("reglages", "Réglages", "Settings", "Ustawienia", "Налаштування", "Ajustes", "Einstellungen", Icons.Filled.Settings),
     ;
 
-    val label: String get() = tr(fr, en)
+    val label: String get() = tr(fr, en, pl, uk, es, de)
 }
 
 @Composable

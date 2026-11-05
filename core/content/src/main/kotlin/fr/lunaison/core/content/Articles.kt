@@ -18,7 +18,7 @@ object Articles {
 
     fun forLanguage(language: Language): List<Article> = when (language) {
         Language.FR -> ArticlesFr.all
-        Language.EN -> ArticlesEn.all
+        Language.EN, Language.PL, Language.UK, Language.ES, Language.DE -> ArticlesEn.all
     }
 
     fun byId(id: String): Article? = all.firstOrNull { it.id == id }
@@ -111,7 +111,14 @@ internal object ArticlesFr {
                 ),
             ),
         ),
-        sources = listOf(Sources.COCHRANE_NSAIDS_2015, Sources.HEAT_2018, Sources.COCHRANE_EXERCISE_2019, Sources.GINGER_2015, Sources.ACOG_DYSMENORRHEA_2018),
+        sources = listOf(
+            Sources.COCHRANE_NSAIDS_2015,
+            Sources.HEAT_2018,
+            Sources.COCHRANE_EXERCISE_2019,
+            Sources.GINGER_2015,
+            Sources.ACOG_DYSMENORRHEA_2018,
+            Sources.ESHRE_ENDOMETRIOSIS_2022,
+        ),
     )
 
     val food = Article(
@@ -211,7 +218,19 @@ internal object ArticlesFr {
                 ),
             ),
         ),
-        sources = listOf(Sources.FIGO_2018, Sources.MSD_PARAMETERS, Sources.NHS_HEAVY_PERIODS, Sources.ACOG_ADOLESCENTS_2015, Sources.ENDOMETRIOSIS_2024, Sources.ACOG_DYSMENORRHEA_2018),
+        sources = listOf(
+            Sources.FIGO_2018,
+            Sources.MSD_PARAMETERS,
+            Sources.NHS_HEAVY_PERIODS,
+            Sources.ACOG_ADOLESCENTS_2015,
+            Sources.ENDOMETRIOSIS_2024,
+            Sources.ACOG_DYSMENORRHEA_2018,
+            Sources.ESHRE_ENDOMETRIOSIS_2022,
+            Sources.PTGIP_ENDOMETRIOSIS_2024,
+            Sources.AWMF_DGGG_ENDOMETRIOSIS_2020,
+            Sources.SANIDAD_ES_ENDOMETRIOSIS_2013,
+            Sources.MOZ_UA_ENDOMETRIOSIS_2016,
+        ),
     )
 
     val protection = Article(

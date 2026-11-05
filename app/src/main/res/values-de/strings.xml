@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lunaison</string>
+    <string name="reminders_channel">Erinnerungen</string>
+    <string name="reminders_channel_description">Hinweis auf deine nächste Periode und Erinnerung an den Tageseintrag</string>
+    <string name="widget_description">Diskrete Anzeige von Zyklustag und Zyklusphase</string>
+</resources>
