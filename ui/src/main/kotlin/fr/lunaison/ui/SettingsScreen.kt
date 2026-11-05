@@ -36,6 +36,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -49,6 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import fr.lunaison.core.cycle.LogReminderMode
 import fr.lunaison.core.data.AppSettings
+import fr.lunaison.core.data.InvalidPasswordException
+import fr.lunaison.core.data.PeriodCalendarImporter
 import fr.lunaison.core.designsystem.ChoiceChips
 import fr.lunaison.core.designsystem.LunaButton
 import fr.lunaison.core.designsystem.LunaButtonStyle
@@ -81,7 +84,11 @@ fun SettingsScreen(
     val reminders = settings.reminders
     var confirmErase by rememberSaveable { mutableStateOf(false) }
     var showPinSetup by rememberSaveable { mutableStateOf(false) }
-    var importResultCount by rememberSaveable { mutableStateOf<Int?>(null) }
+    var importResultMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var showPasswordDialog by rememberSaveable { mutableStateOf(false) }
+    var passwordInput by rememberSaveable { mutableStateOf("") }
+    var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
+    var pendingZipBytes by remember { mutableStateOf<ByteArray?>(null) }
 
     val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
     fun ensureNotifications() {
@@ -104,8 +111,31 @@ fun SettingsScreen(
     val importer = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
             scope.launch {
-                val text = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }.orEmpty()
-                importResultCount = actions.importCsv(text)
+                try {
+                    val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                    if (bytes == null || bytes.isEmpty()) {
+                        importResultMessage = tr("Fichier vide ou inaccessible.", "Empty or inaccessible file.")
+                        return@launch
+                    }
+                    if (PeriodCalendarImporter.isZip(bytes) && PeriodCalendarImporter.isEncryptedZip(bytes)) {
+                        pendingZipBytes = bytes
+                        passwordInput = ""
+                        passwordError = null
+                        showPasswordDialog = true
+                    } else {
+                        val summary = actions.importAuto(bytes, null)
+                        importResultMessage = if (summary.cyclesCount > 0) {
+                            tr(
+                                "${summary.daysCount} journées et ${summary.cyclesCount} cycles importés depuis Calendrier.",
+                                "${summary.daysCount} days and ${summary.cyclesCount} cycles imported from Calendar.",
+                            )
+                        } else {
+                            tr("${summary.daysCount} journées importées.", "${summary.daysCount} days imported.")
+                        }
+                    }
+                } catch (e: Exception) {
+                    importResultMessage = tr("Erreur lors de l'import : ${e.localizedMessage}", "Import error: ${e.localizedMessage}")
+                }
             }
         }
     }
@@ -309,12 +339,12 @@ fun SettingsScreen(
             LunaButton(tr("Bilan de santé pour un soignant", "Health report for a clinician"), onClick = onHealthReport, style = LunaButtonStyle.Outlined)
             LunaButton(tr("Exporter (tableur)", "Export (spreadsheet)"), onClick = { exporter.launch("lunaison.csv") }, style = LunaButtonStyle.Outlined)
             LunaButton(
-                tr("Importer une sauvegarde (CSV)", "Import a backup (CSV)"),
-                onClick = { importer.launch(arrayOf("text/*", "application/csv", "*/*")) },
+                tr("Importer des données (CSV, sauvegarde Calendrier)", "Import data (CSV, Calendar backup)"),
+                onClick = { importer.launch(arrayOf("*/*")) },
                 style = LunaButtonStyle.Outlined,
             )
-            importResultCount?.let { count ->
-                Muted(tr("$count journées importées.", "$count days imported."))
+            importResultMessage?.let { msg ->
+                Muted(msg)
             }
             LunaButton(tr("Tout effacer", "Erase everything"), onClick = { confirmErase = true }, style = LunaButtonStyle.Quiet, icon = Icons.Filled.Delete)
         }
@@ -364,6 +394,85 @@ fun SettingsScreen(
                 }) { Text(tr("Effacer", "Erase")) }
             },
             dismissButton = { TextButton(onClick = { confirmErase = false }) { Text(tr("Annuler", "Cancel")) } },
+        )
+    }
+
+    if (showPasswordDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showPasswordDialog = false
+                pendingZipBytes = null
+            },
+            title = { Text(tr("Sauvegarde protégée", "Protected backup")) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        tr(
+                            "Cette sauvegarde de l'application « Calendrier » est chiffrée. Entrez le mot de passe fourni lors de l'exportation :",
+                            "This backup from the \"Calendar\" app is encrypted. Enter the password provided during export:",
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    OutlinedTextField(
+                        value = passwordInput,
+                        onValueChange = {
+                            passwordInput = it
+                            passwordError = null
+                        },
+                        label = { Text(tr("Mot de passe", "Password")) },
+                        singleLine = true,
+                        isError = passwordError != null,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    if (passwordError != null) {
+                        Text(
+                            passwordError.orEmpty(),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val bytes = pendingZipBytes
+                        if (bytes != null) {
+                            scope.launch {
+                                try {
+                                    val summary = actions.importAuto(bytes, passwordInput.trim())
+                                    showPasswordDialog = false
+                                    pendingZipBytes = null
+                                    importResultMessage = if (summary.cyclesCount > 0) {
+                                        tr(
+                                            "${summary.daysCount} journées et ${summary.cyclesCount} cycles importés depuis Calendrier.",
+                                            "${summary.daysCount} days and ${summary.cyclesCount} cycles imported from Calendar.",
+                                        )
+                                    } else {
+                                        tr("${summary.daysCount} journées importées.", "${summary.daysCount} days imported.")
+                                    }
+                                } catch (e: InvalidPasswordException) {
+                                    passwordError = tr("Mot de passe incorrect.", "Incorrect password.")
+                                } catch (e: Exception) {
+                                    passwordError = tr("Erreur : ${e.localizedMessage}", "Error: ${e.localizedMessage}")
+                                }
+                            }
+                        }
+                    },
+                ) {
+                    Text(tr("Déchiffrer et importer", "Decrypt & import"))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showPasswordDialog = false
+                        pendingZipBytes = null
+                    },
+                ) {
+                    Text(tr("Annuler", "Cancel"))
+                }
+            },
         )
     }
 }
