@@ -20,7 +20,7 @@ Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans 
 - **Repérer ce qui mérite un avis médical** : douleurs fortes répétées, règles de plus de 8 jours, règles abondantes répétées (repères du NHS), cycles hors des repères, saignements entre les règles, absence de règles, retard prolongé. Jamais un diagnostic.
 - **Lire des fiches sourcées** : cycle, douleurs, alimentation, syndrome prémenstruel, quand consulter, choc toxique, limites des prévisions, fiche pour l'entourage.
 - **Rappels discrets** : avant les règles, pour noter sa journée, ou chaque jour pour sa contraception ou son traitement, toujours neutres sur l'écran verrouillé (« Lunaison »).
-- **Partager avec un ou une partenaire, par message ou par QR Code hors-ligne** (18 ans et plus) : préparation de messages dans la messagerie choisie, conseils de soutien concrets pour le ou la partenaire, et partage décentralisé des estimations par **QR Code** (affiché et scanné directement dans l'appli) ou par le menu de partage d'Android (SMS, Signal, WhatsApp…), sans aucun serveur.
+- **Partager avec un ou une partenaire, par message ou par QR Code** (18 ans et plus) : préparation de messages dans la messagerie choisie, conseils de soutien concrets pour le ou la partenaire, et partage direct des estimations par **QR Code** (affiché et scanné dans l'appli) ou par le menu de partage d'Android (SMS, Signal, WhatsApp…), d'un téléphone à l'autre sans passer par un serveur.
 - **Personnalisation, code PIN et widget d'accueil** : 4 palettes de couleurs (clair et sombre), verrouillage facultatif par code à 4 chiffres (avec masquage dans les applications récentes) et widget d'accueil discret.
 
 Lunaison n'est **ni un dispositif médical ni une méthode de contraception**.
@@ -47,12 +47,12 @@ Lunaison n'est **ni un dispositif médical ni une méthode de contraception**.
 
 Les captures sont générées automatiquement à partir du code des écrans à chaque modification.
 
-## Ce que Lunaison refuse de faire
+## Parti pris
 
-- **Pas de permission Internet** : le manifeste Android ne demande aucun accès réseau. Vos dates de règles, symptômes et notes ne peuvent techniquement quitter votre téléphone que si vous les exportez vous-même.
-- **Pas d'abonnement ni de fonction verrouillée** : le mode périménopause, le bilan de consultation, les signes d'ovulation et le partage partenaire sont inclus gratuitement.
-- **Pas de chatbot médical ni d'alerte anxiogène** : un retard ou un symptôme inhabituel est expliqué calmement avec ses références médicales, sans rouge agressif ni incitation commerciale.
-- **Pas de série de jours à maintenir** : oublier de noter quelques jours est normal.
+- **Pas de permission Internet** : l'application ne demande aucun accès réseau à Android. Vos dates de règles, symptômes et notes restent sur votre téléphone.
+- **Tout est inclus d'emblée** : le mode périménopause, le bilan de consultation, les signes d'ovulation et le partage partenaire sont accessibles sans abonnement.
+- **Un ton posé, sans couleur rouge** : un retard ou un symptôme inhabituel est expliqué simplement avec ses références médicales.
+- **Aucun compteur de régularité** : oublier de noter quelques jours est normal et n'empêche pas l'application de fonctionner.
 
 ## Pourquoi Lunaison est gratuite
 
