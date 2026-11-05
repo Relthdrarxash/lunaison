@@ -240,6 +240,18 @@ fun SettingsScreen(
             TextButton(onClick = { openLink(context, Links.PRIVACY) }) { Text(tr("Politique de confidentialité", "Privacy policy")) }
             TextButton(onClick = { openLink(context, Links.SOURCE) }) { Text(tr("Code source", "Source code")) }
             TextButton(onClick = { openLink(context, Links.CONTACT) }) { Text(tr("Nous écrire", "Contact us")) }
+            TextButton(onClick = { openStore(context) }) {
+                Text(
+                    tr(
+                        "Laisser un avis sur le Play Store",
+                        "Leave a review on Google Play",
+                        pl = "Wystaw opinię w Google Play",
+                        uk = "Залишити відгук у Google Play",
+                        es = "Dejar una opinión en Google Play",
+                        de = "Bewertung im Play Store abgeben",
+                    ),
+                )
+            }
         }
     }
 

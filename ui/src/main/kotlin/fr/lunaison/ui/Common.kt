@@ -93,6 +93,21 @@ fun openLink(context: Context, url: String) {
     }
 }
 
+/** Ouvre la fiche de l'application sur le magasin d'applications (ou dans le navigateur). */
+fun openStore(context: Context, packageName: String = "fr.lunaison") {
+    val marketUri = Uri.parse("market://details?id=$packageName")
+    val webUri = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+    try {
+        context.startActivity(Intent(Intent.ACTION_VIEW, marketUri))
+    } catch (_: ActivityNotFoundException) {
+        try {
+            context.startActivity(Intent(Intent.ACTION_VIEW, webUri))
+        } catch (_: ActivityNotFoundException) {
+            // Aucun magasin ni navigateur disponible
+        }
+    }
+}
+
 object Links {
     val PRIVACY: String
         get() = tr("https://relthdrarxash.github.io/lunaison/confidentialite.html", "https://relthdrarxash.github.io/lunaison/en/privacy.html")

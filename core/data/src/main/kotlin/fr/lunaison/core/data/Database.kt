@@ -57,6 +57,7 @@ data class SettingsEntity(
     val myShareName: String = "",
     val trackOvulationSigns: Boolean = false,
     val irregularCyclesMode: Boolean = false,
+    val reviewPromptDismissed: Boolean = false,
 )
 
 @Dao
@@ -89,14 +90,14 @@ interface LunaisonDao {
     suspend fun deleteSettings()
 }
 
-@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 5, exportSchema = true)
+@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 6, exportSchema = true)
 abstract class LunaisonDatabase : RoomDatabase() {
     abstract fun dao(): LunaisonDao
 
     companion object {
         fun create(context: Context): LunaisonDatabase =
             Room.databaseBuilder(context.applicationContext, LunaisonDatabase::class.java, "lunaison.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                 .build()
 
         /** Version 2 : mémorise le bilan de cycle déjà lu. Une colonne ajoutée, aucune donnée touchée. */
@@ -135,6 +136,13 @@ abstract class LunaisonDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE day_logs ADD COLUMN basalTemperature REAL")
                 db.execSQL("ALTER TABLE settings ADD COLUMN trackOvulationSigns INTEGER NOT NULL DEFAULT 0")
                 db.execSQL("ALTER TABLE settings ADD COLUMN irregularCyclesMode INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        /** Version 6 : mémorise si la demande d'avis discrète a été masquée ou consultée. */
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE settings ADD COLUMN reviewPromptDismissed INTEGER NOT NULL DEFAULT 0")
             }
         }
     }
