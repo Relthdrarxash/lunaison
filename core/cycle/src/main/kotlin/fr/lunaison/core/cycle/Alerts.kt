@@ -35,10 +35,10 @@ enum class AlertKind(
     HEAVY_FLOW(
         "Des règles abondantes à plusieurs reprises",
         "Heavy periods more than once",
-        "Des règles abondantes répétées peuvent fatiguer et faire baisser le fer. Si vous changez de protection en moins de trois heures, " +
-            "ou si vous voyez des caillots de plus de 2,5 cm, parlez-en à un professionnel de santé.",
-        "Repeated heavy periods can make you tired and lower your iron levels. If you need to change your pad, tampon or cup in less than three hours, " +
-            "or if you see clots larger than 2.5 cm (1 inch), talk to a health professional.",
+        "Des règles abondantes répétées peuvent fatiguer et faire baisser le fer. Si vous devez changer de protection toutes les 1 à 2 heures, " +
+            "ou si vous perdez des caillots de plus de 2,5 cm environ, parlez-en à un professionnel de santé.",
+        "Repeated heavy periods can make you tired and lower your iron levels. If you need to change your pad or tampon every 1 to 2 hours, " +
+            "or if you pass clots larger than about 2.5 cm (1 inch), talk to a health professional.",
         "consulter",
     ),
     CYCLE_LENGTH(

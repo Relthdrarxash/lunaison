@@ -57,6 +57,10 @@ object Sources {
         "Manuel MSD, Paramètres menstruels normaux (d'après la FIGO)",
         "https://www.msdmanuals.com/professional/multimedia/table/normal-menstrual-parameters",
     )
+    val NHS_HEAVY_PERIODS = Source(
+        "NHS, Heavy periods, revu en 2026",
+        "https://www.nhs.uk/conditions/heavy-periods/",
+    )
     val ANSES_TSS_2025 = Source(
         "Anses, Protections intimes : composition et choc toxique, toutes nos recommandations, 2025",
         "https://www.anses.fr/fr/content/protections-intimes-composition-et-choc-toxique-toutes-nos-recommandations",
@@ -69,6 +73,6 @@ object Sources {
     val all: List<Source> = listOf(
         FIGO_2018, BULL_2019, ACOG_ADOLESCENTS_2015, ACOG_DYSMENORRHEA_2018, COCHRANE_NSAIDS_2015,
         COCHRANE_EXERCISE_2019, HEAT_2018, GINGER_2015, OMEGA3_2022, EFSA_IRON_2015, CALCIUM_PMS_1998,
-        ENDOMETRIOSIS_2024, MSD_PARAMETERS, ANSES_TSS_2025, TRUSSELL_2011,
+        ENDOMETRIOSIS_2024, MSD_PARAMETERS, NHS_HEAVY_PERIODS, ANSES_TSS_2025, TRUSSELL_2011,
     )
 }
