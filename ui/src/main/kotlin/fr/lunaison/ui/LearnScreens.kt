@@ -12,18 +12,19 @@ import androidx.compose.ui.text.style.TextDecoration
 import fr.lunaison.core.content.Articles
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
+import fr.lunaison.core.model.tr
 
 @Composable
 fun LearnScreen(onArticle: (String) -> Unit) {
     Page {
-        PageTitle("Comprendre", subtitle = "Des fiches courtes, relues et sourcées.")
+        PageTitle(tr("Comprendre", "Learn"), subtitle = tr("Des fiches courtes, relues et sourcées.", "Short, reviewed and referenced guides."))
         Articles.all.forEach { article ->
             LunaCard(modifier = Modifier.clickable(role = Role.Button) { onArticle(article.id) }) {
                 Text(article.title, style = MaterialTheme.typography.titleMedium)
                 Text(article.summary, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        Muted("Ces fiches informent et ne remplacent pas l'avis d'un professionnel de santé.")
+        Muted(tr("Ces fiches informent et ne remplacent pas l'avis d'un professionnel de santé.", "These guides inform you and do not replace the advice of a health professional."))
     }
 }
 
@@ -33,7 +34,7 @@ fun ArticleScreen(id: String, onBack: () -> Unit) {
     val context = LocalContext.current
     Page {
         if (article == null) {
-            PageTitle("Fiche introuvable", onBack = onBack)
+            PageTitle(tr("Fiche introuvable", "Guide not found"), onBack = onBack)
             return@Page
         }
         PageTitle(article.title, onBack = onBack)
@@ -45,7 +46,11 @@ fun ArticleScreen(id: String, onBack: () -> Unit) {
         // Les références ne sont pas dans le texte : un lien discret mène à la page du site qui les détaille.
         if (article.sources.isNotEmpty()) {
             TextButton(onClick = { openLink(context, Links.sourcesOf(article.id)) }) {
-                Text("Sources de cette fiche, sur le site", style = MaterialTheme.typography.bodySmall, textDecoration = TextDecoration.Underline)
+                Text(
+                    tr("Sources de cette fiche, sur le site", "Sources for this guide, on the website (in French)"),
+                    style = MaterialTheme.typography.bodySmall,
+                    textDecoration = TextDecoration.Underline,
+                )
             }
         }
     }
