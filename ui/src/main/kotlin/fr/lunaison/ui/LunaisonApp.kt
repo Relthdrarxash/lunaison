@@ -111,6 +111,7 @@ interface Actions {
     fun updateSettings(transform: (AppSettings) -> AppSettings)
     fun eraseAll()
     suspend fun exportCsv(): String
+    suspend fun importCsv(content: String): Int = 0
 }
 
 /** Les actions réelles, toutes enregistrées localement. */
@@ -128,6 +129,7 @@ class RepositoryActions(private val repository: LunaisonRepository, private val 
     }
 
     override suspend fun exportCsv(): String = repository.exportCsv()
+    override suspend fun importCsv(content: String): Int = repository.importCsv(content)
 }
 
 @Composable

@@ -23,6 +23,8 @@ data class DayLogEntity(
     val moods: String,
     val note: String,
     val medicationTaken: Boolean = false,
+    val mucus: String? = null,
+    val basalTemperature: Float? = null,
 )
 
 /** Réglages : une seule ligne. */
@@ -53,6 +55,8 @@ data class SettingsEntity(
     val pinHash: String? = null,
     val followedPartnerSnapshot: String? = null,
     val myShareName: String = "",
+    val trackOvulationSigns: Boolean = false,
+    val irregularCyclesMode: Boolean = false,
 )
 
 @Dao
@@ -85,14 +89,14 @@ interface LunaisonDao {
     suspend fun deleteSettings()
 }
 
-@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 4, exportSchema = true)
+@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 5, exportSchema = true)
 abstract class LunaisonDatabase : RoomDatabase() {
     abstract fun dao(): LunaisonDao
 
     companion object {
         fun create(context: Context): LunaisonDatabase =
             Room.databaseBuilder(context.applicationContext, LunaisonDatabase::class.java, "lunaison.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                 .build()
 
         /** Version 2 : mémorise le bilan de cycle déjà lu. Une colonne ajoutée, aucune donnée touchée. */
@@ -121,6 +125,16 @@ abstract class LunaisonDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE settings ADD COLUMN followedPartnerSnapshot TEXT")
                 db.execSQL("ALTER TABLE settings ADD COLUMN myShareName TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
+        /** Version 5 : suivi symptothermique facultatif (glaire cervicale, température) et mode cycles irréguliers / périménopause. */
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE day_logs ADD COLUMN mucus TEXT")
+                db.execSQL("ALTER TABLE day_logs ADD COLUMN basalTemperature REAL")
+                db.execSQL("ALTER TABLE settings ADD COLUMN trackOvulationSigns INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE settings ADD COLUMN irregularCyclesMode INTEGER NOT NULL DEFAULT 0")
             }
         }
     }

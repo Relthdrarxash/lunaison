@@ -37,6 +37,7 @@ data class AppState(
                 known
                     ?.let { CycleAlerts.evaluate(it, settings.baseline.ageGroup) }
                     .orEmpty()
+                    .filterNot { settings.irregularCyclesMode && (it == AlertKind.IRREGULAR || it == AlertKind.CYCLE_LENGTH) }
                     .filterNot { settings.isDismissed(it, today) }
             }
             val recap = if (settings.pausePredictions) {

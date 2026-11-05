@@ -39,6 +39,21 @@ enum class Symptom(private val fr: String, private val en: String) {
     SLEEP("Sommeil perturbé", "Poor sleep"),
     CRAVINGS("Fringales", "Cravings"),
     ACNE("Boutons", "Acne"),
+    PELVIC_PAIN("Douleur pelvienne", "Pelvic pain"),
+    HOT_FLASHES("Bouffées de chaleur", "Hot flashes"),
+    NIGHT_SWEATS("Sueurs nocturnes", "Night sweats"),
+    BRAIN_FOG("Brouillard mental", "Brain fog"),
+    ;
+
+    val label: String get() = tr(fr, en)
+}
+
+/** Observation facultative de la glaire cervicale (suivi symptothermique / signes d'ovulation). */
+enum class CervicalMucus(private val fr: String, private val en: String) {
+    DRY("Sec ou absent", "Dry or none"),
+    STICKY("Collant ou épais", "Sticky or thick"),
+    CREAMY("Crémeux ou laiteux", "Creamy or lotion-like"),
+    EGG_WHITE("Fluide, transparent (très fertile)", "Clear, stretchy (very fertile)"),
     ;
 
     val label: String get() = tr(fr, en)
@@ -71,9 +86,14 @@ data class DayLog(
     val note: String = "",
     /** Prise de contraception, traitement ou complément notée ce jour-là. */
     val medicationTaken: Boolean = false,
+    /** Aspect de la glaire cervicale, si le suivi des signes d'ovulation est activé. */
+    val mucus: CervicalMucus? = null,
+    /** Température basale au réveil en °C (ex. 36.6f), si le suivi des signes d'ovulation est activé. */
+    val basalTemperature: Float? = null,
 ) {
     val isEmpty: Boolean
-        get() = flow == null && pain == null && symptoms.isEmpty() && moods.isEmpty() && note.isBlank() && !medicationTaken
+        get() = flow == null && pain == null && symptoms.isEmpty() && moods.isEmpty() &&
+            note.isBlank() && !medicationTaken && mucus == null && basalTemperature == null
 }
 
 /** Palette de couleurs de l'interface, toutes conformes au contraste WCAG AA. */
