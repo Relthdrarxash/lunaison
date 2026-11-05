@@ -33,8 +33,12 @@ import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.CervicalMucus
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Flow
+import fr.lunaison.core.model.IntimacyKind
+import fr.lunaison.core.model.Libido
+import fr.lunaison.core.model.MedicationKind
 import fr.lunaison.core.model.Mood
 import fr.lunaison.core.model.Pain
+import fr.lunaison.core.model.PillStatus
 import fr.lunaison.core.model.Symptom
 import java.time.LocalDate
 import java.util.Locale
@@ -136,25 +140,97 @@ fun LogScreen(
             )
         }
 
-        if (state.settings.reminders.medicationReminder || draft.medicationTaken) {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                val medName = state.settings.reminders.medicationLabel.trim()
-                val chipLabel = if (medName.isNotEmpty()) {
-                    tr("Pris aujourd'hui ($medName)", "Taken today ($medName)")
-                } else {
-                    tr("Pris aujourd'hui", "Taken today")
-                }
-                SectionTitle(tr("Contraception ou traitement", "Contraception or medication"))
-                ChoiceChips(
-                    options = listOf(true),
-                    label = { chipLabel },
-                    isSelected = { draft.medicationTaken },
-                    onToggle = { draft = draft.copy(medicationTaken = !draft.medicationTaken) },
-                )
-            }
+        var showMeasurements by remember(date) {
+            mutableStateOf(draft.weight != null || draft.medications.isNotEmpty() || draft.basalTemperature != null || draft.mucus != null)
         }
 
-        if (state.settings.trackOvulationSigns) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            val medName = state.settings.reminders.medicationLabel.trim()
+            val title = if (medName.isNotEmpty()) tr("Pilule & contraception ($medName)", "Pill & contraception ($medName)") else tr("Pilule & contraception", "Pill & contraception")
+            SectionTitle(title)
+            ChoiceChips(
+                options = PillStatus.entries,
+                label = { it.label },
+                isSelected = { draft.pillStatus == it },
+                onToggle = {
+                    val next = if (draft.pillStatus == it) null else it
+                    draft = draft.copy(
+                        pillStatus = next,
+                        medicationTaken = next == PillStatus.TAKEN,
+                    )
+                },
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            SectionTitle(tr("Vie intime & désir", "Intimacy & desire"))
+            ChoiceChips(
+                options = IntimacyKind.entries,
+                label = { it.label },
+                isSelected = { it in draft.intimacy },
+                onToggle = { draft = draft.copy(intimacy = draft.intimacy.toggle(it)) },
+            )
+            ChoiceChips(
+                options = Libido.entries,
+                label = { it.label },
+                isSelected = { draft.libido == it },
+                onToggle = { draft = draft.copy(libido = if (draft.libido == it) null else it) },
+            )
+        }
+
+        val hasMeasurements = draft.weight != null || draft.medications.isNotEmpty() || draft.basalTemperature != null || draft.mucus != null
+        val toggleLabel = if (showMeasurements) {
+            tr("Masquer les mesures & traitements facultatifs", "Hide optional measurements & treatments")
+        } else {
+            val badge = if (hasMeasurements) tr(" (notés)", " (logged)") else ""
+            tr("Ouvrir : médicaments, poids, température…$badge", "Open: medications, weight, temperature…$badge")
+        }
+        LunaButton(
+            toggleLabel,
+            onClick = { showMeasurements = !showMeasurements },
+            style = LunaButtonStyle.Quiet,
+        )
+
+        if (showMeasurements) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                SectionTitle(tr("Médicaments pris", "Medications taken"))
+                ChoiceChips(
+                    options = MedicationKind.entries,
+                    label = { it.label },
+                    isSelected = { it in draft.medications },
+                    onToggle = { draft = draft.copy(medications = draft.medications.toggle(it)) },
+                )
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                SectionTitle(tr("Poids du jour", "Today's weight"))
+                val w = draft.weight
+                if (w == null) {
+                    LunaButton(
+                        tr("Noter mon poids (kg)", "Log weight (kg)"),
+                        onClick = { draft = draft.copy(weight = 60.0f) },
+                        style = LunaButtonStyle.Outlined,
+                    )
+                } else {
+                    Stepper(
+                        label = tr("Poids : ${"%.1f".format(Locale.FRENCH, w)} kg", "Weight: ${"%.1f".format(Locale.ENGLISH, w)} kg"),
+                        onMinus = {
+                            val next = ((w * 10).roundToInt() - 5).coerceAtLeast(300) / 10f
+                            draft = draft.copy(weight = next)
+                        },
+                        onPlus = {
+                            val next = ((w * 10).roundToInt() + 5).coerceAtMost(2500) / 10f
+                            draft = draft.copy(weight = next)
+                        },
+                    )
+                    LunaButton(
+                        tr("Effacer le poids", "Clear weight"),
+                        onClick = { draft = draft.copy(weight = null) },
+                        style = LunaButtonStyle.Quiet,
+                    )
+                }
+            }
+
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SectionTitle(tr("Signes d'ovulation (glaire et température)", "Ovulation signs (mucus and temperature)"))
                 ChoiceChips(

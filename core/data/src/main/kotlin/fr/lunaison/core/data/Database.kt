@@ -25,6 +25,11 @@ data class DayLogEntity(
     val medicationTaken: Boolean = false,
     val mucus: String? = null,
     val basalTemperature: Float? = null,
+    val pillStatus: String? = null,
+    val medications: String = "",
+    val weight: Float? = null,
+    val intimacy: String = "",
+    val libido: String? = null,
 )
 
 /** Réglages : une seule ligne. */
@@ -90,14 +95,14 @@ interface LunaisonDao {
     suspend fun deleteSettings()
 }
 
-@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 6, exportSchema = true)
+@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 7, exportSchema = true)
 abstract class LunaisonDatabase : RoomDatabase() {
     abstract fun dao(): LunaisonDao
 
     companion object {
         fun create(context: Context): LunaisonDatabase =
             Room.databaseBuilder(context.applicationContext, LunaisonDatabase::class.java, "lunaison.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                 .build()
 
         /** Version 2 : mémorise le bilan de cycle déjà lu. Une colonne ajoutée, aucune donnée touchée. */
@@ -143,6 +148,17 @@ abstract class LunaisonDatabase : RoomDatabase() {
         val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE settings ADD COLUMN reviewPromptDismissed INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        /** Version 7 : suivi de pilule (statut précis), prise de médicaments, poids, activité sexuelle et libido. */
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE day_logs ADD COLUMN pillStatus TEXT")
+                db.execSQL("ALTER TABLE day_logs ADD COLUMN medications TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE day_logs ADD COLUMN weight REAL")
+                db.execSQL("ALTER TABLE day_logs ADD COLUMN intimacy TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE day_logs ADD COLUMN libido TEXT")
             }
         }
     }

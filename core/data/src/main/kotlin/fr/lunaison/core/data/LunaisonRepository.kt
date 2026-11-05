@@ -9,9 +9,13 @@ import fr.lunaison.core.model.Baseline
 import fr.lunaison.core.model.CervicalMucus
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Flow
+import fr.lunaison.core.model.IntimacyKind
+import fr.lunaison.core.model.Libido
+import fr.lunaison.core.model.MedicationKind
 import fr.lunaison.core.model.Mood
 import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.PartnerSnapshot
+import fr.lunaison.core.model.PillStatus
 import fr.lunaison.core.model.Symptom
 import fr.lunaison.core.model.ThemePalette
 import kotlinx.coroutines.flow.map
@@ -102,7 +106,10 @@ class LunaisonRepository(private val dao: LunaisonDao) {
 
     /** Export lisible par un tableur. Rien ne quitte le téléphone sans que la personne choisisse où l'enregistrer. */
     suspend fun exportCsv(): String = buildString {
-        appendLine(tr("date;flux;douleur;symptomes;humeurs;traitement;glaire;temperature;note", "date;flow;pain;symptoms;moods;medication;mucus;temperature;note"))
+        appendLine(tr(
+            "date;flux;douleur;symptomes;humeurs;traitement;glaire;temperature;pilule;medicaments;poids;intimite;libido;note",
+            "date;flow;pain;symptoms;moods;medication;mucus;temperature;pill;medications;weight;intimacy;libido;note",
+        ))
         logsOnce().forEach { log ->
             appendLine(
                 listOf(
@@ -111,9 +118,14 @@ class LunaisonRepository(private val dao: LunaisonDao) {
                     log.pain?.label.orEmpty(),
                     log.symptoms.joinToString(", ") { it.label },
                     log.moods.joinToString(", ") { it.label },
-                    if (log.medicationTaken) tr("oui", "yes") else "",
+                    if (log.medicationTaken || log.pillStatus == PillStatus.TAKEN) tr("oui", "yes") else "",
                     log.mucus?.label.orEmpty(),
                     log.basalTemperature?.let { "%.1f".format(java.util.Locale.ROOT, it) }.orEmpty(),
+                    log.pillStatus?.label.orEmpty(),
+                    log.medications.joinToString(", ") { it.label },
+                    log.weight?.let { "%.1f".format(java.util.Locale.ROOT, it) }.orEmpty(),
+                    log.intimacy.joinToString(", ") { it.label },
+                    log.libido?.label.orEmpty(),
                     log.note.replace(";", ",").replace("\n", " "),
                 ).joinToString(";"),
             )
@@ -138,10 +150,21 @@ class LunaisonRepository(private val dao: LunaisonDao) {
             val moods = cols.getOrNull(4)?.let(::parseMoods).orEmpty()
             val medCol = cols.getOrNull(5).orEmpty().lowercase()
             val medTaken = medCol in setOf("oui", "yes", "true", "1")
-            val hasExtendedCols = cols.size >= 9
-            val mucus = if (hasExtendedCols) parseMucus(cols.getOrNull(6).orEmpty()) else null
-            val temp = if (hasExtendedCols) cols.getOrNull(7)?.replace(',', '.')?.toFloatOrNull() else null
-            val note = (if (hasExtendedCols) cols.getOrNull(8) else cols.getOrNull(6)).orEmpty().take(500)
+            val isV2 = cols.size >= 14
+            val isV1Extended = !isV2 && cols.size >= 9
+            val mucus = if (isV2 || isV1Extended) parseMucus(cols.getOrNull(6).orEmpty()) else null
+            val temp = if (isV2 || isV1Extended) cols.getOrNull(7)?.replace(',', '.')?.toFloatOrNull() else null
+            val pillStatus = if (isV2) parsePillStatus(cols.getOrNull(8).orEmpty()) else null
+            val medications = if (isV2) parseMedications(cols.getOrNull(9).orEmpty()) else emptySet()
+            val weight = if (isV2) cols.getOrNull(10)?.replace(',', '.')?.toFloatOrNull() else null
+            val intimacy = if (isV2) parseIntimacy(cols.getOrNull(11).orEmpty()) else emptySet()
+            val libido = if (isV2) parseLibido(cols.getOrNull(12).orEmpty()) else null
+            val noteColIdx = when {
+                isV2 -> 13
+                isV1Extended -> 8
+                else -> 6
+            }
+            val note = cols.getOrNull(noteColIdx).orEmpty().take(500)
             val log = DayLog(
                 date = date,
                 flow = flow,
@@ -149,7 +172,12 @@ class LunaisonRepository(private val dao: LunaisonDao) {
                 symptoms = symptoms,
                 moods = moods,
                 note = note,
-                medicationTaken = medTaken,
+                medicationTaken = medTaken || pillStatus == PillStatus.TAKEN,
+                pillStatus = pillStatus,
+                medications = medications,
+                weight = weight,
+                intimacy = intimacy,
+                libido = libido,
                 mucus = mucus,
                 basalTemperature = temp,
             )
@@ -184,6 +212,11 @@ internal fun DayLogEntity.toModel() = DayLog(
     moods = moods.toEnumSet<Mood>(),
     note = note,
     medicationTaken = medicationTaken,
+    pillStatus = pillStatus.toEnumOrNull<PillStatus>(),
+    medications = medications.toEnumSet<MedicationKind>(),
+    weight = weight,
+    intimacy = intimacy.toEnumSet<IntimacyKind>(),
+    libido = libido.toEnumOrNull<Libido>(),
     mucus = mucus.toEnumOrNull<CervicalMucus>(),
     basalTemperature = basalTemperature,
 )
@@ -195,7 +228,12 @@ internal fun DayLog.toEntity() = DayLogEntity(
     symptoms = symptoms.joinToString(",") { it.name },
     moods = moods.joinToString(",") { it.name },
     note = note,
-    medicationTaken = medicationTaken,
+    medicationTaken = medicationTaken || pillStatus == PillStatus.TAKEN,
+    pillStatus = pillStatus?.name,
+    medications = medications.joinToString(",") { it.name },
+    weight = weight,
+    intimacy = intimacy.joinToString(",") { it.name },
+    libido = libido?.name,
     mucus = mucus?.name,
     basalTemperature = basalTemperature,
 )
@@ -304,4 +342,28 @@ private fun parseMucus(raw: String): CervicalMucus? {
     val v = raw.trim().lowercase()
     if (v.isEmpty()) return null
     return CervicalMucus.entries.firstOrNull { it.name.lowercase() == v || it.label.lowercase() == v }
+}
+
+private fun parsePillStatus(raw: String): PillStatus? {
+    val v = raw.trim().lowercase()
+    if (v.isEmpty()) return null
+    return PillStatus.entries.firstOrNull { it.name.lowercase() == v || it.label.lowercase() == v }
+}
+
+private fun parseMedications(raw: String): Set<MedicationKind> =
+    raw.split(",").mapNotNull { item ->
+        val v = item.trim().lowercase()
+        MedicationKind.entries.firstOrNull { it.name.lowercase() == v || it.label.lowercase() == v }
+    }.toSet()
+
+private fun parseIntimacy(raw: String): Set<IntimacyKind> =
+    raw.split(",").mapNotNull { item ->
+        val v = item.trim().lowercase()
+        IntimacyKind.entries.firstOrNull { it.name.lowercase() == v || it.label.lowercase() == v }
+    }.toSet()
+
+private fun parseLibido(raw: String): Libido? {
+    val v = raw.trim().lowercase()
+    if (v.isEmpty()) return null
+    return Libido.entries.firstOrNull { it.name.lowercase() == v || it.label.lowercase() == v }
 }
