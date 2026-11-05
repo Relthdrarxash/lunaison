@@ -21,10 +21,10 @@ import kotlin.test.assertTrue
  */
 class DatabaseMigrationTest {
 
-    private val latestSchema = File("schemas/fr.lunaison.core.data.LunaisonDatabase/5.json")
+    private val latestSchema = File("schemas/fr.lunaison.core.data.LunaisonDatabase/6.json")
 
     @Test
-    fun `migration de v1 a v5 sans perte de donnees`() = withDatabase { conn, db ->
+    fun `migration de v1 a v6 sans perte de donnees`() = withDatabase { conn, db ->
         createV1(db)
         db.execSQL(
             "INSERT INTO day_logs (date, flow, pain, symptoms, moods, note) " +
@@ -57,11 +57,12 @@ class DatabaseMigrationTest {
             assertEquals("PLUM", rs.getString("themePalette"))
             assertEquals("", rs.getString("myShareName"))
             assertEquals(0, rs.getInt("irregularCyclesMode"))
+            assertEquals(0, rs.getInt("reviewPromptDismissed"))
         }
     }
 
     @Test
-    fun `la base migree correspond exactement au schema Room v5`() {
+    fun `la base migree correspond exactement au schema Room v6`() {
         val expected = withDatabase { conn, db ->
             createTablesSql(latestSchema).values.forEach(db::execSQL)
             tables(conn)
@@ -80,6 +81,7 @@ class DatabaseMigrationTest {
             LunaisonDatabase.MIGRATION_2_3,
             LunaisonDatabase.MIGRATION_3_4,
             LunaisonDatabase.MIGRATION_4_5,
+            LunaisonDatabase.MIGRATION_5_6,
         ).forEach { it.migrate(db) }
     }
 
