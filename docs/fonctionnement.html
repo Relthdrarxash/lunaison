@@ -150,6 +150,53 @@
         <figcaption>Le partage avec un ou une partenaire passe par votre propre messagerie (SMS, WhatsApp, Signal). L'export produit un fichier tableur que vous rangez où vous voulez.</figcaption>
       </figure>
     </section>
+
+    <section class="section" aria-labelledby="audit">
+      <h2 id="audit">Auditabilité : formules exactes et fichiers du code source</h2>
+      <p>Lunaison n'embarque aucune intelligence artificielle et aucun modèle boîte noire : chaque calcul repose sur des règles purement déterministes, regroupées dans le module <code>core/cycle</code> sans aucune dépendance à Android, et vérifiées par des tests automatiques à chaque compilation.</p>
+      <div class="table-scroll">
+        <table class="simple">
+          <thead><tr><th>Algorithme</th><th>Formule et constantes exactes</th><th>Fichier source et tests à auditer</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Détection des règles</strong></td>
+              <td>Un épisode de règles commence au premier jour de flux réel (<code>LIGHT</code>, <code>MEDIUM</code> ou <code>HEAVY</code> ; les simples traces <code>SPOTTING</code> sont exclues). Jusqu'à 2 jours sans flux noté au milieu ne coupent pas l'épisode (<code>MAX_GAP_IN_PERIOD = 3</code>).</td>
+              <td><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/cycle/src/main/kotlin/fr/lunaison/core/cycle/Periods.kt"><code>Periods.kt</code></a><br><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt"><code>CycleConfig.kt</code></a></td>
+            </tr>
+            <tr>
+              <td><strong>2. Filtrage et durée médiane du cycle</strong></td>
+              <td>Seuls les cycles complets de <code>15</code> à <code>90</code> jours (<code>MIN_PLAUSIBLE_CYCLE</code>, <code>MAX_PLAUSIBLE_CYCLE</code>) sont retenus, sur les <code>6</code> derniers cycles (<code>CYCLES_FOR_PREDICTION = 6</code>). Durée estimée = médiane entière des cycles retenus (ou moyenne avec la durée déclarée s'il n'y a qu'un cycle).</td>
+              <td><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleAnalyzer.kt"><code>CycleAnalyzer.kt</code></a><br><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/cycle/src/test/kotlin/fr/lunaison/core/cycle/CycleAnalyzerTest.kt"><code>CycleAnalyzerTest.kt</code></a></td>
+            </tr>
+            <tr>
+              <td><strong>3. Largeur de la fourchette (incertitude)</strong></td>
+              <td>À partir de 3 cycles complets : demi-largeur <code>spread = clamp(ceil(&sigma;), 2, 7)</code> jours autour de la date médiane, où <code>&sigma;</code> est l'écart-type de vos 6 derniers cycles. Pour 2 cycles : <code>&plusmn;3</code> jours ; sans historique : <code>&plusmn;4</code> jours (<code>PROVISIONAL_SPREAD</code>).</td>
+              <td><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleAnalyzer.kt"><code>CycleAnalyzer.kt</code></a></td>
+            </tr>
+            <tr>
+              <td><strong>4. Ovulation et phases du cycle</strong></td>
+              <td>Ovulation estimée à <code>prochaines_règles - 13 jours</code> (<code>LUTEAL_DAYS = 13</code>), entourée d'une fenêtre d'ovulation de <code>&plusmn;2 jours</code> (<code>OVULATION_WINDOW = 2</code>). Fenêtre fertile facultative : de <code>ovulation - 5 j</code> à <code>ovulation + 1 j</code>.</td>
+              <td><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleAnalyzer.kt"><code>CycleAnalyzer.kt</code></a></td>
+            </tr>
+            <tr>
+              <td><strong>5. Corrélation symptômes / phases</strong></td>
+              <td>Un symptôme ou une humeur n'est associé à une phase que s'il apparaît dans au moins <code>2</code> cycles (<code>MIN_CYCLES_FOR_STATS = 2</code>), dans au moins <code>50 %</code> des cycles renseignés, et avec une fréquence dans la phase au moins <code>2,0 fois</code> supérieure au reste du cycle (<code>PATTERN_ENRICHMENT = 2.0</code>, dès que <code>&ge; 5</code> jours hors phase sont renseignés).</td>
+              <td><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/cycle/src/main/kotlin/fr/lunaison/core/cycle/PhasePatterns.kt"><code>PhasePatterns.kt</code></a><br><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/cycle/src/test/kotlin/fr/lunaison/core/cycle/CycleInsightsTest.kt"><code>CycleInsightsTest.kt</code></a></td>
+            </tr>
+            <tr>
+              <td><strong>6. Signaux médicaux (FIGO / ACOG / NHS)</strong></td>
+              <td>Évaluation déterministe sur les 3 derniers cycles (règles <code>&gt; 8 j</code>, écart min/max <code>&gt; 9 j</code> sur au moins 4 cycles, cycle hors <code>24..38 j</code> ou <code>21..45 j</code> avant 18 ans, absence <code>&gt; 90 j</code>, douleur forte ou ménorragie répétée sur <code>&ge; 2</code> des 3 dernières règles).</td>
+              <td><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/cycle/src/main/kotlin/fr/lunaison/core/cycle/Alerts.kt"><code>Alerts.kt</code></a></td>
+            </tr>
+            <tr>
+              <td><strong>7. Jeton de partage partenaire hors-ligne</strong></td>
+              <td>Chaîne <code>LUNA1:&lt;base64url&gt;</code> encodant uniquement <code>v1|prénom|datePartage|duréeHabituelle|fertilité|début1:durée1,...</code> sur les 6 dernières règles au maximum. Aucune note personnelle, aucun symptôme et aucune humeur n'y figurent.</td>
+              <td><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/model/src/main/kotlin/fr/lunaison/core/model/PartnerSnapshot.kt"><code>PartnerSnapshot.kt</code></a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </main>
   <footer class="site-footer">
     <div class="wrap">
