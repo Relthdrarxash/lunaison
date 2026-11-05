@@ -103,14 +103,16 @@ class ContentTest {
     }
 
     @Test
-    fun `les deux langues ont les memes fiches, sections et sources`() {
+    fun `toutes les langues ont les memes fiches, sections et sources`() {
         val fr = Articles.forLanguage(Language.FR)
-        val en = Articles.forLanguage(Language.EN)
-        assertEquals(fr.map { it.id }, en.map { it.id })
-        fr.zip(en).forEach { (a, b) ->
-            assertEquals(a.sources, b.sources, "Sources différentes pour ${a.id}")
-            assertEquals(a.sections.map { it.paragraphs.size }, b.sections.map { it.paragraphs.size }, "Structure différente pour ${a.id}")
-            assertNotEquals(a.title, b.title, "Fiche ${a.id} non traduite")
+        Language.entries.filter { it != Language.FR }.forEach { lang ->
+            val other = Articles.forLanguage(lang)
+            assertEquals(fr.map { it.id }, other.map { it.id }, "Fiches manquantes en $lang")
+            fr.zip(other).forEach { (a, b) ->
+                assertEquals(a.sources, b.sources, "Sources différentes pour ${a.id} en $lang")
+                assertEquals(a.sections.map { it.paragraphs.size }, b.sections.map { it.paragraphs.size }, "Structure différente pour ${a.id} en $lang")
+                assertNotEquals(a.title, b.title, "Fiche ${a.id} non traduite en $lang")
+            }
         }
     }
 

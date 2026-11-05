@@ -18,7 +18,11 @@ object Articles {
 
     fun forLanguage(language: Language): List<Article> = when (language) {
         Language.FR -> ArticlesFr.all
-        Language.EN, Language.PL, Language.UK, Language.ES, Language.DE -> ArticlesEn.all
+        Language.EN -> ArticlesEn.all
+        Language.ES -> ArticlesEs.all
+        Language.DE -> ArticlesDe.all
+        Language.PL -> ArticlesPl.all
+        Language.UK -> ArticlesUk.all
     }
 
     fun byId(id: String): Article? = all.firstOrNull { it.id == id }
