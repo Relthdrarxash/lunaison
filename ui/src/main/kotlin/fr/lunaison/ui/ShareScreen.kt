@@ -188,11 +188,27 @@ private fun Composer(state: AppState, partner: Partner, onEdit: () -> Unit, onRe
         minLines = 3,
     )
     LunaButton(
-        tr("Ouvrir ${partner.channel.label}", "Open ${partner.channel.label}"),
+        tr(
+            "Partager avec ${partner.name}",
+            "Share with ${partner.name}",
+            pl = "Udostępnij dla: ${partner.name}",
+            uk = "Поділитися з ${partner.name}",
+            es = "Compartir con ${partner.name}",
+            de = "Mit ${partner.name} teilen",
+        ),
         onClick = { ShareLauncher.send(context, partner, text) },
         icon = Icons.AutoMirrored.Filled.Send,
     )
-    Muted(tr("Vous relirez le message dans ${partner.channel.label} avant de l'envoyer.", "You will review the message in ${partner.channel.label} before sending it."))
+    Muted(
+        tr(
+            "Ouvre ${partner.channel.label} avec le message prêt : vous le relisez avant l'envoi.",
+            "Opens ${partner.channel.label} with the message ready: you review it before sending.",
+            pl = "Otwiera aplikację ${partner.channel.label} z gotową wiadomością: możesz ją sprawdzić przed wysłaniem.",
+            uk = "Відкриває ${partner.channel.label} із готовим повідомленням: ви зможете перевірити його перед відправленням.",
+            es = "Abre ${partner.channel.label} con el mensaje preparado: puedes revisarlo antes de enviarlo.",
+            de = "Öffnet ${partner.channel.label} mit dem vorbereiteten Text: Du prüfst ihn vor dem Absenden.",
+        ),
+    )
     TextButton(onClick = onEdit) { Text(tr("Changer de contact ou de messagerie", "Change contact or messaging app")) }
     TextButton(onClick = onRemove) { Text(tr("Ne plus partager", "Stop sharing")) }
 }
