@@ -1,0 +1,4 @@
+• Partage partenaire par QR code hors-ligne (génération et scan intégrés) et conseils par phase.
+• Bilan de consultation (3 ou 6 mois), import/export CSV et widget d'écran d'accueil.
+• Options : fenêtre fertile, signes d'ovulation (glaire, température), mode cycles irréguliers / périménopause, mode pause.
+• Rappel quotidien (contraception ou traitement), respiration guidée 1 min, 4 thèmes de couleur et code PIN à 4 chiffres.
