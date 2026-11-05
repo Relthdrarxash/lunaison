@@ -75,7 +75,14 @@ fun OnboardingScreen(
                 Muted(tr("Lunaison aide à s'organiser et à mieux se connaître. Ce n'est ni un dispositif médical ni une méthode de contraception.", "Lunaison helps you plan and get to know yourself better. It is neither a medical device nor a method of contraception."))
                 LunaButton(tr("Commencer (suivre mon cycle)", "Get started (track my cycle)"), onClick = { step = 1 })
                 LunaButton(
-                    tr("Je suis partenaire (scanner un QR Code ou SMS)", "I am a partner (scan a QR Code or SMS)"),
+                    tr(
+                        "Je suis partenaire (scanner un QR Code, NFC ou SMS)",
+                        "I am a partner (scan a QR Code, NFC or SMS)",
+                        pl = "Jestem partnerem (kod QR, NFC lub SMS)",
+                        uk = "Я партнер (QR-код, NFC або SMS)",
+                        es = "Soy pareja (código QR, NFC o SMS)",
+                        de = "Ich bin Partner (QR-Code, NFC oder SMS)",
+                    ),
                     onClick = { showPartnerScanner = true },
                     style = LunaButtonStyle.Outlined,
                 )

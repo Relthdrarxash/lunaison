@@ -1,7 +1,11 @@
 package fr.lunaison.ui
 
 import android.Manifest
+import android.app.Activity
+import android.content.ContextWrapper
 import android.content.pm.PackageManager
+import android.nfc.NfcAdapter
+import android.nfc.tech.IsoDep
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -126,6 +130,16 @@ fun QrScannerDialog(
     existingPartner: PartnerSnapshot? = null,
 ) {
     val context = LocalContext.current
+    val activity = remember(context) {
+        generateSequence(context) { (it as? ContextWrapper)?.baseContext }
+            .filterIsInstance<Activity>()
+            .firstOrNull()
+    }
+    val nfcAdapter = remember(activity) {
+        activity?.let { runCatching { NfcAdapter.getDefaultAdapter(it) }.getOrNull() }
+    }
+    val hasNfc = nfcAdapter != null && nfcAdapter.isEnabled
+
     var hasCameraPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED,
@@ -133,9 +147,54 @@ fun QrScannerDialog(
     }
     var pastedCode by rememberSaveable { mutableStateOf("") }
     var pasteError by rememberSaveable { mutableStateOf(false) }
+    var scannedDelivered by remember { mutableStateOf(false) }
 
     val deliver: (PartnerSnapshot) -> Unit = { decoded ->
-        onScanned(existingPartner?.mergeWith(decoded) ?: decoded)
+        if (!scannedDelivered) {
+            scannedDelivered = true
+            onScanned(existingPartner?.mergeWith(decoded) ?: decoded)
+        }
+    }
+
+    DisposableEffect(activity, nfcAdapter) {
+        val currentActivity = activity
+        val currentAdapter = nfcAdapter
+        if (currentActivity != null && currentAdapter != null && currentAdapter.isEnabled) {
+            val callback = NfcAdapter.ReaderCallback { tag ->
+                val isoDep = IsoDep.get(tag) ?: return@ReaderCallback
+                try {
+                    isoDep.connect()
+                    isoDep.timeout = 2500
+                    val command = LunaisonHceService.buildSelectAidApdu()
+                    val response = isoDep.transceive(command)
+                    if (response != null && response.size >= 2) {
+                        val sw1 = response[response.size - 2].toInt() and 0xFF
+                        val sw2 = response[response.size - 1].toInt() and 0xFF
+                        if (sw1 == 0x90 && sw2 == 0x00) {
+                            val payloadBytes = response.copyOfRange(0, response.size - 2)
+                            val text = String(payloadBytes, java.nio.charset.StandardCharsets.UTF_8)
+                            val decoded = PartnerSnapshot.decode(text)
+                            if (decoded != null) {
+                                currentActivity.runOnUiThread {
+                                    deliver(decoded)
+                                }
+                            }
+                        }
+                    }
+                } catch (_: Exception) {
+                    // Tag déconnecté prématurément ou non reconnu
+                } finally {
+                    runCatching { isoDep.close() }
+                }
+            }
+            val flags = NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
+            currentAdapter.enableReaderMode(currentActivity, callback, flags, null)
+        }
+        onDispose {
+            if (currentActivity != null && currentAdapter != null && currentAdapter.isEnabled) {
+                runCatching { currentAdapter.disableReaderMode(currentActivity) }
+            }
+        }
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -163,10 +222,46 @@ fun QrScannerDialog(
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (hasCameraPermission) {
                     Text(
-                        if (existingPartner != null) {
-                            tr("Scannez le QR Code de mise à jour affiché sur le téléphone de ${existingPartner.partnerName} :", "Scan the update QR Code shown on ${existingPartner.partnerName}'s phone:")
+                        if (hasNfc) {
+                            if (existingPartner != null) {
+                                tr(
+                                    "Scannez le QR Code de mise à jour ou collez les téléphones dos à dos (NFC) :",
+                                    "Scan the update QR Code or tap phones back-to-back (NFC):",
+                                    pl = "Zeskanuj kod QR aktualizacji lub zbliż telefony tyłem do siebie (NFC):",
+                                    uk = "Відскануйте QR-код оновлення або прикладіть телефони спинками (NFC):",
+                                    es = "Escanea el código QR de actualización o junta los teléfonos dorso con dorso (NFC):",
+                                    de = "Scanne den Aktualisierungs-QR-Code oder halte die Telefone Rücken an Rücken (NFC):",
+                                )
+                            } else {
+                                tr(
+                                    "Visez le QR Code ou collez les téléphones dos à dos (NFC) :",
+                                    "Point at the QR Code or tap phones back-to-back (NFC):",
+                                    pl = "Skieruj aparat na kod QR lub zbliż telefony tyłem do siebie (NFC):",
+                                    uk = "Наведіть камеру на QR-код або прикладіть телефони спинками (NFC):",
+                                    es = "Apunta al código QR o junta los teléfonos dorso con dorso (NFC):",
+                                    de = "Ziele auf den QR-Code oder halte die Telefone Rücken an Rücken (NFC):",
+                                )
+                            }
                         } else {
-                            tr("Visez le QR Code affiché dans Lunaison sur le téléphone de votre partenaire :", "Point at the QR Code shown in Lunaison on your partner's phone:")
+                            if (existingPartner != null) {
+                                tr(
+                                    "Scannez le QR Code de mise à jour affiché sur le téléphone de ${existingPartner.partnerName} :",
+                                    "Scan the update QR Code shown on ${existingPartner.partnerName}'s phone:",
+                                    pl = "Zeskanuj kod QR aktualizacji na telefonie partnera (${existingPartner.partnerName}):",
+                                    uk = "Відскануйте QR-код оновлення на телефоні партнера (${existingPartner.partnerName}):",
+                                    es = "Escanea el código QR de actualización que aparece en el teléfono de ${existingPartner.partnerName}:",
+                                    de = "Scanne den Aktualisierungs-QR-Code auf dem Smartphone von ${existingPartner.partnerName}:",
+                                )
+                            } else {
+                                tr(
+                                    "Visez le QR Code affiché dans Lunaison sur le téléphone de votre partenaire :",
+                                    "Point at the QR Code shown in Lunaison on your partner's phone:",
+                                    pl = "Skieruj aparat na kod QR w aplikacji Lunaison na telefonie partnera:",
+                                    uk = "Наведіть камеру на QR-код у застосунку Lunaison на телефоні партнера:",
+                                    es = "Apunta al código QR mostrado en Lunaison en el teléfono de tu pareja:",
+                                    de = "Ziele auf den QR-Code in Lunaison auf dem Smartphone deines Partners:",
+                                )
+                            }
                         },
                         style = MaterialTheme.typography.bodySmall,
                     )
@@ -177,7 +272,25 @@ fun QrScannerDialog(
                     )
                 } else {
                     Text(
-                        tr("Sans accès à la caméra, vous pouvez coller ci-dessous le message ou le code LUNA1:... envoyé par SMS :", "Without camera access, you can paste below the message or LUNA1:... code sent by SMS:"),
+                        if (hasNfc) {
+                            tr(
+                                "Sans caméra, collez les téléphones dos à dos (NFC) ou collez ci-dessous le code LUNA1:... reçu par SMS :",
+                                "Without camera, tap phones back-to-back (NFC) or paste below the LUNA1:... code received by SMS:",
+                                pl = "Bez aparatu: zbliż telefony tyłem do siebie (NFC) lub wklej poniżej kod LUNA1:... otrzymany SMS-em:",
+                                uk = "Без камери: прикладіть телефони спинками (NFC) або вставте нижче код LUNA1:..., отриманий в SMS:",
+                                es = "Sin cámara, junta los teléfonos dorso con dorso (NFC) o pega abajo el código LUNA1:... recibido por SMS:",
+                                de = "Ohne Kamera: halte die Telefone Rücken an Rücken (NFC) oder füge unten den per SMS empfangenen LUNA1:...-Code ein:",
+                            )
+                        } else {
+                            tr(
+                                "Sans accès à la caméra, vous pouvez coller ci-dessous le message ou le code LUNA1:... envoyé par SMS :",
+                                "Without camera access, you can paste below the message or LUNA1:... code sent by SMS:",
+                                pl = "Bez dostępu do aparatu możesz wkleić poniżej wiadomość lub kod LUNA1:... z SMS-a:",
+                                uk = "Без доступу до камери ви можете вставити нижче повідомлення або код LUNA1:..., отриманий в SMS:",
+                                es = "Sin acceso a la cámara, puedes pegar a continuación el mensaje o código LUNA1:... enviado por SMS:",
+                                de = "Ohne Kamerazugriff kannst du unten die per SMS gesendete Nachricht oder den LUNA1:...-Code einfügen:",
+                            )
+                        },
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
@@ -357,7 +470,16 @@ fun PartnerSnapshotCard(
                 }
                 if (onRescan != null) {
                     TextButton(onClick = onRescan) {
-                        Text(tr("Mettre à jour (QR / SMS)", "Update (QR / SMS)"))
+                        Text(
+                            tr(
+                                "Mettre à jour (QR / NFC / SMS)",
+                                "Update (QR / NFC / SMS)",
+                                pl = "Aktualizuj (QR / NFC / SMS)",
+                                uk = "Оновити (QR / NFC / SMS)",
+                                es = "Actualizar (QR / NFC / SMS)",
+                                de = "Aktualisieren (QR / NFC / SMS)",
+                            ),
+                        )
                     }
                 }
             }
