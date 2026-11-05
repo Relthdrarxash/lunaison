@@ -95,14 +95,29 @@ fun LogScreen(
             draft.pain?.let { Muted(it.description) }
         }
 
+        var showAllSymptoms by remember { mutableStateOf(false) }
+        val extraSymptoms = setOf(Symptom.PELVIC_PAIN, Symptom.HOT_FLASHES, Symptom.NIGHT_SWEATS, Symptom.BRAIN_FOG)
+        val visibleSymptoms = if (state.settings.irregularCyclesMode || showAllSymptoms || draft.symptoms.any { it in extraSymptoms }) {
+            Symptom.entries
+        } else {
+            Symptom.entries.filterNot { it in extraSymptoms }
+        }
+
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             SectionTitle(tr("Symptômes", "Symptoms"))
             ChoiceChips(
-                options = Symptom.entries,
+                options = visibleSymptoms,
                 label = { it.label },
                 isSelected = { it in draft.symptoms },
                 onToggle = { draft = draft.copy(symptoms = draft.symptoms.toggle(it)) },
             )
+            if (visibleSymptoms.size < Symptom.entries.size) {
+                LunaButton(
+                    tr("Autres symptômes (périménopause, douleurs pelviennes…)", "More symptoms (perimenopause, pelvic pain…)"),
+                    onClick = { showAllSymptoms = true },
+                    style = LunaButtonStyle.Quiet,
+                )
+            }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -115,20 +130,22 @@ fun LogScreen(
             )
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            val medName = state.settings.reminders.medicationLabel.trim()
-            val chipLabel = if (medName.isNotEmpty()) {
-                tr("Pris aujourd'hui ($medName)", "Taken today ($medName)")
-            } else {
-                tr("Pris aujourd'hui", "Taken today")
+        if (state.settings.reminders.medicationEnabled || draft.medicationTaken) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                val medName = state.settings.reminders.medicationLabel.trim()
+                val chipLabel = if (medName.isNotEmpty()) {
+                    tr("Pris aujourd'hui ($medName)", "Taken today ($medName)")
+                } else {
+                    tr("Pris aujourd'hui", "Taken today")
+                }
+                SectionTitle(tr("Contraception ou traitement", "Contraception or medication"))
+                ChoiceChips(
+                    options = listOf(true),
+                    label = { chipLabel },
+                    isSelected = { draft.medicationTaken },
+                    onToggle = { draft = draft.copy(medicationTaken = !draft.medicationTaken) },
+                )
             }
-            SectionTitle(tr("Contraception ou traitement", "Contraception or medication"))
-            ChoiceChips(
-                options = listOf(true),
-                label = { chipLabel },
-                isSelected = { draft.medicationTaken },
-                onToggle = { draft = draft.copy(medicationTaken = !draft.medicationTaken) },
-            )
         }
 
         if (state.settings.trackOvulationSigns) {
