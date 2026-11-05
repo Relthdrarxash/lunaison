@@ -187,7 +187,7 @@ fun HomeScreen(
         LunaButton(
             if (todayLog.isEmpty) tr("Noter ma journée", "Log my day") else tr("Modifier ma journée", "Edit my day"),
             onClick = { onLog(state.today, false) },
-            style = if (inPeriod || paused) LunaButtonStyle.Primary else LunaButtonStyle.Outlined,
+            style = LunaButtonStyle.Primary,
             icon = Icons.Filled.Edit,
         )
         if (!todayLog.isEmpty) TodaySummary(todayLog, state.settings.reminders.medicationLabel)
@@ -195,7 +195,7 @@ fun HomeScreen(
         LunaButton(
             tr("Respirer et relâcher (douleur, stress)", "Breathe and relax (pain, stress)"),
             onClick = onBreathe,
-            style = LunaButtonStyle.Quiet,
+            style = LunaButtonStyle.Outlined,
         )
 
         if (state.settings.isAdult) {
@@ -203,7 +203,7 @@ fun HomeScreen(
             LunaButton(
                 if (partner != null) tr("Prévenir ${partner.name}", "Let ${partner.name} know") else tr("Partager avec un ou une partenaire", "Share with a partner"),
                 onClick = onShare,
-                style = LunaButtonStyle.Quiet,
+                style = LunaButtonStyle.Outlined,
                 icon = Icons.Filled.Share,
             )
             if (followed != null && followedCycle != null) {
