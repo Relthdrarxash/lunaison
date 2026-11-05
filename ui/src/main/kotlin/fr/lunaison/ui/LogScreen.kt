@@ -24,13 +24,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.lunaison.core.designsystem.ChoiceChips
 import fr.lunaison.core.designsystem.LunaButton
+import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.SectionTitle
+import fr.lunaison.core.model.CervicalMucus
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Flow
 import fr.lunaison.core.model.Mood
 import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.Symptom
 import java.time.LocalDate
+import java.util.Locale
+import kotlin.math.roundToInt
 import fr.lunaison.core.model.tr
 
 /**
@@ -125,6 +129,43 @@ fun LogScreen(
                 isSelected = { draft.medicationTaken },
                 onToggle = { draft = draft.copy(medicationTaken = !draft.medicationTaken) },
             )
+        }
+
+        if (state.settings.trackOvulationSigns) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                SectionTitle(tr("Signes d'ovulation (glaire et température)", "Ovulation signs (mucus and temperature)"))
+                ChoiceChips(
+                    options = CervicalMucus.entries,
+                    label = { it.label },
+                    isSelected = { draft.mucus == it },
+                    onToggle = { draft = draft.copy(mucus = if (draft.mucus == it) null else it) },
+                )
+                val temp = draft.basalTemperature
+                if (temp == null) {
+                    LunaButton(
+                        tr("Noter ma température au réveil", "Log waking basal temperature"),
+                        onClick = { draft = draft.copy(basalTemperature = 36.5f) },
+                        style = LunaButtonStyle.Outlined,
+                    )
+                } else {
+                    Stepper(
+                        label = tr("Température : ${"%.1f".format(Locale.FRENCH, temp)} °C", "Temperature: ${"%.1f".format(Locale.ENGLISH, temp)} °C"),
+                        onMinus = {
+                            val next = ((temp * 10).roundToInt() - 1).coerceAtLeast(355) / 10f
+                            draft = draft.copy(basalTemperature = next)
+                        },
+                        onPlus = {
+                            val next = ((temp * 10).roundToInt() + 1).coerceAtMost(385) / 10f
+                            draft = draft.copy(basalTemperature = next)
+                        },
+                    )
+                    LunaButton(
+                        tr("Effacer la température", "Clear temperature"),
+                        onClick = { draft = draft.copy(basalTemperature = null) },
+                        style = LunaButtonStyle.Quiet,
+                    )
+                }
+            }
         }
 
         OutlinedTextField(

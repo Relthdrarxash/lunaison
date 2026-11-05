@@ -6,6 +6,7 @@ import fr.lunaison.core.cycle.LogReminderMode
 import fr.lunaison.core.cycle.ReminderSettings
 import fr.lunaison.core.model.AgeGroup
 import fr.lunaison.core.model.Baseline
+import fr.lunaison.core.model.CervicalMucus
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Flow
 import fr.lunaison.core.model.Mood
@@ -53,6 +54,10 @@ data class AppSettings(
     val followedPartner: PartnerSnapshot? = null,
     /** Prénom affiché dans le QR Code ou le SMS généré pour son ou sa partenaire. */
     val myShareName: String = "",
+    /** Active le suivi facultatif des signes d'ovulation (glaire cervicale et température basale). */
+    val trackOvulationSigns: Boolean = false,
+    /** Mode adapté aux cycles naturellement irréguliers (périménopause, SOPK, post-partum). */
+    val irregularCyclesMode: Boolean = false,
 ) {
     val isAdult: Boolean get() = baseline.ageGroup == AgeGroup.ADULT
 
@@ -95,7 +100,7 @@ class LunaisonRepository(private val dao: LunaisonDao) {
 
     /** Export lisible par un tableur. Rien ne quitte le téléphone sans que la personne choisisse où l'enregistrer. */
     suspend fun exportCsv(): String = buildString {
-        appendLine(tr("date;flux;douleur;symptomes;humeurs;traitement;note", "date;flow;pain;symptoms;moods;medication;note"))
+        appendLine(tr("date;flux;douleur;symptomes;humeurs;traitement;glaire;temperature;note", "date;flow;pain;symptoms;moods;medication;mucus;temperature;note"))
         logsOnce().forEach { log ->
             appendLine(
                 listOf(
@@ -105,10 +110,53 @@ class LunaisonRepository(private val dao: LunaisonDao) {
                     log.symptoms.joinToString(", ") { it.label },
                     log.moods.joinToString(", ") { it.label },
                     if (log.medicationTaken) tr("oui", "yes") else "",
+                    log.mucus?.label.orEmpty(),
+                    log.basalTemperature?.let { "%.1f".format(java.util.Locale.ROOT, it) }.orEmpty(),
                     log.note.replace(";", ",").replace("\n", " "),
                 ).joinToString(";"),
             )
         }
+    }
+
+    /**
+     * Importe un fichier CSV (format Lunaison `;` ou export externe `,` contenant dates et flux)
+     * et renvoie le nombre de journées importées.
+     */
+    suspend fun importCsv(content: String): Int {
+        var imported = 0
+        val lines = content.lineSequence().map { it.trim() }.filter { it.isNotEmpty() }.toList()
+        for (line in lines) {
+            val delimiter = if (';' in line) ';' else ','
+            val cols = line.split(delimiter).map { it.trim().removeSurrounding("\"") }
+            val date = cols.firstOrNull()?.take(10)?.let { runCatching { LocalDate.parse(it) }.getOrNull() } ?: continue
+            val rawFlow = cols.getOrNull(1).orEmpty()
+            val flow = parseFlow(rawFlow)
+            val pain = cols.getOrNull(2)?.let(::parsePain)
+            val symptoms = cols.getOrNull(3)?.let(::parseSymptoms).orEmpty()
+            val moods = cols.getOrNull(4)?.let(::parseMoods).orEmpty()
+            val medCol = cols.getOrNull(5).orEmpty().lowercase()
+            val medTaken = medCol in setOf("oui", "yes", "true", "1")
+            val hasExtendedCols = cols.size >= 9
+            val mucus = if (hasExtendedCols) parseMucus(cols.getOrNull(6).orEmpty()) else null
+            val temp = if (hasExtendedCols) cols.getOrNull(7)?.replace(',', '.')?.toFloatOrNull() else null
+            val note = (if (hasExtendedCols) cols.getOrNull(8) else cols.getOrNull(6)).orEmpty().take(500)
+            val log = DayLog(
+                date = date,
+                flow = flow,
+                pain = pain,
+                symptoms = symptoms,
+                moods = moods,
+                note = note,
+                medicationTaken = medTaken,
+                mucus = mucus,
+                basalTemperature = temp,
+            )
+            if (!log.isEmpty) {
+                save(log)
+                imported += 1
+            }
+        }
+        return imported
     }
 
     companion object {
@@ -134,6 +182,8 @@ internal fun DayLogEntity.toModel() = DayLog(
     moods = moods.toEnumSet<Mood>(),
     note = note,
     medicationTaken = medicationTaken,
+    mucus = mucus.toEnumOrNull<CervicalMucus>(),
+    basalTemperature = basalTemperature,
 )
 
 internal fun DayLog.toEntity() = DayLogEntity(
@@ -144,6 +194,8 @@ internal fun DayLog.toEntity() = DayLogEntity(
     moods = moods.joinToString(",") { it.name },
     note = note,
     medicationTaken = medicationTaken,
+    mucus = mucus?.name,
+    basalTemperature = basalTemperature,
 )
 
 internal fun SettingsEntity.toModel() = AppSettings(
@@ -181,6 +233,8 @@ internal fun SettingsEntity.toModel() = AppSettings(
     pinHash = pinHash,
     followedPartner = followedPartnerSnapshot?.let(PartnerSnapshot::decode),
     myShareName = myShareName,
+    trackOvulationSigns = trackOvulationSigns,
+    irregularCyclesMode = irregularCyclesMode,
 )
 
 internal fun AppSettings.toEntity() = SettingsEntity(
@@ -207,4 +261,43 @@ internal fun AppSettings.toEntity() = SettingsEntity(
     pinHash = pinHash,
     followedPartnerSnapshot = followedPartner?.encode(),
     myShareName = myShareName,
+    trackOvulationSigns = trackOvulationSigns,
+    irregularCyclesMode = irregularCyclesMode,
 )
+
+private fun parseFlow(raw: String): Flow? {
+    val v = raw.trim().lowercase()
+    if (v.isEmpty()) return null
+    return Flow.entries.firstOrNull { it.name.lowercase() == v || it.label.lowercase() == v }
+        ?: when {
+            "spot" in v || "trace" in v -> Flow.SPOTTING
+            "light" in v || "léger" in v || "leger" in v -> Flow.LIGHT
+            "heavy" in v || "abond" in v -> Flow.HEAVY
+            "med" in v || "moyen" in v || "period" in v || "règle" in v -> Flow.MEDIUM
+            else -> null
+        }
+}
+
+private fun parsePain(raw: String): Pain? {
+    val v = raw.trim().lowercase()
+    if (v.isEmpty()) return null
+    return Pain.entries.firstOrNull { it.name.lowercase() == v || it.label.lowercase() == v }
+}
+
+private fun parseSymptoms(raw: String): Set<Symptom> =
+    raw.split(",").mapNotNull { item ->
+        val v = item.trim().lowercase()
+        Symptom.entries.firstOrNull { it.name.lowercase() == v || it.label.lowercase() == v }
+    }.toSet()
+
+private fun parseMoods(raw: String): Set<Mood> =
+    raw.split(",").mapNotNull { item ->
+        val v = item.trim().lowercase()
+        Mood.entries.firstOrNull { it.name.lowercase() == v || it.label.lowercase() == v }
+    }.toSet()
+
+private fun parseMucus(raw: String): CervicalMucus? {
+    val v = raw.trim().lowercase()
+    if (v.isEmpty()) return null
+    return CervicalMucus.entries.firstOrNull { it.name.lowercase() == v || it.label.lowercase() == v }
+}
