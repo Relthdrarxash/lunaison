@@ -26,6 +26,7 @@ import fr.lunaison.core.data.LunaisonRepositoryProvider
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import fr.lunaison.core.model.tr
 
 enum class ReminderKind { PERIOD, LOG }
 
@@ -77,16 +78,16 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
             ReminderKind.PERIOD -> if (state is CycleState.Known && !state.inPeriod) {
                 val days = state.daysUntilNext
                 val text = when {
-                    days <= 0 -> "Vos règles peuvent arriver d'un jour à l'autre."
-                    days == 1 -> "Vos règles devraient arriver demain."
-                    else -> "Vos règles devraient arriver dans $days jours environ."
+                    days <= 0 -> tr("Vos règles peuvent arriver d'un jour à l'autre.", "Your period may arrive any day now.")
+                    days == 1 -> tr("Vos règles devraient arriver demain.", "Your period should arrive tomorrow.")
+                    else -> tr("Vos règles devraient arriver dans $days jours environ.", "Your period should arrive in about $days days.")
                 }
-                notify(kind, "Bientôt vos règles", text)
+                notify(kind, tr("Bientôt vos règles", "Period coming soon"), text)
             }
             ReminderKind.LOG -> {
                 val logged = logs.any { it.date == today }
                 if (ReminderPlanner.shouldRemindToLog(state, settings.reminders, today, logged)) {
-                    notify(kind, "Un petit point sur votre journée ?", "Quelques secondes pour noter comment vous allez.")
+                    notify(kind, tr("Un petit point sur votre journée ?", "A quick check-in on your day?"), tr("Quelques secondes pour noter comment vous allez.", "A few seconds to note how you are doing."))
                 }
             }
         }

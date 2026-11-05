@@ -28,6 +28,7 @@ import fr.lunaison.core.cycle.Phase
 import fr.lunaison.core.cycle.PhasePatterns
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
+import fr.lunaison.core.model.tr
 
 /** « Mes cycles » : ce que les données notées disent, calculé sur le téléphone. */
 @Composable
@@ -40,7 +41,7 @@ fun InsightsScreen(state: AppState, onBack: () -> Unit, onArticle: (String) -> U
     val context = LocalContext.current
 
     Page {
-        PageTitle("Mes cycles", onBack = onBack)
+        PageTitle(tr("Mes cycles", "My cycles"), onBack = onBack)
 
         if (cycle == null || overview == null) {
             LunaCard { Text(InsightTexts.NOTHING_YET, style = MaterialTheme.typography.bodyMedium) }
@@ -48,47 +49,47 @@ fun InsightsScreen(state: AppState, onBack: () -> Unit, onArticle: (String) -> U
             return@Page
         }
 
-        SectionTitle("Durée de vos cycles")
+        SectionTitle(tr("Durée de vos cycles", "Length of your cycles"))
         LunaCard {
             InsightTexts.overviewLines(overview).forEach { Bullet(it) }
             CycleBars(overview)
             if (!overview.withinReferences) {
-                TextButton(onClick = { onArticle("consulter") }) { Text("Quand consulter") }
+                TextButton(onClick = { onArticle("consulter") }) { Text(tr("Quand consulter", "When to see a doctor")) }
             }
         }
 
-        SectionTitle("Vos prévisions")
+        SectionTitle(tr("Vos prévisions", "Your forecasts"))
         LunaCard {
             Text(InsightTexts.predictionLine(overview), style = MaterialTheme.typography.bodyMedium)
-            TextButton(onClick = { onArticle("previsions") }) { Text("Ce que les prévisions peuvent dire") }
+            TextButton(onClick = { onArticle("previsions") }) { Text(tr("Ce que les prévisions peuvent dire", "What predictions can tell you")) }
         }
 
         if (onsets.isNotEmpty()) {
-            SectionTitle("Avant vos règles")
+            SectionTitle(tr("Avant vos règles", "Before your period"))
             LunaCard { onsets.forEach { Bullet(InsightTexts.onsetLine(it)) } }
         }
 
         if (duringPeriod != null && !duringPeriod.isEmpty) {
-            SectionTitle("Pendant vos règles")
+            SectionTitle(tr("Pendant vos règles", "During your period"))
             LunaCard {
-                Text("Lors de vos dernières règles, vous avez souvent noté :", style = MaterialTheme.typography.bodyMedium)
-                duringPeriod.symptoms.forEach { (s, n) -> Bullet("${s.label} (${n} cycles sur ${duringPeriod.cycles})") }
-                duringPeriod.moods.forEach { (m, n) -> Bullet("${m.label} (${n} cycles sur ${duringPeriod.cycles})") }
+                Text(tr("Lors de vos dernières règles, vous avez souvent noté :", "During your recent periods, you often logged:"), style = MaterialTheme.typography.bodyMedium)
+                duringPeriod.symptoms.forEach { (s, n) -> Bullet(tr("${s.label} (${n} cycles sur ${duringPeriod.cycles})", "${s.label} (${n} of ${duringPeriod.cycles} cycles)")) }
+                duringPeriod.moods.forEach { (m, n) -> Bullet(tr("${m.label} (${n} cycles sur ${duringPeriod.cycles})", "${m.label} (${n} of ${duringPeriod.cycles} cycles)")) }
             }
         }
 
         val painful = overview.records.filter { it.periodLength != null }
         if (painful.any { it.painDays > 0 }) {
-            SectionTitle("Douleurs pendant les règles")
+            SectionTitle(tr("Douleurs pendant les règles", "Pain during your period"))
             LunaCard {
-                Text("Jours de douleur gênante ou forte, des règles les plus anciennes aux plus récentes :", style = MaterialTheme.typography.bodyMedium)
-                Text(painful.joinToString("  ·  ") { "${Format.dayMonth(it.start)} : ${it.painDays}" }, style = MaterialTheme.typography.bodyMedium)
-                TextButton(onClick = { onArticle("douleurs") }) { Text("Soulager les douleurs") }
+                Text(tr("Jours de douleur gênante ou forte, des règles les plus anciennes aux plus récentes :", "Days of bothersome or severe pain, from the oldest period to the most recent:"), style = MaterialTheme.typography.bodyMedium)
+                Text(painful.joinToString("  ·  ") { tr("${Format.dayMonth(it.start)} : ${it.painDays}", "${Format.dayMonth(it.start)}: ${it.painDays}") }, style = MaterialTheme.typography.bodyMedium)
+                TextButton(onClick = { onArticle("douleurs") }) { Text(tr("Soulager les douleurs", "Relieving pain")) }
             }
         }
 
         Muted(InsightTexts.HOW_IT_WORKS)
-        TextButton(onClick = { openLink(context, Links.SOURCES) }) { Text("Comment c'est calculé") }
+        TextButton(onClick = { openLink(context, Links.SOURCES) }) { Text(tr("Comment c'est calculé", "How it is calculated")) }
     }
 }
 
@@ -100,7 +101,7 @@ private fun CycleBars(overview: CycleOverview) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .clearAndSetSemantics { contentDescription = "Cycle du ${Format.dayMonth(record.start)} : ${Format.days(record.length)}" },
+                .clearAndSetSemantics { contentDescription = tr("Cycle du ${Format.dayMonth(record.start)} : ${Format.days(record.length)}", "Cycle from ${Format.dayMonth(record.start)}: ${Format.days(record.length)}") },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
@@ -113,7 +114,7 @@ private fun CycleBars(overview: CycleOverview) {
                         .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(7.dp)),
                 )
             }
-            Text("${record.length} j", style = MaterialTheme.typography.bodySmall, modifier = Modifier.width(40.dp))
+            Text(tr("${record.length} j", "${record.length} d"), style = MaterialTheme.typography.bodySmall, modifier = Modifier.width(40.dp))
         }
     }
 }

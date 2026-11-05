@@ -25,6 +25,7 @@ import fr.lunaison.core.model.Flow
 import fr.lunaison.core.model.Mood
 import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.Symptom
+import fr.lunaison.core.model.tr
 import fr.lunaison.ui.Actions
 import fr.lunaison.ui.AppState
 import fr.lunaison.ui.ArticleScreen
@@ -38,6 +39,7 @@ import fr.lunaison.ui.ShareScreen
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
+import java.util.Locale
 
 /** Données d'exemple : quatre cycles notés, avec des symptômes qui reviennent avant les règles. */
 object Sample {
@@ -68,7 +70,7 @@ object Sample {
             }
             add(DayLog(start.plusDays(10), moods = setOf(Mood.ENERGETIC, Mood.HAPPY)))
         }
-        add(DayLog(today, symptoms = setOf(Symptom.BLOATING), moods = setOf(Mood.CALM), note = "Grosse journée, mais ça va."))
+        add(DayLog(today, symptoms = setOf(Symptom.BLOATING), moods = setOf(Mood.CALM), note = tr("Grosse journée, mais ça va.", "Busy day, but I'm okay.")))
     }.filter { !it.date.isAfter(until) }
 
     val settings = AppSettings(
@@ -89,10 +91,18 @@ private object NoActions : Actions {
     override suspend fun exportCsv(): String = ""
 }
 
-class ScreensTest {
+/**
+ * Une série de captures dans une langue : [ScreensTest] en français (docs/captures),
+ * [ScreensEnTest] en anglais (docs/captures/en). Les textes de l'appli suivent la langue de la JVM.
+ */
+abstract class LocalizedScreens(private val locale: Locale) {
+
+    init {
+        Locale.setDefault(locale)
+    }
 
     @get:Rule
-    val paparazzi = Paparazzi(deviceConfig = DeviceConfig.PIXEL_5, maxPercentDifference = 0.1)
+    val paparazzi = Paparazzi(deviceConfig = DeviceConfig.PIXEL_5.copy(locale = locale.language), maxPercentDifference = 0.1)
 
     // Les écrans qui ouvrent le sélecteur de contacts ou de fichiers ont besoin d'un registre, même factice.
     private val registryOwner = object : ActivityResultRegistryOwner {
@@ -126,3 +136,7 @@ class ScreensTest {
         shot("reglages") { SettingsScreen(state, NoActions, versionName = "0.1.0", onArticle = {}) }
     }
 }
+
+class ScreensTest : LocalizedScreens(Locale.FRENCH)
+
+class ScreensEnTest : LocalizedScreens(Locale.ENGLISH)

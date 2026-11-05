@@ -1,5 +1,7 @@
 # Lunaison
 
+**Français** · [English](README.en.md)
+
 Suivi du cycle menstruel, libre et sans compte. Pour noter ses règles, ses symptômes et son humeur, comprendre ce qui se passe à chaque phase, savoir quand arrivent les prochaines règles, et prévenir son ou sa partenaire si on le souhaite.
 
 Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans traceur et **sans accès à Internet**. Tout reste sur le téléphone.
@@ -34,6 +36,8 @@ L'appli reste au strict nécessaire. Ce qu'elle ne dit pas elle-même, d'où vie
 ## Technique
 
 Kotlin, Jetpack Compose, Material 3, Room, WorkManager. minSdk 26, targetSdk 36.
+
+L'appli est en français et en anglais, selon la langue du téléphone. Chaque texte est écrit dans les deux langues côte à côte (fonction `tr` de `:core:model`), pour qu'aucune traduction ne puisse manquer ; les fiches ont un fichier par langue, vérifié par les tests.
 
 ```
 :app                 Écrans, navigation, rappels, partage

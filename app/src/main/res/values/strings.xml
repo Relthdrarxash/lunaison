@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Lunaison</string>
-    <string name="reminders_channel">Rappels</string>
-    <string name="reminders_channel_description">Annonce des prochaines règles et rappel de saisie</string>
+    <string name="reminders_channel">Reminders</string>
+    <string name="reminders_channel_description">Notice of your next period and a reminder to log your day</string>
 </resources>
