@@ -206,7 +206,6 @@ private fun QrSyncSection(
     val context = LocalContext.current
     val known = state.cycle as? CycleState.Known
     var showQr by rememberSaveable { mutableStateOf(false) }
-    var updateOnlyMode by rememberSaveable { mutableStateOf(false) }
     var showScanner by rememberSaveable { mutableStateOf(false) }
     var includeFertility by rememberSaveable { mutableStateOf(state.settings.showFertility) }
 
@@ -223,12 +222,11 @@ private fun QrSyncSection(
             }
             base.sortedBy { it.start }.takeLast(6)
         }
-        val snapshot = remember(allPeriods, updateOnlyMode, state.today, state.settings.myShareName, includeFertility, known.stats.cycleLength) {
-            val selectedPeriods = if (updateOnlyMode) allPeriods.takeLast(1) else allPeriods
+        val snapshot = remember(allPeriods, state.today, state.settings.myShareName, includeFertility, known.stats.cycleLength) {
             PartnerSnapshot(
                 partnerName = state.settings.myShareName.trim().ifEmpty { tr("Partenaire", "Partner") },
                 sharedAt = state.today,
-                periods = selectedPeriods,
+                periods = allPeriods,
                 usualCycleLength = known.stats.cycleLength,
                 showFertility = includeFertility,
             )
@@ -241,17 +239,8 @@ private fun QrSyncSection(
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(
-                tr("Choisissez « Premier partage » pour transmettre vos 6 derniers cycles, ou « Mise à jour » au début d'un nouveau cycle : le téléphone de votre partenaire fusionnera automatiquement cette mise à jour avec l'historique déjà reçu. Vos notes personnelles ne sont jamais incluses.", "Choose 'Initial share' to send your last 6 cycles, or 'Cycle update' when a new period starts: your partner's phone will automatically merge this update with the history already received. Your personal notes are never included."),
+                tr("Ce même QR Code (ou code SMS) sert aussi bien la première fois que pour mettre à jour le calendrier de votre partenaire au cycle suivant : les cycles déjà connus sont fusionnés sans doublon. Vos notes personnelles ne sont jamais incluses.", "This same QR Code (or SMS code) works both the first time and to update your partner's calendar on the next cycle: already-known cycles are merged without duplicates. Your personal notes are never included."),
                 style = MaterialTheme.typography.bodySmall,
-            )
-            ChoiceChips(
-                options = listOf(false, true),
-                label = { isUpdate ->
-                    if (isUpdate) tr("QR de mise à jour (ce cycle)", "Update QR (this cycle)")
-                    else tr("Premier partage (6 cycles)", "Initial share (6 cycles)")
-                },
-                isSelected = { it == updateOnlyMode },
-                onToggle = { updateOnlyMode = it },
             )
             OutlinedTextField(
                 value = state.settings.myShareName,
@@ -274,12 +263,7 @@ private fun QrSyncSection(
                 )
             }
             LunaButton(
-                when {
-                    showQr && updateOnlyMode -> tr("Masquer le QR Code de mise à jour", "Hide update QR Code")
-                    showQr -> tr("Masquer mon QR Code", "Hide my QR Code")
-                    updateOnlyMode -> tr("Afficher le QR Code de mise à jour", "Show update QR Code")
-                    else -> tr("Afficher mon QR Code de partage", "Show my sharing QR Code")
-                },
+                if (showQr) tr("Masquer mon QR Code", "Hide my QR Code") else tr("Afficher mon QR Code (partage ou mise à jour)", "Show my QR Code (share or update)"),
                 onClick = { showQr = !showQr },
                 style = LunaButtonStyle.Outlined,
             )
@@ -287,31 +271,17 @@ private fun QrSyncSection(
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     QrCodeBox(content = encoded)
                 }
-                Muted(
-                    if (updateOnlyMode) {
-                        tr("Sur le téléphone de votre partenaire, appuyez sur « Mettre à jour (QR / SMS) » sur votre carte de suivi.", "On your partner's phone, tap 'Update (QR / SMS)' on your cycle card.")
-                    } else {
-                        tr("Ouvrez Lunaison > Partager > Scanner un QR Code sur le téléphone de votre partenaire.", "Open Lunaison > Share > Scan a QR Code on your partner's phone.")
-                    },
-                )
+                Muted(tr("Sur le téléphone de votre partenaire : appuyez sur « Mettre à jour (QR / SMS) » sur l'accueil, ou ouvrez Partager > Scanner un QR Code.", "On your partner's phone: tap 'Update (QR / SMS)' on the home screen, or open Share > Scan a QR Code."))
             }
-            val shareBody = remember(known, encoded, updateOnlyMode) {
-                if (updateOnlyMode) {
-                    tr(
-                        "Mise à jour de mon cycle Lunaison (${Format.nextPeriod(known)}) Pour actualiser mon calendrier sur ton téléphone, appuie sur « Mettre à jour (QR / SMS) » et colle ce message : $encoded",
-                        "Lunaison cycle update (${Format.nextPeriod(known)}) To update my calendar on your phone, tap 'Update (QR / SMS)' and paste this message: $encoded",
-                    )
-                } else {
-                    tr(
-                        "Voici mon suivi Lunaison (${Format.nextPeriod(known)}) Pour afficher mes estimations sur ton téléphone, colle ce message dans Lunaison > Partager > Scanner ou coller un code : $encoded",
-                        "Here is my Lunaison update (${Format.nextPeriod(known)}) To view my estimates on your phone, paste this message in Lunaison > Share > Scan or paste a code: $encoded",
-                    )
-                }
+            val shareBody = remember(known, encoded) {
+                tr(
+                    "Voici mon suivi Lunaison (${Format.nextPeriod(known)}) Pour afficher ou mettre à jour mes estimations sur ton téléphone, colle ce message dans Lunaison (Accueil > Mettre à jour ou Partager > Scanner) : $encoded",
+                    "Here is my Lunaison update (${Format.nextPeriod(known)}) To view or update my estimates on your phone, paste this message in Lunaison (Home > Update or Share > Scan): $encoded",
+                )
             }
             if (partner != null) {
                 LunaButton(
-                    if (updateOnlyMode) tr("Envoyer la mise à jour via ${partner.channel.label}", "Send update via ${partner.channel.label}")
-                    else tr("Envoyer le code via ${partner.channel.label}", "Send code via ${partner.channel.label}"),
+                    tr("Envoyer le code via ${partner.channel.label}", "Send code via ${partner.channel.label}"),
                     onClick = { ShareLauncher.send(context, partner, shareBody) },
                     style = LunaButtonStyle.Outlined,
                     icon = Icons.AutoMirrored.Filled.Send,
