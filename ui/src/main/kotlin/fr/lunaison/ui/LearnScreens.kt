@@ -1,5 +1,6 @@
 package fr.lunaison.ui
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +33,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextDecoration
@@ -524,6 +532,8 @@ private fun CycleVisualGuide() {
             )
         }
 
+        HormoneCurvesDiagram()
+
         SectionTitle(tr("L'anatomie interne sans tabou", "Internal anatomy explained"))
         LunaCard {
             Text(
@@ -627,5 +637,187 @@ private fun MucusStageRow(stage: String, texture: String) {
     ) {
         Text(stage, style = MaterialTheme.typography.titleSmall)
         Text(texture, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun HormoneCurvesDiagram() {
+    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        SectionTitle(tr("La courbe des hormones (cycle de 28 jours)", "Hormone level curves (28-day cycle)"))
+        LunaCard {
+            Text(
+                tr("Évolution des 3 hormones clés sur un cycle naturel :", "Evolution of the 3 key hormones over a natural cycle:"),
+                style = MaterialTheme.typography.titleSmall,
+            )
+
+            // Canvas graphique de la dynamique hormonale
+            Canvas(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+            ) {
+                val padTop = 16.dp.toPx()
+                val padBottom = 16.dp.toPx()
+                val h = size.height - padTop - padBottom
+                val w = size.width
+
+                fun x(day: Float): Float = ((day - 1f) / 27f).coerceIn(0f, 1f) * w
+                fun y(level: Float): Float = padTop + (1f - level.coerceIn(0f, 1f)) * h
+
+                // Bandes pastel des 4 phases
+                // Règles J1-J5
+                drawRect(
+                    color = Color(0xFFE8998D).copy(alpha = 0.16f),
+                    topLeft = Offset(x(1f), 0f),
+                    size = Size(x(5f) - x(1f), size.height),
+                )
+                // Folliculaire J5-J13
+                drawRect(
+                    color = Color(0xFFB4D6C4).copy(alpha = 0.16f),
+                    topLeft = Offset(x(5f), 0f),
+                    size = Size(x(13f) - x(5f), size.height),
+                )
+                // Ovulation J13-J15
+                drawRect(
+                    color = Color(0xFFF9D162).copy(alpha = 0.25f),
+                    topLeft = Offset(x(13f), 0f),
+                    size = Size(x(15f) - x(13f), size.height),
+                )
+                // Lutéale J15-J28
+                drawRect(
+                    color = Color(0xFFD3BBD9).copy(alpha = 0.16f),
+                    topLeft = Offset(x(15f), 0f),
+                    size = Size(x(28f) - x(15f), size.height),
+                )
+
+                // Ligne de base
+                drawLine(
+                    color = Color.LightGray.copy(alpha = 0.35f),
+                    start = Offset(0f, y(0f)),
+                    end = Offset(w, y(0f)),
+                    strokeWidth = 1.dp.toPx(),
+                )
+
+                // 1. Œstrogènes (Vert sauge / émeraude)
+                val estrogenPoints = listOf(
+                    Offset(x(1f), y(0.12f)),
+                    Offset(x(5f), y(0.16f)),
+                    Offset(x(9f), y(0.38f)),
+                    Offset(x(12f), y(0.78f)),
+                    Offset(x(13f), y(0.92f)),
+                    Offset(x(14f), y(0.48f)),
+                    Offset(x(17f), y(0.42f)),
+                    Offset(x(21f), y(0.62f)),
+                    Offset(x(25f), y(0.32f)),
+                    Offset(x(28f), y(0.12f)),
+                )
+                drawSmoothCurve(estrogenPoints, Color(0xFF2E7D5E), 3.dp.toPx())
+
+                // 2. Progestérone (Terracotta chaud)
+                val progesteronePoints = listOf(
+                    Offset(x(1f), y(0.06f)),
+                    Offset(x(12f), y(0.06f)),
+                    Offset(x(14f), y(0.12f)),
+                    Offset(x(16f), y(0.35f)),
+                    Offset(x(19f), y(0.78f)),
+                    Offset(x(21.5f), y(0.88f)),
+                    Offset(x(24f), y(0.65f)),
+                    Offset(x(26.5f), y(0.24f)),
+                    Offset(x(28f), y(0.06f)),
+                )
+                drawSmoothCurve(progesteronePoints, Color(0xFFC04E3A), 3.dp.toPx())
+
+                // 3. Pic de LH (Ambre doré)
+                val lhPoints = listOf(
+                    Offset(x(1f), y(0.08f)),
+                    Offset(x(11f), y(0.08f)),
+                    Offset(x(12.5f), y(0.28f)),
+                    Offset(x(13.5f), y(0.96f)),
+                    Offset(x(14.5f), y(0.26f)),
+                    Offset(x(16f), y(0.08f)),
+                    Offset(x(28f), y(0.08f)),
+                )
+                drawSmoothCurve(lhPoints, Color(0xFFD49B24), 2.5.dp.toPx())
+            }
+
+            // Repères temporels horizontaux
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(tr("J1 (Règles)", "D1 (Period)"), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(tr("J7", "D7"), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(tr("J14 (Ovulation)", "D14 (Ovulation)"), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                Text(tr("J21", "D21"), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(tr("J28", "D28"), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+
+            // Légende descriptive
+            HormoneLegendItem(
+                color = Color(0xFF2E7D5E),
+                name = tr("Œstrogènes (Estradiol)", "Estrogen (Estradiol)"),
+                role = tr("Pic juste avant l'ovulation. Stimule la régénération de la muqueuse utérine (endomètre), éclaircit la glaire et soutient l'énergie.", "Peaks right before ovulation. Stimulates uterine lining growth, clarifies mucus and supports energy."),
+            )
+            HormoneLegendItem(
+                color = Color(0xFFC04E3A),
+                name = tr("Progestérone", "Progesterone"),
+                role = tr("Pic au milieu de la phase lutéale (sécrétée par le corps jaune). Maintient l'endomètre prêt pour un embryon. Sa chute déclenche les règles.", "Peaks in mid-luteal phase (secreted by corpus luteum). Maintains lining for potential pregnancy. Its sharp drop triggers menstruation."),
+            )
+            HormoneLegendItem(
+                color = Color(0xFFD49B24),
+                name = tr("Pic de LH (Hormone lutéinisante)", "LH surge (Luteinizing hormone)"),
+                role = tr("Décharge brève et intense à J13-J14 qui déclenche l'expulsion de l'ovule par le follicule en 24 à 36 heures.", "Brief, intense surge at Days 13-14 that triggers egg release within 24 to 36 hours."),
+            )
+        }
+    }
+}
+
+private fun DrawScope.drawSmoothCurve(
+    points: List<Offset>,
+    color: Color,
+    strokeWidth: Float,
+) {
+    if (points.size < 2) return
+    val path = Path()
+    path.moveTo(points[0].x, points[0].y)
+    for (i in 0 until points.size - 1) {
+        val p0 = points[i]
+        val p1 = points[i + 1]
+        val cx = (p0.x + p1.x) / 2f
+        path.cubicTo(cx, p0.y, cx, p1.y, p1.x, p1.y)
+    }
+    drawPath(
+        path = path,
+        color = color,
+        style = Stroke(
+            width = strokeWidth,
+            cap = StrokeCap.Round,
+            join = StrokeJoin.Round,
+        ),
+    )
+}
+
+@Composable
+private fun HormoneLegendItem(color: Color, name: String, role: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(top = 5.dp)
+                .size(10.dp)
+                .background(color, CircleShape),
+        )
+        Column {
+            Text(name, style = MaterialTheme.typography.titleSmall)
+            Text(role, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }
