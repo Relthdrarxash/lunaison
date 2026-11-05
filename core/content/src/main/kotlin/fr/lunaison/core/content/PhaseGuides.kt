@@ -25,9 +25,13 @@ data class Tip(
     val pain: Set<Pain> = emptySet(),
     val flow: Set<Flow> = emptySet(),
     val withoutStudy: Boolean = false,
+    val pl: String = en,
+    val uk: String = en,
+    val es: String = en,
+    val de: String = en,
 ) {
     /** Le conseil dans la langue de l'appli. */
-    val text: String get() = tr(fr, en)
+    val text: String get() = tr(fr, en, pl, uk, es, de)
 
     fun matches(log: DayLog): Boolean =
         log.symptoms.any { it in symptoms } ||
@@ -45,13 +49,21 @@ data class PhaseGuide(
     val phase: Phase,
     private val nameFr: String,
     private val nameEn: String,
+    private val namePl: String = nameEn,
+    private val nameUk: String = nameEn,
+    private val nameEs: String = nameEn,
+    private val nameDe: String = nameEn,
     private val whatHappensFr: String,
     private val whatHappensEn: String,
+    private val whatHappensPl: String = whatHappensEn,
+    private val whatHappensUk: String = whatHappensEn,
+    private val whatHappensEs: String = whatHappensEn,
+    private val whatHappensDe: String = whatHappensEn,
     val tips: List<Tip>,
     val articleId: String,
 ) {
-    val name: String get() = tr(nameFr, nameEn)
-    val whatHappens: String get() = tr(whatHappensFr, whatHappensEn)
+    val name: String get() = tr(nameFr, nameEn, namePl, nameUk, nameEs, nameDe)
+    val whatHappens: String get() = tr(whatHappensFr, whatHappensEn, whatHappensPl, whatHappensUk, whatHappensEs, whatHappensDe)
 
     /** Les textes dans les deux langues, pour les tests. */
     val allTexts: List<String> get() = listOf(nameFr, nameEn, whatHappensFr, whatHappensEn) + tips.flatMap { listOf(it.fr, it.en) }
@@ -67,8 +79,16 @@ object PhaseGuides {
         phase = Phase.MENSTRUAL,
         nameFr = "Règles",
         nameEn = "Period",
+        namePl = "Miesiączka",
+        nameUk = "Менструація",
+        nameEs = "Menstruación",
+        nameDe = "Periode",
         whatHappensFr = "La paroi de l'utérus s'élimine et les hormones sont au plus bas. Fatigue et douleurs sont fréquentes les premiers jours.",
         whatHappensEn = "The lining of the uterus is shed and hormone levels are at their lowest. Tiredness and pain are common in the first days.",
+        whatHappensPl = "Błona śluzowa macicy ulega złuszczeniu, a poziom hormonów jest najniższy. Zmęczenie i ból są częste w pierwszych dniach.",
+        whatHappensUk = "Слизова оболонка матки відторгається, а рівень гормонів найнижчий. Втома та біль часто трапляються в перші дні.",
+        whatHappensEs = "El endometrio se desprende y las hormonas están en su nivel más bajo. El cansancio y el dolor son habituales en los primeros días.",
+        whatHappensDe = "Die Gebärmutterschleimhaut wird abgestoßen und die Hormone sind auf dem Tiefststand. Müdigkeit und Schmerzen sind in den ersten Tagen häufig.",
         tips = listOf(
             Tip(
                 "La chaleur sur le bas du ventre soulage autant qu'un anti-inflammatoire dans les études. Attention aux brûlures : jamais de chaleur trop forte directement sur la peau.",
@@ -126,8 +146,16 @@ object PhaseGuides {
         phase = Phase.FOLLICULAR,
         nameFr = "Phase folliculaire",
         nameEn = "Follicular phase",
+        namePl = "Faza folikularna",
+        nameUk = "Фолікулярна фаза",
+        nameEs = "Fase folicular",
+        nameDe = "Follikelphase",
         whatHappensFr = "Les œstrogènes remontent pendant qu'un follicule mûrit dans un ovaire. Beaucoup de personnes se sentent plus en forme, d'autres ne remarquent aucune différence.",
         whatHappensEn = "Estrogen rises again while a follicle matures in an ovary. Many people feel more energetic, others notice no difference at all.",
+        whatHappensPl = "Poziom estrogenów ponownie rośnie, podczas gdy w jajniku dojrzewa pęcherzyk. Wiele osób czuje przypływ energii, inne nie zauważają różnicy.",
+        whatHappensUk = "Рівень естрогенів знову зростає, поки в яєчнику дозріває фолікул. Багато хто відчуває більше сил, інші не помічають різниці.",
+        whatHappensEs = "Los estrógenos vuelven a subir mientras un folículo madura en el ovario. Muchas personas se sienten con más energía, otras no notan diferencias.",
+        whatHappensDe = "Das Östrogen steigt wieder an, während ein Follikel im Eierstock heranreift. Viele fühlen sich energiegeladener, andere bemerken keinen Unterschied.",
         tips = listOf(
             Tip(
                 "Une activité physique régulière, environ trois séances par semaine, peut réduire les douleurs des règles suivantes. Les études sont modestes, mais le risque est faible.",
@@ -169,8 +197,16 @@ object PhaseGuides {
         phase = Phase.OVULATION,
         nameFr = "Autour de l'ovulation",
         nameEn = "Around ovulation",
+        namePl = "Wokół owulacji",
+        nameUk = "Навколо овуляції",
+        nameEs = "En torno a la ovulación",
+        nameDe = "Rund um den Eisprung",
         whatHappensFr = "L'ovaire libère un ovule. Certaines personnes ressentent une petite douleur d'un côté du ventre ou remarquent des pertes plus fluides et filantes.",
         whatHappensEn = "The ovary releases an egg. Some people feel a slight pain on one side of the belly or notice clearer, stretchier discharge.",
+        whatHappensPl = "Jajnik uwalnia komórkę jajową. Niektóre osoby odczuwają delikatny ból z jednej strony podbrzusza lub zauważają bardziej przejrzysty, rozciągliwy śluz.",
+        whatHappensUk = "Яєчник вивільняє яйцеклітину. Дехто відчуває легкий біль з одного боку внизу живота або помічає прозоріші та тягучіші виділення.",
+        whatHappensEs = "El ovario libera un óvulo. Algunas personas notan una leve molestia en un lado del bajo vientre o un flujo más fluido y elástico.",
+        whatHappensDe = "Der Eierstock gibt eine Eizelle frei. Manche spüren ein leichtes Ziehen auf einer Seite des Unterbauchs oder bemerken klareren, spinnbaren Zervixschleim.",
         tips = listOf(
             Tip(
                 "Cette période est estimée à partir de vos règles, avec une marge d'erreur : elle ne permet pas d'éviter une grossesse.",
@@ -205,8 +241,16 @@ object PhaseGuides {
         phase = Phase.LUTEAL,
         nameFr = "Phase lutéale",
         nameEn = "Luteal phase",
+        namePl = "Faza lutealna",
+        nameUk = "Лютеїнова фаза",
+        nameEs = "Fase lútea",
+        nameDe = "Lutealphase",
         whatHappensFr = "La progestérone domine. Dans les derniers jours, seins sensibles, ventre gonflé, fatigue ou humeur changeante sont fréquents.",
         whatHappensEn = "Progesterone dominates. In the last days, tender breasts, bloating, tiredness or changing moods are common.",
+        whatHappensPl = "Dominuje progesteron. W ostatnich dniach częsta jest tkliwość piersi, wzdęcia, zmęczenie lub wahania nastroju.",
+        whatHappensUk = "Переважає прогестерон. В останні дні часто спостерігаються чутливість грудей, здуття живота, втома чи мінливий настрій.",
+        whatHappensEs = "Predomina la progesterona. En los últimos días son habituales la sensibilidad mamaria, la hinchazón, el cansancio o los cambios de humor.",
+        whatHappensDe = "Progesteron dominiert. In den letzten Tagen sind Spannungsgefühl in den Brüsten, Völlegefühl, Müdigkeit oder Stimmungsschwankungen häufig.",
         tips = listOf(
             Tip(
                 "Produits laitiers, eaux riches en calcium ou amandes : un apport suffisant en calcium a réduit les symptômes prémenstruels dans un essai.",
@@ -255,8 +299,16 @@ object PhaseGuides {
         phase = Phase.LATE,
         nameFr = "Règles en retard",
         nameEn = "Period late",
+        namePl = "Spóźniona miesiączka",
+        nameUk = "Затримка менструації",
+        nameEs = "Retraso menstrual",
+        nameDe = "Periode verspätet",
         whatHappensFr = "Vos règles n'ont pas commencé dans la plage estimée. Stress, voyage, maladie, changement de poids, sport intense ou grossesse peuvent l'expliquer.",
         whatHappensEn = "Your period has not started within the estimated range. Stress, travel, illness, weight change, intense exercise or pregnancy can explain it.",
+        whatHappensPl = "Miesiączka nie rozpoczęła się w przewidywanym przedziale. Przyczyną może być stres, podróż, infekcja, zmiana wagi, intensywny sport lub ciąża.",
+        whatHappensUk = "Менструація не почалася в очікуваний проміжок дат. Стрес, поїздки, хвороба, зміна ваги, спорт чи вагітність можуть це пояснювати.",
+        whatHappensEs = "La regla no ha comenzado en las fechas estimadas. El estrés, los viajes, una infección, cambios de peso, deporte intenso o un embarazo pueden explicarlo.",
+        whatHappensDe = "Die Periode hat nicht im geschätzten Zeitraum begonnen. Stress, Reisen, Infekte, Gewichtsveränderungen, Sport oder eine Schwangerschaft können der Grund sein.",
         tips = listOf(
             Tip(
                 "Si elles ont commencé et que vous l'avez oublié, ajoutez-les dans le calendrier.",
