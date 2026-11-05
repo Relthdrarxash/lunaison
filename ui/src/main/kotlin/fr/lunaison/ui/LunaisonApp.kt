@@ -90,6 +90,16 @@ fun LunaisonApp(repository: LunaisonRepository, versionName: String) {
                     repository.updateSettings { it.copy(onboarded = true, baseline = baseline) }
                 }
             },
+            onFinishAsPartner = { snapshot ->
+                scope.launch {
+                    repository.updateSettings {
+                        it.copy(
+                            onboarded = true,
+                            followedPartner = snapshot,
+                        )
+                    }
+                }
+            },
         )
         return
     }
