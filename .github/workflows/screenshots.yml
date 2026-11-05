@@ -45,14 +45,18 @@ jobs:
             echo "::error::${line}"
           done
 
-      - name: Copier dans docs/captures
+      - name: Copier dans docs/captures (français) et docs/captures/en (anglais)
         run: |
-          mkdir -p docs/captures
+          mkdir -p docs/captures docs/captures/en
           for f in screenshots/src/test/snapshots/images/*_ScreensTest_*.png; do
             name=$(basename "$f")
             cp "$f" "docs/captures/${name#*_ScreensTest_captures_}"
           done
-          ls -la docs/captures
+          for f in screenshots/src/test/snapshots/images/*_ScreensEnTest_*.png; do
+            name=$(basename "$f")
+            cp "$f" "docs/captures/en/${name#*_ScreensEnTest_captures_}"
+          done
+          ls -la docs/captures docs/captures/en
 
       # Un envoi fait avec le jeton de la CI ne relance pas les workflows : pas de boucle.
       - name: Enregistrer si elles ont changé

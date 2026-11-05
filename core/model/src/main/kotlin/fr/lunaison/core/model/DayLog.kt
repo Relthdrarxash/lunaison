@@ -3,50 +3,62 @@ package fr.lunaison.core.model
 import java.time.LocalDate
 
 /** Flux du jour. Les traces seules ne marquent pas le début des règles. */
-enum class Flow(val label: String) {
-    SPOTTING("Traces"),
-    LIGHT("Léger"),
-    MEDIUM("Moyen"),
-    HEAVY("Abondant"),
+enum class Flow(private val fr: String, private val en: String) {
+    SPOTTING("Traces", "Spotting"),
+    LIGHT("Léger", "Light"),
+    MEDIUM("Moyen", "Medium"),
+    HEAVY("Abondant", "Heavy"),
     ;
+
+    val label: String get() = tr(fr, en)
 
     /** Un vrai saignement, par opposition à de simples traces. */
     val isBleeding: Boolean get() = this != SPOTTING
 }
 
 /** Douleur ressentie, décrite par son effet plutôt que par un chiffre. */
-enum class Pain(val label: String, val description: String) {
-    NONE("Aucune", "Pas de douleur"),
-    MILD("Légère", "Je la sens, sans que ça me gêne"),
-    MODERATE("Gênante", "Elle me gêne, mais je fais ce que j'avais prévu"),
-    SEVERE("Forte", "Elle m'empêche de faire mes activités"),
+enum class Pain(private val fr: String, private val en: String, private val frDescription: String, private val enDescription: String) {
+    NONE("Aucune", "None", "Pas de douleur", "No pain"),
+    MILD("Légère", "Mild", "Je la sens, sans que ça me gêne", "I can feel it, but it doesn't bother me"),
+    MODERATE("Gênante", "Bothersome", "Elle me gêne, mais je fais ce que j'avais prévu", "It bothers me, but I still do what I had planned"),
+    SEVERE("Forte", "Severe", "Elle m'empêche de faire mes activités", "It stops me from doing my usual activities"),
+    ;
+
+    val label: String get() = tr(fr, en)
+    val description: String get() = tr(frDescription, enDescription)
 }
 
-enum class Symptom(val label: String) {
-    HEADACHE("Maux de tête"),
-    BACK_PAIN("Mal de dos"),
-    BLOATING("Ventre gonflé"),
-    BREAST_TENDERNESS("Seins sensibles"),
-    DIGESTIVE("Troubles digestifs"),
-    NAUSEA("Nausées"),
-    FATIGUE("Fatigue"),
-    SLEEP("Sommeil perturbé"),
-    CRAVINGS("Fringales"),
-    ACNE("Boutons"),
+enum class Symptom(private val fr: String, private val en: String) {
+    HEADACHE("Maux de tête", "Headache"),
+    BACK_PAIN("Mal de dos", "Back pain"),
+    BLOATING("Ventre gonflé", "Bloating"),
+    BREAST_TENDERNESS("Seins sensibles", "Tender breasts"),
+    DIGESTIVE("Troubles digestifs", "Digestive issues"),
+    NAUSEA("Nausées", "Nausea"),
+    FATIGUE("Fatigue", "Fatigue"),
+    SLEEP("Sommeil perturbé", "Poor sleep"),
+    CRAVINGS("Fringales", "Cravings"),
+    ACNE("Boutons", "Acne"),
+    ;
+
+    val label: String get() = tr(fr, en)
 }
 
 /** Humeurs du jour, plusieurs possibles, notées à part des symptômes physiques. Libellés non genrés. */
-enum class Mood(val label: String, val positive: Boolean) {
-    CALM("Calme", true),
-    HAPPY("De bonne humeur", true),
-    ENERGETIC("Énergie haute", true),
-    MOTIVATED("Motivation", true),
-    SENSITIVE("À fleur de peau", false),
-    IRRITABLE("Irritable", false),
-    ANXIOUS("Anxiété", false),
-    STRESSED("Stress", false),
-    SAD("Triste", false),
-    LOW_ENERGY("Énergie basse", false),
+enum class Mood(private val fr: String, private val en: String, val positive: Boolean) {
+    CALM("Calme", "Calm", true),
+    HAPPY("De bonne humeur", "In a good mood", true),
+    ENERGETIC("Énergie haute", "High energy", true),
+    MOTIVATED("Motivation", "Motivated", true),
+    SENSITIVE("À fleur de peau", "Sensitive", false),
+    IRRITABLE("Irritable", "Irritable", false),
+    ANXIOUS("Anxiété", "Anxious", false),
+    STRESSED("Stress", "Stressed", false),
+    SAD("Triste", "Sad", false),
+    LOW_ENERGY("Énergie basse", "Low energy", false),
+    ;
+
+    val label: String get() = tr(fr, en)
 }
 
 /** Ce que la personne a noté pour une journée. Tout est facultatif. */
