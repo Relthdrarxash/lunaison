@@ -72,8 +72,8 @@ fun CalendarScreen(state: AppState, onDay: (LocalDate) -> Unit, onInsights: () -
     }
 
     Page {
-        PageTitle(tr("Calendrier", "Calendar"), subtitle = tr("Touchez un jour passé pour le remplir.", "Tap a past day to fill it in."))
-        TextButton(onClick = onInsights) { Text(tr("Mes cycles : durées, prévisions, ce qui revient", "My cycles: lengths, forecasts, what comes back")) }
+        PageTitle(tr("Calendrier", "Calendar"), subtitle = tr("Touchez un jour pour le noter ou le modifier.", "Tap a day to log or edit it."))
+        TextButton(onClick = onInsights) { Text(tr("Analyse de mes cycles", "My cycle insights"), style = MaterialTheme.typography.labelLarge) }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { monthText = month.minusMonths(1).toString() }) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = tr("Mois précédent", "Previous month"))
