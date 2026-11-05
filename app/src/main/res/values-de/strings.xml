@@ -4,4 +4,5 @@
     <string name="reminders_channel">Erinnerungen</string>
     <string name="reminders_channel_description">Hinweis auf deine nächste Periode und Erinnerung an den Tageseintrag</string>
     <string name="widget_description">Diskrete Anzeige von Zyklustag und Zyklusphase</string>
+    <string name="nfc_sync_description">Lunaison-Zyklussynchronisation</string>
 </resources>

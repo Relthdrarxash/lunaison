@@ -14,11 +14,17 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +50,9 @@ import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.DayLog
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 import fr.lunaison.core.model.tr
 
 @Composable
@@ -64,6 +72,7 @@ fun HomeScreen(
     val followed = state.settings.followedPartner
     val followedCycle = state.followedPartnerCycle
     var showPartnerScanner by rememberSaveable { mutableStateOf(false) }
+    var showSetupOwnCycle by rememberSaveable { mutableStateOf(false) }
 
     Page {
         PageTitle(Format.weekday(state.today))
@@ -91,8 +100,15 @@ fun HomeScreen(
                 }
             }
             LunaButton(
-                tr("Suivre aussi mon propre cycle", "Also track my own cycle"),
-                onClick = onCalendar,
+                tr(
+                    "Suivre aussi mon propre cycle",
+                    "Also track my own cycle",
+                    pl = "Śledź również mój własny cykl",
+                    uk = "Стежити також за власним циклом",
+                    es = "Seguir también mi propio ciclo",
+                    de = "Auch meinen eigenen Zyklus begleiten",
+                ),
+                onClick = { showSetupOwnCycle = true },
                 style = LunaButtonStyle.Quiet,
                 icon = Icons.Filled.DateRange,
             )
@@ -104,6 +120,20 @@ fun HomeScreen(
                         actions.updateSettings { it.copy(followedPartner = scanned) }
                     },
                     onDismiss = { showPartnerScanner = false },
+                )
+            }
+            if (showSetupOwnCycle) {
+                SetupOwnCycleDialog(
+                    today = state.today,
+                    onConfirm = { startDate ->
+                        showSetupOwnCycle = false
+                        actions.updateSettings { it.copy(baseline = it.baseline.copy(lastPeriodStart = startDate)) }
+                    },
+                    onOpenCalendar = {
+                        showSetupOwnCycle = false
+                        onCalendar()
+                    },
+                    onDismiss = { showSetupOwnCycle = false },
                 )
             }
             return@Page
@@ -174,6 +204,20 @@ fun HomeScreen(
                     cycle = followedCycle,
                     onRescan = { showPartnerScanner = true },
                     onRemove = { actions.updateSettings { it.copy(followedPartner = null) } },
+                )
+            } else {
+                LunaButton(
+                    tr(
+                        "Suivre le cycle d'un ou d'une partenaire (QR / NFC / SMS)",
+                        "Follow a partner's cycle (QR / NFC / SMS)",
+                        pl = "Śledź cykl partnera (QR / NFC / SMS)",
+                        uk = "Стежити за циклом партнера (QR / NFC / SMS)",
+                        es = "Seguir el ciclo de una pareja (QR / NFC / SMS)",
+                        de = "Zyklus eines Partners begleiten (QR / NFC / SMS)",
+                    ),
+                    onClick = { showPartnerScanner = true },
+                    style = LunaButtonStyle.Quiet,
+                    icon = Icons.Filled.Favorite,
                 )
             }
             if (showPartnerScanner) {
@@ -357,5 +401,140 @@ private fun PhaseCard(state: AppState, cycle: CycleState.Known, onArticle: (Stri
     }
     state.anticipation?.let { coming ->
         Muted(InsightTexts.anticipationLine(coming))
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SetupOwnCycleDialog(
+    today: LocalDate,
+    onConfirm: (LocalDate) -> Unit,
+    onOpenCalendar: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var selectedDate by remember { mutableStateOf(today) }
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                tr(
+                    "Suivre aussi mon propre cycle",
+                    "Also track my own cycle",
+                    pl = "Śledź również mój własny cykl",
+                    uk = "Стежити також за власним циклом",
+                    es = "Seguir también mi propio ciclo",
+                    de = "Auch meinen eigenen Zyklus begleiten",
+                ),
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    tr(
+                        "Vous suivez actuellement le cycle de votre partenaire. Vous pouvez également activer le suivi de votre propre cycle à tout moment.",
+                        "You are currently following your partner's cycle. You can also activate tracking for your own cycle at any time.",
+                        pl = "Obecnie śledzisz cykl partnera. W każdej chwili możesz włączyć śledzenie własnego cyklu.",
+                        uk = "Зараз ви стежите за циклом партнера. Ви також можете в будь-який момент увімкнути відстеження власного циклу.",
+                        es = "Actualmente sigues el ciclo de tu pareja. También puedes activar el seguimiento de tu propio ciclo en cualquier momento.",
+                        de = "Du begleitest aktuell den Zyklus deines Partners. Du kannst die Begleitung deines eigenen Zyklus jederzeit aktivieren.",
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    tr(
+                        "Quel jour ont commencé vos dernières règles ?",
+                        "When did your last period start?",
+                        pl = "Kiedy rozpoczęła się Twoja ostatnia miesiączka?",
+                        uk = "Коли почалася ваша остання менструація?",
+                        es = "¿Cuándo empezó tu última menstruación?",
+                        de = "Wann hat deine letzte Periode begonnen?",
+                    ),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                LunaButton(
+                    tr(
+                        "Le ${Format.dayMonth(selectedDate)} (changer)",
+                        "${Format.dayMonth(selectedDate)} (change)",
+                        pl = "${Format.dayMonth(selectedDate)} (zmień)",
+                        uk = "${Format.dayMonth(selectedDate)} (змінити)",
+                        es = "${Format.dayMonth(selectedDate)} (cambiar)",
+                        de = "${Format.dayMonth(selectedDate)} (ändern)",
+                    ),
+                    onClick = { showDatePicker = true },
+                    style = LunaButtonStyle.Outlined,
+                    icon = Icons.Filled.DateRange,
+                )
+                TextButton(onClick = onOpenCalendar) {
+                    Text(
+                        tr(
+                            "Ouvrir le calendrier complet",
+                            "Open full calendar",
+                            pl = "Otwórz pełny kalendarz",
+                            uk = "Відкрити повний календар",
+                            es = "Abrir el calendario completo",
+                            de = "Vollständigen Kalender öffnen",
+                        ),
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            LunaButton(
+                tr(
+                    "Activer mon cycle",
+                    "Activate my cycle",
+                    pl = "Włącz mój cykl",
+                    uk = "Увімкнути мій цикл",
+                    es = "Activar mi ciclo",
+                    de = "Meinen Zyklus aktivieren",
+                ),
+                onClick = { onConfirm(selectedDate) },
+            )
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    tr("Annuler", "Cancel", pl = "Anuluj", uk = "Скасувати", es = "Cancelar", de = "Abbrechen"),
+                )
+            }
+        },
+    )
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli(),
+            selectableDates = remember(today) {
+                object : SelectableDates {
+                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                        val date = Instant.ofEpochMilli(utcTimeMillis).atZone(ZoneOffset.UTC).toLocalDate()
+                        return !date.isAfter(today) && date.isAfter(today.minusDays(120))
+                    }
+                }
+            },
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            selectedDate = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
+                        }
+                        showDatePicker = false
+                    },
+                ) {
+                    Text(tr("Valider", "OK", pl = "OK", uk = "OK", es = "Aceptar", de = "OK"))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text(tr("Annuler", "Cancel", pl = "Anuluj", uk = "Скасувати", es = "Cancelar", de = "Abbrechen"))
+                }
+            },
+        ) {
+            DatePicker(state = datePickerState)
+        }
     }
 }

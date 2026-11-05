@@ -4,4 +4,5 @@
     <string name="reminders_channel">Recordatorios</string>
     <string name="reminders_channel_description">Aviso de tu próxima menstruación y recordatorio para anotar el día</string>
     <string name="widget_description">Indicador discreto del día y la fase del ciclo</string>
+    <string name="nfc_sync_description">Sincronización de ciclo de Lunaison</string>
 </resources>
