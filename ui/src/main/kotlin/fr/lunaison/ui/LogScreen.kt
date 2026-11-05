@@ -130,7 +130,7 @@ fun LogScreen(
             )
         }
 
-        if (state.settings.reminders.medicationEnabled || draft.medicationTaken) {
+        if (state.settings.reminders.medicationReminder || draft.medicationTaken) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 val medName = state.settings.reminders.medicationLabel.trim()
                 val chipLabel = if (medName.isNotEmpty()) {
