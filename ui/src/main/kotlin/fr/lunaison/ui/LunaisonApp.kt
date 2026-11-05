@@ -34,6 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import fr.lunaison.core.data.AppSettings
+import fr.lunaison.core.data.ImportSummary
 import fr.lunaison.core.data.LunaisonRepository
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Flow
@@ -131,6 +132,7 @@ interface Actions {
     fun eraseAll()
     suspend fun exportCsv(): String
     suspend fun importCsv(content: String): Int = 0
+    suspend fun importAuto(bytes: ByteArray, password: String? = null): ImportSummary = ImportSummary(0, 0)
 }
 
 /** Les actions réelles, toutes enregistrées localement. */
@@ -149,6 +151,8 @@ class RepositoryActions(private val repository: LunaisonRepository, private val 
 
     override suspend fun exportCsv(): String = repository.exportCsv()
     override suspend fun importCsv(content: String): Int = repository.importCsv(content)
+    override suspend fun importAuto(bytes: ByteArray, password: String?): ImportSummary =
+        repository.importAuto(bytes, password)
 }
 
 @Composable

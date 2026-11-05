@@ -116,7 +116,7 @@ fun LunaCard(
     }
 }
 
-/** Pastilles à choix, une ou plusieurs selon l'usage. La sélection est aussi signalée par une coche, pas seulement par la couleur. */
+/** Pastilles à choix, une ou plusieurs selon l'usage. La sélection est signalée par la couleur du conteneur, avec taille stable. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun <T> ChoiceChips(
@@ -125,6 +125,7 @@ fun <T> ChoiceChips(
     isSelected: (T) -> Boolean,
     onToggle: (T) -> Unit,
     modifier: Modifier = Modifier,
+    showCheckmark: Boolean = false,
 ) {
     FlowRow(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         options.forEach { option ->
@@ -133,7 +134,7 @@ fun <T> ChoiceChips(
                 selected = selected,
                 onClick = { onToggle(option) },
                 label = { Text(label(option), style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(vertical = 10.dp)) },
-                leadingIcon = if (selected) {
+                leadingIcon = if (selected && showCheckmark) {
                     { Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
                 } else {
                     null
