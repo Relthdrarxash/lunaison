@@ -71,6 +71,18 @@ sealed interface CycleState {
     ) : CycleState {
         val daysUntilNext: Int get() = daysBetween(today, next.start)
 
+        /** Date estimée de l'ovulation (13 jours avant les prochaines règles prévues). */
+        val ovulationDate: LocalDate get() = next.start.minusDays(CycleConfig.LUTEAL_DAYS.toLong())
+
+        /** Fenêtre fertile estimée (5 jours avant l'ovulation jusqu'au lendemain). */
+        val fertileWindow: ClosedRange<LocalDate> get() = ovulationDate.minusDays(5)..ovulationDate.plusDays(1)
+
+        /** Vrai si aujourd'hui tombe dans la fenêtre fertile estimée. */
+        val inFertileWindow: Boolean get() = !inPeriod && daysLate == 0 && today in fertileWindow
+
+        /** Retard significatif au-delà de la plage habituelle (au moins 5 jours après la date estimée). */
+        val possiblePregnancyHint: Boolean get() = daysLate >= 5
+
         /** Prévisions suivantes, pour le calendrier. La marge s'élargit à chaque cycle. */
         fun upcoming(count: Int): List<Prediction> = (0 until count).map { index ->
             val start = next.start.plusDays((index * stats.cycleLength).toLong())

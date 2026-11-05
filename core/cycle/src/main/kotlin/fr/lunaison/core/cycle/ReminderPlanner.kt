@@ -17,6 +17,9 @@ data class ReminderSettings(
     val periodReminderDaysBefore: Int = 2,
     val logReminder: LogReminderMode = LogReminderMode.AROUND_PERIOD,
     val logReminderTime: LocalTime = LocalTime.of(20, 0),
+    val medicationReminder: Boolean = false,
+    val medicationReminderTime: LocalTime = LocalTime.of(9, 0),
+    val medicationLabel: String = "",
 )
 
 object ReminderPlanner {
@@ -39,6 +42,13 @@ object ReminderPlanner {
         return if (today.isAfter(now)) today else today.plusDays(1)
     }
 
+    /** Prochaine heure de rappel de contraception ou traitement quotidien. */
+    fun nextMedicationReminder(settings: ReminderSettings, now: LocalDateTime): LocalDateTime? {
+        if (!settings.medicationReminder) return null
+        val today = LocalDateTime.of(now.toLocalDate(), settings.medicationReminderTime)
+        return if (today.isAfter(now)) today else today.plusDays(1)
+    }
+
     /** Le rappel de saisie est-il utile ce jour-là ? Jamais si la journée est déjà remplie. */
     fun shouldRemindToLog(state: CycleState, settings: ReminderSettings, date: LocalDate, alreadyLogged: Boolean): Boolean {
         if (alreadyLogged) return false
@@ -48,4 +58,8 @@ object ReminderPlanner {
             LogReminderMode.AROUND_PERIOD -> state is CycleState.Known && (state.inPeriod || date in state.next || state.daysLate > 0)
         }
     }
+
+    /** Le rappel de contraception ou traitement est-il utile ce jour-là ? Jamais si la prise est déjà notée. */
+    fun shouldRemindMedication(settings: ReminderSettings, alreadyTaken: Boolean): Boolean =
+        settings.medicationReminder && !alreadyTaken
 }

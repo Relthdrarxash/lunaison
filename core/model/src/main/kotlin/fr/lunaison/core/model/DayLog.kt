@@ -69,9 +69,22 @@ data class DayLog(
     val symptoms: Set<Symptom> = emptySet(),
     val moods: Set<Mood> = emptySet(),
     val note: String = "",
+    /** Prise de contraception, traitement ou complément notée ce jour-là. */
+    val medicationTaken: Boolean = false,
 ) {
     val isEmpty: Boolean
-        get() = flow == null && pain == null && symptoms.isEmpty() && moods.isEmpty() && note.isBlank()
+        get() = flow == null && pain == null && symptoms.isEmpty() && moods.isEmpty() && note.isBlank() && !medicationTaken
+}
+
+/** Palette de couleurs de l'interface, toutes conformes au contraste WCAG AA. */
+enum class ThemePalette(private val fr: String, private val en: String) {
+    PLUM("Nuit de lune (Prune)", "Moonlight (Plum)"),
+    SAGE("Forêt calme (Sauge)", "Calm forest (Sage)"),
+    OCEAN("Marée (Océan)", "Tide (Ocean)"),
+    TERRACOTTA("Terre chaude (Terracotta)", "Warm earth (Terracotta)"),
+    ;
+
+    val label: String get() = tr(fr, en)
 }
 
 /** Tranche d'âge déclarée : elle règle les repères de cycle et l'accès au partage. */

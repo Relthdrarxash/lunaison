@@ -4,6 +4,7 @@ import android.app.Application
 import fr.lunaison.core.data.LunaisonRepository
 import fr.lunaison.core.data.LunaisonRepositoryProvider
 import fr.lunaison.reminders.ReminderScheduler
+import fr.lunaison.widget.LunaisonWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,7 +25,10 @@ class LunaisonApplication : Application(), LunaisonRepositoryProvider {
         scope.launch {
             combine(repository.logs, repository.settings) { logs, settings -> logs to settings }
                 .distinctUntilChanged()
-                .collect { ReminderScheduler.reschedule(this@LunaisonApplication, repository) }
+                .collect {
+                    ReminderScheduler.reschedule(this@LunaisonApplication, repository)
+                    LunaisonWidget.updateAll(this@LunaisonApplication, repository)
+                }
         }
     }
 }

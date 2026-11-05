@@ -28,7 +28,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import fr.lunaison.core.model.tr
 
-enum class ReminderKind { PERIOD, LOG }
+enum class ReminderKind { PERIOD, LOG, MEDICATION }
 
 /**
  * Rappels locaux, planifiés avec WorkManager : chaque rappel est une tâche unique,
@@ -46,8 +46,10 @@ object ReminderScheduler {
             return
         }
         val state = CycleAnalyzer.analyze(repository.logsOnce(), settings.baseline, now.toLocalDate())
-        plan(context, ReminderKind.PERIOD, ReminderPlanner.nextPeriodReminder(state, settings.reminders, now), now)
+        val periodAt = if (settings.pausePredictions) null else ReminderPlanner.nextPeriodReminder(state, settings.reminders, now)
+        plan(context, ReminderKind.PERIOD, periodAt, now)
         plan(context, ReminderKind.LOG, ReminderPlanner.nextLogReminder(settings.reminders, now), now)
+        plan(context, ReminderKind.MEDICATION, ReminderPlanner.nextMedicationReminder(settings.reminders, now), now)
     }
 
     private fun plan(context: Context, kind: ReminderKind, at: LocalDateTime?, now: LocalDateTime) {
@@ -88,6 +90,15 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
                 val logged = logs.any { it.date == today }
                 if (ReminderPlanner.shouldRemindToLog(state, settings.reminders, today, logged)) {
                     notify(kind, tr("Un petit point sur votre journée ?", "A quick check-in on your day?"), tr("Quelques secondes pour noter comment vous allez.", "A few seconds to note how you are doing."))
+                }
+            }
+            ReminderKind.MEDICATION -> {
+                val takenToday = logs.any { it.date == today && it.medicationTaken }
+                if (ReminderPlanner.shouldRemindMedication(settings.reminders, takenToday)) {
+                    val label = settings.reminders.medicationLabel.trim()
+                    val title = if (label.isNotEmpty()) tr("Rappel : $label", "Reminder: $label") else tr("Rappel quotidien", "Daily reminder")
+                    val text = tr("Pensez à votre prise du jour et à la noter dans Lunaison.", "Remember your daily dose and log it in Lunaison.")
+                    notify(kind, title, text)
                 }
             }
         }

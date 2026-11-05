@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import fr.lunaison.core.content.ShareKind
 import fr.lunaison.core.content.ShareMessages
+import fr.lunaison.core.cycle.CycleState
 import fr.lunaison.core.data.Partner
 import fr.lunaison.core.data.PartnerChannel
 import fr.lunaison.core.designsystem.ChoiceChips
@@ -62,6 +63,17 @@ fun ShareScreen(state: AppState, actions: Actions, onBack: () -> Unit, onArticle
             )
         } else {
             Composer(state, partner, onEdit = { editing = true }, onRemove = { actions.updateSettings { it.copy(partner = null) } })
+        }
+        val knownCycle = state.cycle as? CycleState.Known
+        if (knownCycle != null) {
+            val guide = remember(knownCycle.phase) { ShareMessages.partnerGuide(knownCycle.phase) }
+            SectionTitle(tr("Repères pour votre partenaire", "Guide for your partner"))
+            LunaCard {
+                Text(guide.phaseTitle, style = MaterialTheme.typography.titleMedium)
+                Text(guide.whatPartnerShouldKnow, style = MaterialTheme.typography.bodyMedium)
+                Text(tr("Comment soutenir concrètement :", "Concrete ways to help:"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
+                guide.supportTips.forEach { Bullet(it) }
+            }
         }
         LunaCard {
             Text(tr("Ce qui est partagé", "What is shared"), style = MaterialTheme.typography.titleMedium)
