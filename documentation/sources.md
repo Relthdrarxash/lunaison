@@ -9,7 +9,8 @@ Chaque affirmation de santé de l'appli renvoie à l'une de ces références. El
 | Référence | Utilisée pour |
 |---|---|
 | Munro MG, Critchley HOD, Fraser IS (FIGO). *The two FIGO systems for normal and abnormal uterine bleeding symptoms and classification of causes of abnormal uterine bleeding in the reproductive years: 2018 revisions.* Int J Gynaecol Obstet, 2018;143(3):393-408. [doi:10.1002/ijgo.12666](https://doi.org/10.1002/ijgo.12666) | Repères adultes : cycle de 24 à 38 jours, règles de 8 jours au plus, écart entre cycles de 7 à 9 jours au plus |
-| Manuel MSD, *Normal Menstrual Parameters* (d'après la FIGO). [Lien](https://www.msdmanuals.com/professional/multimedia/table/normal-menstrual-parameters) | Signes de règles abondantes : protection changée en moins de 3 heures, caillots de plus de 2,5 cm |
+| Manuel MSD, *Normal Menstrual Parameters* (d'après la FIGO). [Lien](https://www.msdmanuals.com/professional/multimedia/table/normal-menstrual-parameters) | Paramètres menstruels normaux (durée, volume) |
+| NHS, *Heavy periods*, page revue le 2 juillet 2026. [Lien](https://www.nhs.uk/conditions/heavy-periods/) | Signes de règles abondantes : protection à changer toutes les 1 à 2 heures, coupe à vider plus souvent que prévu, caillots de plus de 2,5 cm environ |
 | Bull JR et al. *Real-world menstrual cycle characteristics of more than 600,000 menstrual cycles.* npj Digital Medicine, 2019;2:83. [doi:10.1038/s41746-019-0152-7](https://doi.org/10.1038/s41746-019-0152-7) | Cycle moyen de 29,3 jours, 13 % de cycles de 28 jours, phase lutéale moyenne de 12,4 jours, variation moyenne de 2,6 jours d'un cycle à l'autre. Étude financée par Natural Cycles |
 | ACOG, Committee Opinion n° 651. *Menstruation in Girls and Adolescents: Using the Menstrual Cycle as a Vital Sign*, 2015. [Lien](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2015/12/menstruation-in-girls-and-adolescents-using-the-menstrual-cycle-as-a-vital-sign) | Repères à l'adolescence : cycles de 21 à 45 jours, avis après 90 jours sans règles |
 
@@ -79,6 +80,7 @@ Dans l'appli, chaque fiche renvoie vers cette partie, sans liste de références
 
 - [Munro MG et al. (FIGO), 2018](https://doi.org/10.1002/ijgo.12666)
 - [Manuel MSD](https://www.msdmanuals.com/professional/multimedia/table/normal-menstrual-parameters)
+- [NHS, Heavy periods](https://www.nhs.uk/conditions/heavy-periods/)
 - [ACOG n° 651, 2015](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2015/12/menstruation-in-girls-and-adolescents-using-the-menstrual-cycle-as-a-vital-sign)
 - [Kvaskoff M (Inserm), 2024](https://doi.org/10.1051/qsp/2024048)
 - [ACOG n° 760, 2018](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/12/dysmenorrhea-and-endometriosis-in-the-adolescent)
@@ -105,7 +107,7 @@ L'accueil affiche un conseil par jour, sans sa source. Les voici toutes, phase p
 | Une douleur qui vous empêche de faire vos activités n'est pas à supporter : elle mérite un avis médical. | [ACOG n° 760, 2018](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/12/dysmenorrhea-and-endometriosis-in-the-adolescent) |
 | Les règles font perdre du fer. Légumineuses, viande ou poisson, avec une source de vitamine C comme un agrume ou un kiwi, aident à le compenser. | [EFSA, 2015](https://www.efsa.europa.eu/en/efsajournal/pub/4254) |
 | Le thé et le café gênent l'absorption du fer : mieux vaut les prendre à distance des repas. | [EFSA, 2015](https://www.efsa.europa.eu/en/efsajournal/pub/4254) |
-| Si vous changez de protection en moins de trois heures, ou si vous voyez des caillots de plus de 2,5 cm, parlez-en à un professionnel de santé. | [Manuel MSD](https://www.msdmanuals.com/professional/multimedia/table/normal-menstrual-parameters) |
+| Si vous devez changer de protection toutes les 1 à 2 heures, ou vider votre coupe plus souvent que prévu, ou si vous perdez des caillots de plus de 2,5 cm environ, parlez-en à un professionnel de santé. | [NHS, Heavy periods](https://www.nhs.uk/conditions/heavy-periods/) |
 | Tampon ou coupe : respectez la durée de port indiquée sur la notice. Pour la nuit, une serviette ou une culotte menstruelle évite de la dépasser. | [Anses, 2025](https://www.anses.fr/fr/content/protections-intimes-composition-et-choc-toxique-toutes-nos-recommandations) |
 | Quelques petits essais suggèrent que le gingembre en poudre réduit la douleur les premiers jours. Les preuves sont faibles. | [Daily JW et al., 2015](https://pubmed.ncbi.nlm.nih.gov/26177393/) |
 
