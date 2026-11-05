@@ -58,6 +58,8 @@ data class AppSettings(
     val trackOvulationSigns: Boolean = false,
     /** Mode adapté aux cycles naturellement irréguliers (périménopause, SOPK, post-partum). */
     val irregularCyclesMode: Boolean = false,
+    /** Mémorise si la demande d'avis discrète a été traitée (avis laissé ou masqué). */
+    val reviewPromptDismissed: Boolean = false,
 ) {
     val isAdult: Boolean get() = baseline.ageGroup == AgeGroup.ADULT
 
@@ -235,6 +237,7 @@ internal fun SettingsEntity.toModel() = AppSettings(
     myShareName = myShareName,
     trackOvulationSigns = trackOvulationSigns,
     irregularCyclesMode = irregularCyclesMode,
+    reviewPromptDismissed = reviewPromptDismissed,
 )
 
 internal fun AppSettings.toEntity() = SettingsEntity(
@@ -263,6 +266,7 @@ internal fun AppSettings.toEntity() = SettingsEntity(
     myShareName = myShareName,
     trackOvulationSigns = trackOvulationSigns,
     irregularCyclesMode = irregularCyclesMode,
+    reviewPromptDismissed = reviewPromptDismissed,
 )
 
 private fun parseFlow(raw: String): Flow? {
