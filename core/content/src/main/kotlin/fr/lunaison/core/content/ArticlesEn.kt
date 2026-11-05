@@ -90,7 +90,14 @@ internal object ArticlesEn {
                 ),
             ),
         ),
-        sources = listOf(Sources.COCHRANE_NSAIDS_2015, Sources.HEAT_2018, Sources.COCHRANE_EXERCISE_2019, Sources.GINGER_2015, Sources.ACOG_DYSMENORRHEA_2018),
+        sources = listOf(
+            Sources.COCHRANE_NSAIDS_2015,
+            Sources.HEAT_2018,
+            Sources.COCHRANE_EXERCISE_2019,
+            Sources.GINGER_2015,
+            Sources.ACOG_DYSMENORRHEA_2018,
+            Sources.ESHRE_ENDOMETRIOSIS_2022,
+        ),
     )
 
     val food = Article(
@@ -150,7 +157,7 @@ internal object ArticlesEn {
             Section(
                 "When to ask for help",
                 listOf(
-                    "If your mood collapses on those days, or if anxiety or anger damage your relationships or your work, talk to a doctor. A severe form, premenstrual dysphoric disorder, can be treated. And if dark thoughts appear, do not wait: contact a crisis line in your country now, such as 3114 in France or 988 in the United States, or your local emergency number.",
+                    "If your mood collapses on those days, or if anxiety or anger damage your relationships or your work, talk to a doctor. A severe form, premenstrual dysphoric disorder, can be treated. And if dark thoughts appear, do not wait: contact a crisis line in your country now, such as 3114 in France, 116 123 in Poland and Germany, 7333 in Ukraine, 024 in Spain, 988 in the United States, or 112 across Europe.",
                 ),
             ),
         ),
@@ -190,7 +197,19 @@ internal object ArticlesEn {
                 ),
             ),
         ),
-        sources = listOf(Sources.FIGO_2018, Sources.MSD_PARAMETERS, Sources.NHS_HEAVY_PERIODS, Sources.ACOG_ADOLESCENTS_2015, Sources.ENDOMETRIOSIS_2024, Sources.ACOG_DYSMENORRHEA_2018),
+        sources = listOf(
+            Sources.FIGO_2018,
+            Sources.MSD_PARAMETERS,
+            Sources.NHS_HEAVY_PERIODS,
+            Sources.ACOG_ADOLESCENTS_2015,
+            Sources.ENDOMETRIOSIS_2024,
+            Sources.ACOG_DYSMENORRHEA_2018,
+            Sources.ESHRE_ENDOMETRIOSIS_2022,
+            Sources.PTGIP_ENDOMETRIOSIS_2024,
+            Sources.AWMF_DGGG_ENDOMETRIOSIS_2020,
+            Sources.SANIDAD_ES_ENDOMETRIOSIS_2013,
+            Sources.MOZ_UA_ENDOMETRIOSIS_2016,
+        ),
     )
 
     val protection = Article(

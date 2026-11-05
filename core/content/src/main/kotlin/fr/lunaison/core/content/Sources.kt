@@ -21,6 +21,26 @@ object Sources {
         "ACOG, Committee Opinion n° 760, Dysmenorrhea and Endometriosis in the Adolescent, 2018",
         "https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/12/dysmenorrhea-and-endometriosis-in-the-adolescent",
     )
+    val ESHRE_ENDOMETRIOSIS_2022 = Source(
+        "Becker CM et al. (ESHRE), ESHRE guideline: management of women with endometriosis, Hum Reprod Open, 2022",
+        "https://doi.org/10.1093/hropen/hoac009",
+    )
+    val PTGIP_ENDOMETRIOSIS_2024 = Source(
+        "Kędzia M et al. (PTGiP), Rekomendacje Polskiego Towarzystwa Ginekologów i Położników dotyczące postępowania u kobiet z endometriozą, Ginekologia Polska, 2024",
+        "https://doi.org/10.5603/gpl.100261",
+    )
+    val AWMF_DGGG_ENDOMETRIOSIS_2020 = Source(
+        "DGGG / OEGGG / SGGG (AWMF), S2k-Leitlinie Diagnostik und Therapie der Endometriose (015-045), 2020",
+        "https://register.awmf.org/de/leitlinien/detail/015-045",
+    )
+    val SANIDAD_ES_ENDOMETRIOSIS_2013 = Source(
+        "Ministerio de Sanidad (Espagne), avec la SEGO, Guía de atención a las mujeres con endometriosis en el Sistema Nacional de Salud, 2013",
+        "https://www.sanidad.gob.es/organizacion/sns/planCalidadSNS/pdf/equidad/ENDOMETRIOSIS.pdf",
+    )
+    val MOZ_UA_ENDOMETRIOSIS_2016 = Source(
+        "МОЗ України, наказ № 319 від 06.04.2016, Уніфікований клінічний протокол «Тактика ведення пацієнток з генітальним ендометріозом»",
+        "https://www.dec.gov.ua/cat_mtd/galuzevi-standarti-ta-klinichni-nastanovi/",
+    )
     val COCHRANE_NSAIDS_2015 = Source(
         "Marjoribanks J et al., Nonsteroidal anti-inflammatory drugs for dysmenorrhoea, Cochrane, 2015",
         "https://doi.org/10.1002/14651858.CD001751.pub3",
@@ -71,8 +91,11 @@ object Sources {
     )
 
     val all: List<Source> = listOf(
-        FIGO_2018, BULL_2019, ACOG_ADOLESCENTS_2015, ACOG_DYSMENORRHEA_2018, COCHRANE_NSAIDS_2015,
-        COCHRANE_EXERCISE_2019, HEAT_2018, GINGER_2015, OMEGA3_2022, EFSA_IRON_2015, CALCIUM_PMS_1998,
-        ENDOMETRIOSIS_2024, MSD_PARAMETERS, NHS_HEAVY_PERIODS, ANSES_TSS_2025, TRUSSELL_2011,
+        FIGO_2018, BULL_2019, ACOG_ADOLESCENTS_2015, ACOG_DYSMENORRHEA_2018,
+        ESHRE_ENDOMETRIOSIS_2022, PTGIP_ENDOMETRIOSIS_2024, AWMF_DGGG_ENDOMETRIOSIS_2020,
+        SANIDAD_ES_ENDOMETRIOSIS_2013, MOZ_UA_ENDOMETRIOSIS_2016,
+        COCHRANE_NSAIDS_2015, COCHRANE_EXERCISE_2019, HEAT_2018, GINGER_2015,
+        OMEGA3_2022, EFSA_IRON_2015, CALCIUM_PMS_1998, ENDOMETRIOSIS_2024,
+        MSD_PARAMETERS, NHS_HEAVY_PERIODS, ANSES_TSS_2025, TRUSSELL_2011,
     )
 }
