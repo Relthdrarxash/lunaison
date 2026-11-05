@@ -90,6 +90,8 @@ enum class Symptom(
     HOT_FLASHES("Bouffées de chaleur", "Hot flashes", "Uderzenia gorąca", "Припливи жару", "Sofocos", "Hitzewallungen"),
     NIGHT_SWEATS("Sueurs nocturnes", "Night sweats", "Nocne poty", "Нічна пітливість", "Sudores nocturnos", "Nachtschweiß"),
     BRAIN_FOG("Brouillard mental", "Brain fog", "Mgła mózgowa", "Туман у голові", "Niebla mental", "Konzentrationsprobleme"),
+    CRAMPS("Crampes", "Cramps", "Skurcze", "Спазми", "Cólicos", "Krämpfe"),
+    DIZZINESS("Vertiges", "Dizziness", "Zawroty głowy", "Запаморочення", "Mareos", "Schwindel"),
     ;
 
     val label: String get() = tr(fr, en, pl, uk, es, de)
@@ -138,6 +140,78 @@ enum class Mood(
     val label: String get() = tr(fr, en, pl, uk, es, de)
 }
 
+/** Statut précis de la pilule ou contraception orale pour la journée. */
+enum class PillStatus(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    TAKEN("Prise", "Taken", "Przyjęta", "Прийнято", "Tomada", "Eingenommen"),
+    MISSED("Oubliée", "Missed", "Pominięta", "Пропущено", "Olvidada", "Vergessen"),
+    LATE("En retard", "Late", "Spóźniona", "З запізненням", "Con retraso", "Verspätet"),
+    PLACEBO("Placebo / Pause", "Placebo / Break", "Placebo / Przerwa", "Плацебо / Перерва", "Placebo / Pausa", "Placebo / Pause"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
+/** Catégories de médicaments ou traitements courants pris dans la journée. */
+enum class MedicationKind(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    PAINKILLER("Antidouleur (paracétamol)", "Painkiller (paracetamol)", "Przeciwbólowy", "Знеболювальне", "Analgésico", "Schmerzmittel"),
+    ANTI_INFLAMMATORY("Anti-inflammatoire (ibuprofène)", "Anti-inflammatory (ibuprofen)", "Przeciwzapalny", "Протизапальне", "Antiinflamatorio", "Entzündungshemmer"),
+    ANTISPASMODIC("Antispasmodique (Spasfon)", "Antispasmodic", "Rozkurczowy", "Спазмолітик", "Antiespasmódico", "Krampflöser"),
+    ANTIBIOTIC("Antibiotique", "Antibiotic", "Antybiotyk", "Антибіотик", "Antibiótico", "Antibiotikum"),
+    SUPPLEMENT("Vitamines / Compléments", "Vitamins / Supplements", "Witaminy / Suplementy", "Вітаміни / Добавки", "Vitaminas / Suplementos", "Vitamine / Nahrungsergänzung"),
+    OTHER("Autre traitement", "Other medication", "Inny lek", "Інші ліки", "Otro tratamiento", "Anderes Medikament"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
+/** Activité sexuelle notée dans l'intimité, sans aucun jugement ni transmission cloud. */
+enum class IntimacyKind(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    PROTECTED("Rapport protégé", "Protected sex", "Stosunek zabezpieczony", "Захищений секс", "Relación protegida", "Geschützter Verkehr"),
+    UNPROTECTED("Rapport non protégé", "Unprotected sex", "Stosunek niezabezpieczony", "Незахищений секс", "Relación sin protección", "Ungeschützter Verkehr"),
+    NON_PENETRATIVE("Sans pénétration / solo", "Non-penetrative / solo", "Bez penetracji / solo", "Без проникнення / соло", "Sin penetración / a solas", "Ohne Penetration / Solo"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
+/** Niveau de désir ressenti au cours du cycle. */
+enum class Libido(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    LOW("Désir doux / bas", "Low desire", "Niskie pożądanie", "Знижене лібідо", "Deseo suave", "Geringe Libido"),
+    NORMAL("Désir modéré", "Moderate desire", "Umiarkowane pożądanie", "Помірне лібідо", "Deseo moderado", "Mäßige Libido"),
+    HIGH("Désir vif / élevé", "High desire", "Wysokie pożądanie", "Високе лібідо", "Deseo intenso", "Hohe Libido"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
 /** Ce que la personne a noté pour une journée. Tout est facultatif. */
 data class DayLog(
     val date: LocalDate,
@@ -148,6 +222,16 @@ data class DayLog(
     val note: String = "",
     /** Prise de contraception, traitement ou complément notée ce jour-là. */
     val medicationTaken: Boolean = false,
+    /** Statut précis de la pilule/contraception si renseigné. */
+    val pillStatus: PillStatus? = null,
+    /** Médicaments ou traitements pris le jour même. */
+    val medications: Set<MedicationKind> = emptySet(),
+    /** Poids du jour en kg (ex. 58.4f). */
+    val weight: Float? = null,
+    /** Activité sexuelle notée ce jour-là. */
+    val intimacy: Set<IntimacyKind> = emptySet(),
+    /** Niveau de désir / libido du jour. */
+    val libido: Libido? = null,
     /** Aspect de la glaire cervicale, si le suivi des signes d'ovulation est activé. */
     val mucus: CervicalMucus? = null,
     /** Température basale au réveil en °C (ex. 36.6f), si le suivi des signes d'ovulation est activé. */
@@ -155,7 +239,8 @@ data class DayLog(
 ) {
     val isEmpty: Boolean
         get() = flow == null && pain == null && symptoms.isEmpty() && moods.isEmpty() &&
-            note.isBlank() && !medicationTaken && mucus == null && basalTemperature == null
+            note.isBlank() && !medicationTaken && pillStatus == null && medications.isEmpty() &&
+            weight == null && intimacy.isEmpty() && libido == null && mucus == null && basalTemperature == null
 }
 
 /** Palette de couleurs de l'interface, toutes conformes au contraste WCAG AA. */

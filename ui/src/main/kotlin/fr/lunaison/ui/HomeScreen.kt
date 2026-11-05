@@ -5,8 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
@@ -36,15 +40,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.lunaison.core.content.DailyTip
 import fr.lunaison.core.content.InsightTexts
 import fr.lunaison.core.content.PhaseGuides
+import fr.lunaison.core.content.PhaseHormoneInfo
 import fr.lunaison.core.content.ShareMessages
 import fr.lunaison.core.cycle.AlertKind
 import fr.lunaison.core.cycle.CycleConfig
 import fr.lunaison.core.cycle.CycleRecap
 import fr.lunaison.core.cycle.CycleState
+import fr.lunaison.core.cycle.Phase
 import fr.lunaison.core.cycle.PhasePatterns
 import fr.lunaison.core.designsystem.LunaButton
 import fr.lunaison.core.designsystem.LunaButtonStyle
@@ -284,6 +291,8 @@ fun HomeScreen(
         }
 
         if (!paused && cycle is CycleState.Known) {
+            UpcomingForecastCard(cycle)
+            PhaseHormonesCard(cycle.phase)
             PhaseCard(state, cycle, onArticle)
             if (cycle.stats.completedCycles >= CycleConfig.MIN_CYCLES_FOR_STATS) {
                 LunaButton(tr("Mes cycles", "My cycles"), onClick = onInsights, style = LunaButtonStyle.Quiet, icon = Icons.Filled.DateRange)
@@ -375,11 +384,124 @@ private fun CycleCard(cycle: CycleState.Known, showFertility: Boolean, onArticle
                 )
             }
         }
+
+        // Probabilités estimées de grossesse au jour le jour
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        tr("Chances de grossesse :", "Pregnancy likelihood:"),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                    Text(
+                        cycle.todayPregnancyOdds.label,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+                Text(
+                    cycle.todayPregnancyOdds.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
+        }
+
         Text(Format.confidence(cycle.stats.confidence), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
         if (!cycle.inPeriod && cycle.daysLate == 0) {
             TextButton(onClick = { onArticle("previsions") }) {
                 Text(tr("Pourquoi cette plage ?", "Why this range?"), color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
+        }
+    }
+}
+
+@Composable
+private fun UpcomingForecastCard(cycle: CycleState.Known) {
+    val forecasts = remember(cycle) { cycle.upcomingDayForecasts(7) }
+    SectionTitle(tr("Dans les 7 prochains jours", "In the next 7 days"))
+    LunaCard {
+        Text(
+            tr("Aperçu prévisionnel jour par jour :", "Day-by-day forecast overview:"),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        ) {
+            items(forecasts.size) { idx ->
+                val f = forecasts[idx]
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = if (f.inLikelyPeriod) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                    modifier = Modifier.width(112.dp),
+                ) {
+                    Column(
+                        Modifier.padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Text(Format.weekday(f.date).take(4), style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center)
+                        Text(Format.dayMonth(f.date), style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
+                        Text("J${f.dayOfCycle}", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+                        Text(Format.phaseName(f.phase), style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, maxLines = 1)
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                        ) {
+                            Text(
+                                f.odds.label,
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PhaseHormonesCard(phase: Phase) {
+    val profile = remember(phase) { PhaseHormoneInfo.profile(phase) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    SectionTitle(tr("Hormones & dynamique du corps", "Hormones & body dynamics"))
+    LunaCard {
+        Text(profile.title, style = MaterialTheme.typography.titleMedium)
+        Text(profile.hormones.summary, style = MaterialTheme.typography.bodyMedium)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(Modifier.weight(1f)) {
+                Text(tr("Œstrogènes :", "Estrogen:"), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
+                Text(profile.hormones.estrogen.label, style = MaterialTheme.typography.bodySmall)
+            }
+            Column(Modifier.weight(1f)) {
+                Text(tr("Progestérone :", "Progesterone:"), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
+                Text(profile.hormones.progesterone.label, style = MaterialTheme.typography.bodySmall)
+            }
+            Column(Modifier.weight(1f)) {
+                Text(tr("LH / FSH :", "LH / FSH:"), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
+                Text("${profile.hormones.lh.label} / ${profile.hormones.fsh.label}", style = MaterialTheme.typography.bodySmall)
+            }
+        }
+        if (expanded) {
+            Text(tr("Forces & atouts de cette phase :", "Strengths & advantages:"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            profile.strengths.forEach { Bullet(it) }
+            Text(tr("Défis & ce qui peut gêner :", "Possible challenges:"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.error)
+            profile.challenges.forEach { Bullet(it) }
+            Text(tr("Ce qui vous soutient :", "What supports you:"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
+            profile.supportAdvice.forEach { Bullet(it) }
+        }
+        TextButton(onClick = { expanded = !expanded }) {
+            Text(if (expanded) tr("Moins de détails", "Show less") else tr("Atouts, défis et conseils de cette phase", "Strengths, challenges & advice"))
         }
     }
 }
@@ -391,10 +513,17 @@ private fun TodaySummary(log: DayLog, medicationLabel: String = "") {
         log.pain?.let { add(tr("Douleur : ${it.label.lowercase()}", "Pain: ${it.label.lowercase()}")) }
         if (log.symptoms.isNotEmpty()) add(log.symptoms.joinToString(", ") { it.label.lowercase() })
         if (log.moods.isNotEmpty()) add(tr("Humeur : ", "Mood: ") + log.moods.joinToString(", ") { it.label.lowercase() })
-        if (log.medicationTaken) {
+        val pill = log.pillStatus
+        if (pill != null) {
+            add(tr("Pilule : ${pill.label.lowercase()}", "Pill: ${pill.label.lowercase()}"))
+        } else if (log.medicationTaken) {
             val label = medicationLabel.trim().ifBlank { tr("contraception ou traitement", "contraception or medication") }
             add(tr("Pris aujourd'hui : $label", "Taken today: $label"))
         }
+        if (log.medications.isNotEmpty()) add(tr("Médicaments : ", "Medications: ") + log.medications.joinToString(", ") { it.label.lowercase() })
+        log.weight?.let { add(tr("Poids : ${"%.1f".format(java.util.Locale.FRENCH, it)} kg", "Weight: ${"%.1f".format(java.util.Locale.ENGLISH, it)} kg")) }
+        if (log.intimacy.isNotEmpty()) add(tr("Intimité : ", "Intimacy: ") + log.intimacy.joinToString(", ") { it.label.lowercase() })
+        log.libido?.let { add(tr("Désir : ${it.label.lowercase()}", "Desire: ${it.label.lowercase()}")) }
         log.mucus?.let { add(tr("Glaire : ${it.label.lowercase()}", "Mucus: ${it.label.lowercase()}")) }
         log.basalTemperature?.let { add(tr("Température : ${"%.1f".format(java.util.Locale.FRENCH, it)} °C", "Temperature: ${"%.1f".format(java.util.Locale.ENGLISH, it)} °C")) }
     }

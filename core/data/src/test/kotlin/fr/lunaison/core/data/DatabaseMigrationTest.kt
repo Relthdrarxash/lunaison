@@ -21,10 +21,10 @@ import kotlin.test.assertTrue
  */
 class DatabaseMigrationTest {
 
-    private val latestSchema = File("schemas/fr.lunaison.core.data.LunaisonDatabase/6.json")
+    private val latestSchema = File("schemas/fr.lunaison.core.data.LunaisonDatabase/7.json")
 
     @Test
-    fun `migration de v1 a v6 sans perte de donnees`() = withDatabase { conn, db ->
+    fun `migration de v1 a v7 sans perte de donnees`() = withDatabase { conn, db ->
         createV1(db)
         db.execSQL(
             "INSERT INTO day_logs (date, flow, pain, symptoms, moods, note) " +
@@ -47,6 +47,11 @@ class DatabaseMigrationTest {
             assertEquals("Premier jour", rs.getString("note"))
             assertEquals(0, rs.getInt("medicationTaken"))
             assertNull(rs.getString("mucus"))
+            assertNull(rs.getString("pillStatus"))
+            assertEquals("", rs.getString("medications"))
+            assertNull(rs.getString("weight"))
+            assertEquals("", rs.getString("intimacy"))
+            assertNull(rs.getString("libido"))
         }
         conn.query("SELECT * FROM settings WHERE id = 0") { rs ->
             assertTrue(rs.next())
@@ -62,7 +67,7 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun `la base migree correspond exactement au schema Room v6`() {
+    fun `la base migree correspond exactement au schema Room v7`() {
         val expected = withDatabase { conn, db ->
             createTablesSql(latestSchema).values.forEach(db::execSQL)
             tables(conn)
@@ -82,6 +87,7 @@ class DatabaseMigrationTest {
             LunaisonDatabase.MIGRATION_3_4,
             LunaisonDatabase.MIGRATION_4_5,
             LunaisonDatabase.MIGRATION_5_6,
+            LunaisonDatabase.MIGRATION_6_7,
         ).forEach { it.migrate(db) }
     }
 

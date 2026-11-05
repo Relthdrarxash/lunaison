@@ -285,4 +285,23 @@ class ReminderPlannerTest {
         assertEquals(5, merged.periods.size)
         assertEquals(nextStart, merged.periods.last().start)
     }
+
+    @Test
+    fun `les probabilites de grossesse et les previsions a 7 jours suivent la fenetre fertile`() {
+        val lastStart = D0.plusDays(28L * 4)
+        val logs = history(28, 28, 28, 28)
+        // Ovulation estimée = 28 - 13 = 15 jours après le début des règles
+        val stateAtOvulation = known(CycleAnalyzer.analyze(logs, null, lastStart.plusDays(15)))
+        assertEquals(PregnancyOdds.PEAK, stateAtOvulation.todayPregnancyOdds)
+
+        val stateAtFollicular = known(CycleAnalyzer.analyze(logs, null, lastStart.plusDays(7)))
+        assertEquals(PregnancyOdds.LOW, stateAtFollicular.todayPregnancyOdds)
+
+        val stateInPeriod = known(CycleAnalyzer.analyze(logs, null, lastStart.plusDays(2)))
+        assertEquals(PregnancyOdds.VERY_LOW, stateInPeriod.todayPregnancyOdds)
+
+        val forecasts = stateAtFollicular.upcomingDayForecasts(7)
+        assertEquals(7, forecasts.size)
+        assertTrue(forecasts.any { it.odds in setOf(PregnancyOdds.MEDIUM, PregnancyOdds.HIGH, PregnancyOdds.PEAK) })
+    }
 }
