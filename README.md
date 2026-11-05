@@ -102,4 +102,4 @@ Contact : [pilmil.studio@proton.me](mailto:pilmil.studio@proton.me). Distribuée
 
 ## Note sur le développement
 
-L'essentiel du code de Lunaison a été écrit avec Claude, l'assistant IA d'Anthropic. Je l'ai relu, testé et je le maintiens : le moteur du cycle et les contenus sont couverts par des tests automatiques, et je réponds moi-même aux tickets et aux messages.
+Le code de Lunaison a été développé avec l'aide d'un assistant IA (Claude, d'Anthropic) : l'application elle-même n'embarque aucune intelligence artificielle, tous les contenus de santé sont rédigés et vérifiés à partir des sources publiques (HAS, NHS, CNGOF, INSERM), le moteur du cycle est purement déterministe et couvert par des tests automatiques, et je maintiens personnellement le projet en répondant moi-même aux tickets et aux messages.
