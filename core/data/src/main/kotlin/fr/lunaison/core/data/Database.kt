@@ -51,6 +51,8 @@ data class SettingsEntity(
     val showFertility: Boolean = false,
     val themePalette: String = "PLUM",
     val pinHash: String? = null,
+    val followedPartnerSnapshot: String? = null,
+    val myShareName: String = "",
 )
 
 @Dao
@@ -83,14 +85,14 @@ interface LunaisonDao {
     suspend fun deleteSettings()
 }
 
-@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 3, exportSchema = true)
+@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 4, exportSchema = true)
 abstract class LunaisonDatabase : RoomDatabase() {
     abstract fun dao(): LunaisonDao
 
     companion object {
         fun create(context: Context): LunaisonDatabase =
             Room.databaseBuilder(context.applicationContext, LunaisonDatabase::class.java, "lunaison.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                 .build()
 
         /** Version 2 : mémorise le bilan de cycle déjà lu. Une colonne ajoutée, aucune donnée touchée. */
@@ -111,6 +113,14 @@ abstract class LunaisonDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE settings ADD COLUMN showFertility INTEGER NOT NULL DEFAULT 0")
                 db.execSQL("ALTER TABLE settings ADD COLUMN themePalette TEXT NOT NULL DEFAULT 'PLUM'")
                 db.execSQL("ALTER TABLE settings ADD COLUMN pinHash TEXT")
+            }
+        }
+
+        /** Version 4 : partage décentralisé par QR Code / SMS avec un ou une partenaire. */
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE settings ADD COLUMN followedPartnerSnapshot TEXT")
+                db.execSQL("ALTER TABLE settings ADD COLUMN myShareName TEXT NOT NULL DEFAULT ''")
             }
         }
     }

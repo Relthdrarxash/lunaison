@@ -8,12 +8,16 @@ import android.net.Uri
 import android.provider.ContactsContract
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,8 +26,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import fr.lunaison.core.content.ShareKind
@@ -36,6 +43,8 @@ import fr.lunaison.core.designsystem.LunaButton
 import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
+import fr.lunaison.core.model.PartnerPeriod
+import fr.lunaison.core.model.PartnerSnapshot
 import fr.lunaison.core.model.tr
 
 /**
@@ -75,6 +84,9 @@ fun ShareScreen(state: AppState, actions: Actions, onBack: () -> Unit, onArticle
                 guide.supportTips.forEach { Bullet(it) }
             }
         }
+
+        QrSyncSection(state = state, actions = actions, partner = partner)
+
         LunaCard {
             Text(tr("Ce qui est partagé", "What is shared"), style = MaterialTheme.typography.titleMedium)
             Bullet(tr("Seulement le message que vous voyez, quand vous l'envoyez.", "Only the message you see, when you send it."))
@@ -185,6 +197,131 @@ private fun Composer(state: AppState, partner: Partner, onEdit: () -> Unit, onRe
     TextButton(onClick = onRemove) { Text(tr("Ne plus partager", "Stop sharing")) }
 }
 
+@Composable
+private fun QrSyncSection(
+    state: AppState,
+    actions: Actions,
+    partner: Partner?,
+) {
+    val context = LocalContext.current
+    val known = state.cycle as? CycleState.Known
+    var showQr by rememberSaveable { mutableStateOf(false) }
+    var showScanner by rememberSaveable { mutableStateOf(false) }
+    var includeFertility by rememberSaveable { mutableStateOf(state.settings.showFertility) }
+
+    SectionTitle(tr("Partage d'estimations par QR Code ou SMS", "Share estimates via QR Code or SMS"))
+
+    if (known != null) {
+        val snapshot = remember(known, state.today, state.settings.myShareName, includeFertility) {
+            val periods = known.periods.takeLast(6).map { PartnerPeriod(it.start, it.length) }
+                .ifEmpty { listOf(PartnerPeriod(known.lastStart, 5)) }
+            PartnerSnapshot(
+                partnerName = state.settings.myShareName.trim().ifEmpty { tr("Partenaire", "Partner") },
+                sharedAt = state.today,
+                periods = periods,
+                usualCycleLength = known.stats.cycleLength,
+                showFertility = includeFertility,
+            )
+        }
+        val encoded = remember(snapshot) { snapshot.encode() }
+
+        LunaCard {
+            Text(
+                tr("Transmettre mes estimations (sans serveur)", "Share my estimates (serverless)"),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                tr("Votre partenaire peut scanner ce QR Code depuis Lunaison (ou recevoir le code par SMS) pour voir sur son téléphone votre phase actuelle, la plage des prochaines règles et les conseils de soutien. Vos notes personnelles ne sont jamais incluses.", "Your partner can scan this QR Code from Lunaison (or receive the code by SMS) to see on their phone your current phase, next period range and support tips. Your personal notes are never included."),
+                style = MaterialTheme.typography.bodySmall,
+            )
+            OutlinedTextField(
+                value = state.settings.myShareName,
+                onValueChange = { name -> actions.updateSettings { it.copy(myShareName = name.take(30)) } },
+                label = { Text(tr("Mon prénom (affiché chez mon ou ma partenaire)", "My first name (shown to my partner)")) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                val label = tr("Inclure la fenêtre fertile estimée", "Include estimated fertile window")
+                Text(label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                Switch(
+                    checked = includeFertility,
+                    onCheckedChange = { includeFertility = it },
+                    modifier = Modifier.semantics { contentDescription = label },
+                )
+            }
+            LunaButton(
+                if (showQr) tr("Masquer mon QR Code", "Hide my QR Code") else tr("Afficher mon QR Code dans l'appli", "Show my QR Code in the app"),
+                onClick = { showQr = !showQr },
+                style = LunaButtonStyle.Outlined,
+            )
+            if (showQr) {
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    QrCodeBox(content = encoded)
+                }
+                Muted(tr("Ouvrez Lunaison > Partager > Scanner un QR Code sur le téléphone de votre partenaire.", "Open Lunaison > Share > Scan a QR Code on your partner's phone."))
+            }
+            LunaButton(
+                tr("Exporter le code par SMS", "Export code by SMS"),
+                onClick = {
+                    val smsBody = tr(
+                        "Voici mon suivi Lunaison (${Format.nextPeriod(known)}) Pour afficher mes estimations sur ton téléphone, colle ce message dans Lunaison > Partager > Scanner ou coller un code : $encoded",
+                        "Here is my Lunaison update (${Format.nextPeriod(known)}) To view my estimates on your phone, paste this message in Lunaison > Share > Scan or paste a code: $encoded",
+                    )
+                    if (partner != null) {
+                        ShareLauncher.send(context, partner.copy(channel = PartnerChannel.SMS), smsBody)
+                    } else {
+                        ShareLauncher.sendSms(context, smsBody)
+                    }
+                },
+                style = LunaButtonStyle.Outlined,
+                icon = Icons.AutoMirrored.Filled.Send,
+            )
+        }
+    }
+
+    val followed = state.settings.followedPartner
+    val followedCycle = state.followedPartnerCycle
+    if (followed != null && followedCycle != null) {
+        PartnerSnapshotCard(
+            snapshot = followed,
+            cycle = followedCycle,
+            onRescan = { showScanner = true },
+            onRemove = { actions.updateSettings { it.copy(followedPartner = null) } },
+        )
+    } else {
+        LunaCard {
+            Text(
+                tr("Suivre le cycle d'un ou d'une partenaire", "Follow a partner's cycle"),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                tr("Scannez le QR Code affiché sur le téléphone de votre partenaire ou collez le SMS reçu pour afficher ses estimations et les conseils de soutien.", "Scan the QR Code shown on your partner's phone or paste the SMS received to view their estimates and support tips."),
+                style = MaterialTheme.typography.bodySmall,
+            )
+            LunaButton(
+                tr("Scanner un QR Code (ou coller un SMS)", "Scan a QR Code (or paste an SMS)"),
+                onClick = { showScanner = true },
+                style = LunaButtonStyle.Outlined,
+            )
+        }
+    }
+
+    if (showScanner) {
+        QrScannerDialog(
+            onScanned = { scanned ->
+                showScanner = false
+                actions.updateSettings { it.copy(followedPartner = scanned) }
+            },
+            onDismiss = { showScanner = false },
+        )
+    }
+}
+
 /** Prépare le message et ouvre la messagerie. Aucune autorisation : c'est la messagerie qui envoie. */
 object ShareLauncher {
     private const val WHATSAPP = "com.whatsapp"
@@ -205,6 +342,15 @@ object ShareLauncher {
         }
         try {
             context.startActivity(intent ?: Intent.createChooser(plainText(text), null))
+        } catch (_: ActivityNotFoundException) {
+            context.startActivity(Intent.createChooser(plainText(text), null))
+        }
+    }
+
+    fun sendSms(context: Context, text: String) {
+        val smsIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:")).putExtra("sms_body", text)
+        try {
+            context.startActivity(smsIntent)
         } catch (_: ActivityNotFoundException) {
             context.startActivity(Intent.createChooser(plainText(text), null))
         }

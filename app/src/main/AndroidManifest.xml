@@ -3,9 +3,13 @@
 
     <!--
         Aucune permission réseau : Lunaison fonctionne entièrement hors ligne.
-        Seule autorisation : les notifications, demandée quand la personne active un rappel.
+        Autorisations facultatives :
+        - notifications, demandée quand la personne active un rappel ;
+        - caméra, demandée uniquement si la personne ouvre le lecteur de QR Code partenaire.
     -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <!-- Messageries vers lesquelles le partage peut ouvrir directement la conversation. -->
     <queries>
