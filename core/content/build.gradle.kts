@@ -22,4 +22,7 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    // Les tests vérifient les textes français : on fixe la langue par défaut de la JVM.
+    systemProperty("user.language", "fr")
+    systemProperty("user.country", "FR")
 }

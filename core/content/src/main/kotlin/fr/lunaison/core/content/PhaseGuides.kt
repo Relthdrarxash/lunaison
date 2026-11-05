@@ -109,7 +109,7 @@ object PhaseGuides {
             ),
             Tip(
                 "Tampon ou coupe : respectez la durée de port indiquée sur la notice. Pour la nuit, une serviette ou une culotte menstruelle évite de la dépasser.",
-                "Tampon or cup: follow the wearing time given in the leaflet. At night, a pad or period underwear avoids going over it.",
+                "Tampon or cup: follow the wearing time given in the leaflet. At night, a pad or period underwear means you don't go over it.",
                 listOf(Sources.ANSES_TSS_2025),
             ),
             Tip(
@@ -244,7 +244,7 @@ object PhaseGuides {
             ),
             Tip(
                 "Vos règles sont attendues dans une plage de dates : gardez une protection sur vous les derniers jours.",
-                "Your period is expected within a range of dates: keep a pad, tampon or cup with you in the last days.",
+                "Your period is expected within a range of dates: keep a pad, tampon or cup with you in the days before.",
                 withoutStudy = true,
             ),
         ),
