@@ -1,0 +1,1 @@
+First version: daily logging, forecasts, advice for each phase, referenced guides, reminders and sharing by messaging app.

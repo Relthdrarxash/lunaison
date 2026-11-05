@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How it works: Lunaison</title>
+  <meta name="description" content="How Lunaison recognizes your periods, estimates the next ones, places the phases and flags what deserves medical advice.">
+  <link rel="icon" href="../icone.svg" type="image/svg+xml">
+  <link rel="alternate" hreflang="fr" href="../fonctionnement.html">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <a class="skip" href="#contenu">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="./">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F1E2EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        Lunaison
+      </a>
+      <nav class="site-nav" aria-label="Site navigation">
+        <a href="./">The app</a>
+        <a href="how-it-works.html" aria-current="page">How it works</a>
+        <a href="evidence.html">What the studies say</a>
+        <a href="faq.html">Questions</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="../fonctionnement.html" lang="fr" hreflang="fr">Français</a>
+      </nav>
+    </div>
+  </header>
+  <main id="contenu" class="wrap">
+    <section class="hero">
+      <p class="eyebrow">How it works</p>
+      <h1>No magic, just your cycles</h1>
+      <p class="lead">Lunaison does not guess anything: it reads what you have logged, applies a few simple, public rules, and always shows you the uncertainty. Here they are.</p>
+    </section>
+
+    <section class="section" aria-labelledby="phases">
+      <h2 id="phases">The four stages of a cycle</h2>
+      <p>A cycle starts on the first day of a period. The lengths below are an example: for most people, it is the first half that varies, while the second stays fairly stable at around 12 to 13 days.</p>
+      <figure class="figure">
+        <svg viewBox="0 0 640 170" role="img" aria-labelledby="phases-titre phases-desc">
+          <title id="phases-titre">The phases of a 28-day cycle, as an example</title>
+          <desc id="phases-desc">Period from day 1 to day 5, follicular phase from day 6 to day 12, ovulation estimated around days 13 to 16, luteal phase from day 17 to day 28.</desc>
+          <rect x="20" y="40" width="100" height="44" rx="10" style="fill:var(--clay)"/>
+          <rect x="124" y="40" width="136" height="44" rx="10" style="fill:var(--accent-soft)"/>
+          <rect x="264" y="40" width="76" height="44" rx="10" style="fill:none;stroke:var(--clay);stroke-width:3;stroke-dasharray:6 5"/>
+          <rect x="344" y="40" width="276" height="44" rx="10" style="fill:var(--accent-soft);opacity:.7"/>
+          <g style="fill:var(--text);font-size:15px;font-weight:700;font-family:inherit">
+            <text x="70" y="67" text-anchor="middle" style="fill:var(--bg)">Period</text>
+            <text x="192" y="67" text-anchor="middle">Follicular</text>
+            <text x="302" y="67" text-anchor="middle">Ovulation</text>
+            <text x="482" y="67" text-anchor="middle">Luteal</text>
+          </g>
+          <g style="fill:var(--text-muted);font-size:13px;font-family:inherit">
+            <text x="20" y="28">Day 1</text>
+            <text x="264" y="28">around day 14 (estimated)</text>
+            <text x="620" y="28" text-anchor="end">Day 28</text>
+            <text x="192" y="110" text-anchor="middle">variable length</text>
+            <text x="482" y="110" text-anchor="middle">about 12 to 13 days, more stable</text>
+            <text x="482" y="150" text-anchor="middle">last days: premenstrual syndrome possible</text>
+          </g>
+          <line x1="560" y1="122" x2="620" y2="122" style="stroke:var(--clay);stroke-width:3;stroke-linecap:round"/>
+        </svg>
+        <figcaption>Only 13% of cycles last exactly 28 days (Bull et al., 2019, more than 600,000 cycles). Ovulation does not happen on day 14 for most people.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" aria-labelledby="prevision">
+      <h2 id="prevision">How Lunaison estimates your next period</h2>
+      <ol class="steps">
+        <li><strong>Recognizing periods.</strong> A day with real bleeding starts a period; spotting alone does not. Up to two days without an entry in the middle do not split a period in two.</li>
+        <li><strong>Measuring your cycles.</strong> Each cycle runs from one first day of a period to the next. A gap of less than 15 days or more than 90 days is probably a missed entry: it is left out of the calculation.</li>
+        <li><strong>Taking the median of your last six cycles.</strong> The median is the middle value: an unusual cycle (stress, illness, travel) does not throw it off, unlike an average.</li>
+        <li><strong>Giving a range.</strong> Its width depends on how much your cycles vary: from 2 days either side if your cycles are very regular, up to 7 if they vary a lot. Without a history, it starts from what you entered at the beginning, with a 4-day margin.</li>
+        <li><strong>Estimating the phases.</strong> Ovulation is placed about 13 days before the next period, because this part of the cycle varies little. It is an estimate, not a measurement.</li>
+      </ol>
+      <figure class="figure">
+        <svg viewBox="0 0 640 230" role="img" aria-labelledby="prev-titre prev-desc">
+          <title id="prev-titre">Example forecast from six cycles</title>
+          <desc id="prev-desc">Six cycles of 27, 28, 28, 29, 30 and 31 days. The median is 28.5 days, rounded to 29. The range shown goes from 2 days before to 2 days after.</desc>
+          <g style="fill:var(--text-muted);font-size:13px;font-family:inherit">
+            <text x="20" y="22" style="fill:var(--text);font-weight:700;font-size:15px">Your last six cycles (in days)</text>
+            <text x="80" y="102" text-anchor="middle">26</text><text x="160" y="102" text-anchor="middle">27</text><text x="240" y="102" text-anchor="middle">28</text>
+            <text x="320" y="102" text-anchor="middle">29</text><text x="400" y="102" text-anchor="middle">30</text><text x="480" y="102" text-anchor="middle">31</text><text x="560" y="102" text-anchor="middle">32</text>
+          </g>
+          <line x1="60" y1="80" x2="580" y2="80" style="stroke:var(--line);stroke-width:2"/>
+          <g style="fill:var(--clay)">
+            <circle cx="160" cy="66" r="8"/><circle cx="240" cy="66" r="8"/><circle cx="240" cy="48" r="8"/>
+            <circle cx="400" cy="66" r="8"/><circle cx="480" cy="66" r="8"/><circle cx="320" cy="66" r="8"/>
+          </g>
+          <line x1="280" y1="34" x2="280" y2="86" style="stroke:var(--text);stroke-width:2;stroke-dasharray:4 4"/>
+          <text x="286" y="42" style="fill:var(--text);font-size:13px;font-weight:700;font-family:inherit">median 28.5 → 29</text>
+          <text x="20" y="146" style="fill:var(--text);font-weight:700;font-size:15px;font-family:inherit">What the app shows</text>
+          <line x1="60" y1="190" x2="580" y2="190" style="stroke:var(--line);stroke-width:2"/>
+          <rect x="240" y="172" width="160" height="36" rx="18" style="fill:var(--accent-soft)"/>
+          <circle cx="320" cy="190" r="9" style="fill:var(--clay)"/>
+          <g style="fill:var(--text-muted);font-size:13px;font-family:inherit">
+            <text x="60" y="222">last period</text>
+            <text x="320" y="222" text-anchor="middle">likely day</text>
+            <text x="240" y="166">earliest</text>
+            <text x="400" y="166" text-anchor="end">latest</text>
+          </g>
+        </svg>
+        <figcaption>The more regular your cycles, the narrower the range. The app also tells you whether the estimate is provisional, still rough or reliable for you.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" aria-labelledby="signaux">
+      <h2 id="signaux">The "worth mentioning" alerts</h2>
+      <p>When your notes move away from medical reference ranges, Lunaison points it out with a link to the relevant guide. It is never a diagnosis: just something to mention to a doctor, a gynecologist or a midwife.</p>
+      <div class="table-scroll">
+        <table class="simple">
+          <thead><tr><th>Alert</th><th>When it appears</th><th>Where the threshold comes from</th></tr></thead>
+          <tbody>
+            <tr><td>Pain that stops your activities</td><td>"Severe" pain during at least 2 of your last 3 periods</td><td>ACOG 2018; threshold chosen by the app</td></tr>
+            <tr><td>Often heavy flow</td><td>3 or more heavy days, during at least 2 of the last 3 periods</td><td>FIGO 2018; threshold chosen by the app</td></tr>
+            <tr><td>Long periods</td><td>More than 8 days, during one of the last 3 periods</td><td>FIGO 2018</td></tr>
+            <tr><td>Cycles outside the usual range</td><td>Your last 2 cycles outside 24 to 38 days (21 to 45 under 18)</td><td>FIGO 2018, ACOG 2015</td></tr>
+            <tr><td>Very variable cycles</td><td>More than 9 days' difference between your cycles, over at least 4 cycles (adults)</td><td>FIGO 2018</td></tr>
+            <tr><td>No period for a long time</td><td>More than 90 days since the last period</td><td>ACOG 2015</td></tr>
+            <tr><td>Bleeding between periods</td><td>At least 2 days of spotting outside periods, over the last 3 cycles</td><td>Threshold chosen by the app</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="donnees">
+      <h2 id="donnees">Where your data goes</h2>
+      <p>Nowhere. Lunaison does not have permission to access the Internet: even by mistake, it could not send anything. The only way out is you.</p>
+      <figure class="figure">
+        <svg viewBox="0 0 640 210" role="img" aria-labelledby="flux-titre flux-desc">
+          <title id="flux-titre">The path of your data</title>
+          <desc id="flux-desc">Your notes stay in the phone. No arrow goes to the Internet. Two possible ways out, both triggered by you: a message sent through your messaging app, or an exported file.</desc>
+          <rect x="20" y="30" width="220" height="150" rx="24" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/>
+          <text x="130" y="62" text-anchor="middle" style="fill:var(--text);font-weight:800;font-size:16px;font-family:inherit">Your phone</text>
+          <rect x="50" y="80" width="160" height="40" rx="12" style="fill:var(--accent-soft)"/>
+          <text x="130" y="105" text-anchor="middle" style="fill:var(--text);font-size:14px;font-family:inherit">Lunaison and your notes</text>
+          <text x="130" y="152" text-anchor="middle" style="fill:var(--text-muted);font-size:13px;font-family:inherit">cloud backup turned off</text>
+          <g style="stroke:var(--text-muted);stroke-width:2;fill:none">
+            <path d="M300 40 a24 24 0 0 1 46 -6 a18 18 0 0 1 30 14 a16 16 0 0 1 -6 32 h-66 a20 20 0 0 1 -4 -40 z"/>
+          </g>
+          <line x1="292" y1="30" x2="388" y2="94" style="stroke:var(--clay);stroke-width:4;stroke-linecap:round"/>
+          <text x="340" y="118" text-anchor="middle" style="fill:var(--text-muted);font-size:13px;font-family:inherit">no Internet access</text>
+          <path d="M240 150 H420" style="stroke:var(--clay);stroke-width:3;fill:none;marker-end:url(#fleche)"/>
+          <defs><marker id="fleche" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--clay)"/></marker></defs>
+          <rect x="425" y="122" width="195" height="62" rx="16" style="fill:var(--accent-soft)"/>
+          <text x="522" y="148" text-anchor="middle" style="fill:var(--text);font-weight:700;font-size:14px;font-family:inherit">Message or file</text>
+          <text x="522" y="168" text-anchor="middle" style="fill:var(--text-muted);font-size:13px;font-family:inherit">only if you send it</text>
+        </svg>
+        <figcaption>Sharing with a partner goes through your own messaging app (SMS, WhatsApp, Signal). Export produces a spreadsheet file that you keep wherever you like.</figcaption>
+      </figure>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Lunaison is neither a medical device nor a method of contraception. It does not replace the advice of a health professional.</p>
+      <div class="footer-links">
+        <a href="./">The app</a>
+        <a href="how-it-works.html">How it works</a>
+        <a href="evidence.html">What the studies say</a>
+        <a href="faq.html">Questions</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="https://github.com/Relthdrarxash/lunaison">Source code</a>
+        <a href="mailto:pilmil.studio@proton.me">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
