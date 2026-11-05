@@ -6,6 +6,8 @@ import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Flow
 import fr.lunaison.core.model.Mood
 import fr.lunaison.core.model.Pain
+import fr.lunaison.core.model.PartnerPeriod
+import fr.lunaison.core.model.PartnerSnapshot
 import fr.lunaison.core.model.Symptom
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -14,6 +16,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 private val D0: LocalDate = LocalDate.of(2026, 1, 5)
@@ -239,5 +242,33 @@ class ReminderPlannerTest {
         assertEquals(LocalDateTime.of(start, LocalTime.of(9, 0)), at)
         assertTrue(ReminderPlanner.shouldRemindMedication(settings, alreadyTaken = false))
         assertFalse(ReminderPlanner.shouldRemindMedication(settings, alreadyTaken = true))
+    }
+
+    @Test
+    fun `encodage et decodage du partage partenaire par QR Code ou SMS`() {
+        val snapshot = PartnerSnapshot(
+            partnerName = "Camille",
+            sharedAt = start,
+            periods = listOf(
+                PartnerPeriod(D0, 5),
+                PartnerPeriod(D0.plusDays(28), 5),
+                PartnerPeriod(D0.plusDays(56), 5),
+                PartnerPeriod(start, 5),
+            ),
+            usualCycleLength = 28,
+            showFertility = true,
+        )
+        val encoded = snapshot.encode()
+        assertTrue(encoded.startsWith("LUNA1:"))
+        val decodedDirect = assertNotNull(PartnerSnapshot.decode(encoded))
+        assertEquals(snapshot, decodedDirect)
+
+        val sms = "Voici mon suivi Lunaison : $encoded à coller dans l'application."
+        val decodedFromSms = assertNotNull(PartnerSnapshot.decode(sms))
+        assertEquals(snapshot, decodedFromSms)
+
+        val partnerState = known(CycleAnalyzer.analyze(decodedFromSms.toDayLogs(), decodedFromSms.toBaseline(), start.plusDays(10)))
+        assertEquals(11, partnerState.dayOfCycle)
+        assertEquals(start.plusDays(28), partnerState.next.start)
     }
 }

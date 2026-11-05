@@ -22,6 +22,8 @@ data class AppState(
     val recap: CycleRecap? = null,
     /** Ce qui revient d'habitude dans la phase qui commence bientôt. */
     val anticipation: Anticipation? = null,
+    /** État estimé du cycle d'un ou d'une partenaire suivi(e) par QR Code ou SMS. */
+    val followedPartnerCycle: CycleState.Known? = null,
 ) {
     fun logFor(date: LocalDate): DayLog = logs.firstOrNull { it.date == date } ?: DayLog(date)
 
@@ -45,7 +47,10 @@ data class AppState(
                     ?.takeIf { it.record.start != settings.recapSeen }
             }
             val anticipation = if (settings.pausePredictions) null else known?.let { CycleInsights.anticipation(logs, it) }
-            return AppState(today, logs, settings, cycle, alerts, recap, anticipation)
+            val followedPartnerCycle = settings.followedPartner?.let { snap ->
+                CycleAnalyzer.analyze(snap.toDayLogs(), snap.toBaseline(), today) as? CycleState.Known
+            }
+            return AppState(today, logs, settings, cycle, alerts, recap, anticipation, followedPartnerCycle)
         }
     }
 }

@@ -10,6 +10,7 @@ import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Flow
 import fr.lunaison.core.model.Mood
 import fr.lunaison.core.model.Pain
+import fr.lunaison.core.model.PartnerSnapshot
 import fr.lunaison.core.model.Symptom
 import fr.lunaison.core.model.ThemePalette
 import kotlinx.coroutines.flow.map
@@ -48,6 +49,10 @@ data class AppSettings(
     val themePalette: ThemePalette = ThemePalette.PLUM,
     /** Empreinte SHA-256 du code PIN à 4 chiffres, ou null si aucun verrouillage n'est actif. */
     val pinHash: String? = null,
+    /** Empreinte du cycle d'un ou d'une partenaire importée par QR Code ou SMS. */
+    val followedPartner: PartnerSnapshot? = null,
+    /** Prénom affiché dans le QR Code ou le SMS généré pour son ou sa partenaire. */
+    val myShareName: String = "",
 ) {
     val isAdult: Boolean get() = baseline.ageGroup == AgeGroup.ADULT
 
@@ -174,6 +179,8 @@ internal fun SettingsEntity.toModel() = AppSettings(
     showFertility = showFertility,
     themePalette = themePalette.toEnumOrNull<ThemePalette>() ?: ThemePalette.PLUM,
     pinHash = pinHash,
+    followedPartner = followedPartnerSnapshot?.let(PartnerSnapshot::decode),
+    myShareName = myShareName,
 )
 
 internal fun AppSettings.toEntity() = SettingsEntity(
@@ -198,4 +205,6 @@ internal fun AppSettings.toEntity() = SettingsEntity(
     showFertility = showFertility,
     themePalette = themePalette.name,
     pinHash = pinHash,
+    followedPartnerSnapshot = followedPartner?.encode(),
+    myShareName = myShareName,
 )
