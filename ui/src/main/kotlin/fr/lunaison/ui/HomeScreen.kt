@@ -192,20 +192,24 @@ fun HomeScreen(
         )
         if (!todayLog.isEmpty) TodaySummary(todayLog, state.settings.reminders.medicationLabel)
 
-        LunaButton(
-            tr("Respirer et relâcher (douleur, stress)", "Breathe and relax (pain, stress)"),
-            onClick = onBreathe,
-            style = LunaButtonStyle.Outlined,
-        )
-
         if (state.settings.isAdult) {
             val partner = state.settings.partner
-            LunaButton(
-                if (partner != null) tr("Prévenir ${partner.name}", "Let ${partner.name} know") else tr("Partager avec un ou une partenaire", "Share with a partner"),
-                onClick = onShare,
-                style = LunaButtonStyle.Outlined,
-                icon = Icons.Filled.Share,
-            )
+            val shareLabel = if (partner != null) tr("Prévenir ${partner.name}", "Let ${partner.name} know") else tr("Partager", "Share")
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                LunaButton(
+                    tr("Respirer", "Breathe"),
+                    onClick = onBreathe,
+                    style = LunaButtonStyle.Outlined,
+                    modifier = Modifier.weight(1f),
+                )
+                LunaButton(
+                    shareLabel,
+                    onClick = onShare,
+                    style = LunaButtonStyle.Outlined,
+                    icon = Icons.Filled.Share,
+                    modifier = Modifier.weight(1f),
+                )
+            }
             if (followed != null && followedCycle != null) {
                 PartnerSnapshotCard(
                     snapshot = followed,
@@ -215,14 +219,7 @@ fun HomeScreen(
                 )
             } else {
                 LunaButton(
-                    tr(
-                        "Suivre le cycle d'un ou d'une partenaire (QR / NFC / SMS)",
-                        "Follow a partner's cycle (QR / NFC / SMS)",
-                        pl = "Śledź cykl partnera (QR / NFC / SMS)",
-                        uk = "Стежити за циклом партнера (QR / NFC / SMS)",
-                        es = "Seguir el ciclo de una pareja (QR / NFC / SMS)",
-                        de = "Zyklus eines Partners begleiten (QR / NFC / SMS)",
-                    ),
+                    tr("Suivre un cycle partenaire", "Follow a partner's cycle"),
                     onClick = { showPartnerScanner = true },
                     style = LunaButtonStyle.Quiet,
                     icon = Icons.Filled.Favorite,
@@ -238,6 +235,12 @@ fun HomeScreen(
                     onDismiss = { showPartnerScanner = false },
                 )
             }
+        } else {
+            LunaButton(
+                tr("Respirer", "Breathe"),
+                onClick = onBreathe,
+                style = LunaButtonStyle.Outlined,
+            )
         }
 
         if (!paused && (cycle as? CycleState.Known)?.possiblePregnancyHint == true) {
