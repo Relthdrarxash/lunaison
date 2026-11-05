@@ -35,6 +35,7 @@ import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.model.AgeGroup
 import fr.lunaison.core.model.Baseline
+import fr.lunaison.core.model.PartnerSnapshot
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -42,11 +43,16 @@ import fr.lunaison.core.model.tr
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OnboardingScreen(today: LocalDate, onFinish: (Baseline) -> Unit) {
+fun OnboardingScreen(
+    today: LocalDate,
+    onFinish: (Baseline) -> Unit,
+    onFinishAsPartner: (PartnerSnapshot) -> Unit = {},
+) {
     var step by rememberSaveable { mutableIntStateOf(0) }
     var ageGroup by rememberSaveable { mutableStateOf<AgeGroup?>(null) }
     var lastStart by rememberSaveable { mutableStateOf<String?>(null) }
     var usualLength by rememberSaveable { mutableStateOf<Int?>(null) }
+    var showPartnerScanner by rememberSaveable { mutableStateOf(false) }
 
     val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
@@ -67,7 +73,21 @@ fun OnboardingScreen(today: LocalDate, onFinish: (Baseline) -> Unit) {
                     Bullet(tr("Vous pouvez tout effacer en un geste.", "You can erase everything in one tap."))
                 }
                 Muted(tr("Lunaison aide à s'organiser et à mieux se connaître. Ce n'est ni un dispositif médical ni une méthode de contraception.", "Lunaison helps you plan and get to know yourself better. It is neither a medical device nor a method of contraception."))
-                LunaButton(tr("Commencer", "Get started"), onClick = { step = 1 })
+                LunaButton(tr("Commencer (suivre mon cycle)", "Get started (track my cycle)"), onClick = { step = 1 })
+                LunaButton(
+                    tr("Je suis partenaire (scanner un QR Code ou SMS)", "I am a partner (scan a QR Code or SMS)"),
+                    onClick = { showPartnerScanner = true },
+                    style = LunaButtonStyle.Outlined,
+                )
+                if (showPartnerScanner) {
+                    QrScannerDialog(
+                        onScanned = { scanned ->
+                            showPartnerScanner = false
+                            onFinishAsPartner(scanned)
+                        },
+                        onDismiss = { showPartnerScanner = false },
+                    )
+                }
             }
             1 -> {
                 PageTitle(tr("Quel âge avez-vous ?", "How old are you?"), onBack = { step = 0 })
