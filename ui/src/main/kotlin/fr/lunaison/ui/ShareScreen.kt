@@ -206,19 +206,29 @@ private fun QrSyncSection(
     val context = LocalContext.current
     val known = state.cycle as? CycleState.Known
     var showQr by rememberSaveable { mutableStateOf(false) }
+    var updateOnlyMode by rememberSaveable { mutableStateOf(false) }
     var showScanner by rememberSaveable { mutableStateOf(false) }
     var includeFertility by rememberSaveable { mutableStateOf(state.settings.showFertility) }
 
-    SectionTitle(tr("Partage d'estimations par QR Code ou SMS", "Share estimates via QR Code or SMS"))
+    SectionTitle(tr("Partage et mise à jour par QR Code ou SMS", "Share and update via QR Code or SMS"))
 
     if (known != null) {
-        val snapshot = remember(known, state.today, state.settings.myShareName, includeFertility) {
-            val periods = known.periods.takeLast(6).map { PartnerPeriod(it.start, it.length) }
-                .ifEmpty { listOf(PartnerPeriod(known.lastStart, 5)) }
+        val allPeriods = remember(known) {
+            val base = known.periods.takeLast(6).map { p ->
+                val len = if (known.inPeriod && p.start == known.lastStart) maxOf(p.length, known.stats.periodLength) else p.length
+                PartnerPeriod(p.start, len)
+            }.toMutableList()
+            if (base.none { kotlin.math.abs(it.start.toEpochDay() - known.lastStart.toEpochDay()) <= 2 }) {
+                base.add(PartnerPeriod(known.lastStart, known.stats.periodLength))
+            }
+            base.sortedBy { it.start }.takeLast(6)
+        }
+        val snapshot = remember(allPeriods, updateOnlyMode, state.today, state.settings.myShareName, includeFertility, known.stats.cycleLength) {
+            val selectedPeriods = if (updateOnlyMode) allPeriods.takeLast(1) else allPeriods
             PartnerSnapshot(
                 partnerName = state.settings.myShareName.trim().ifEmpty { tr("Partenaire", "Partner") },
                 sharedAt = state.today,
-                periods = periods,
+                periods = selectedPeriods,
                 usualCycleLength = known.stats.cycleLength,
                 showFertility = includeFertility,
             )
@@ -227,12 +237,21 @@ private fun QrSyncSection(
 
         LunaCard {
             Text(
-                tr("Transmettre mes estimations (sans serveur)", "Share my estimates (serverless)"),
+                tr("Transmettre ou mettre à jour mes estimations (sans serveur)", "Share or update my estimates (serverless)"),
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(
-                tr("Votre partenaire peut scanner ce QR Code depuis Lunaison (ou recevoir le code par SMS) pour voir sur son téléphone votre phase actuelle, la plage des prochaines règles et les conseils de soutien. Vos notes personnelles ne sont jamais incluses.", "Your partner can scan this QR Code from Lunaison (or receive the code by SMS) to see on their phone your current phase, next period range and support tips. Your personal notes are never included."),
+                tr("Choisissez « Premier partage » pour transmettre vos 6 derniers cycles, ou « Mise à jour » au début d'un nouveau cycle : le téléphone de votre partenaire fusionnera automatiquement cette mise à jour avec l'historique déjà reçu. Vos notes personnelles ne sont jamais incluses.", "Choose 'Initial share' to send your last 6 cycles, or 'Cycle update' when a new period starts: your partner's phone will automatically merge this update with the history already received. Your personal notes are never included."),
                 style = MaterialTheme.typography.bodySmall,
+            )
+            ChoiceChips(
+                options = listOf(false, true),
+                label = { isUpdate ->
+                    if (isUpdate) tr("QR de mise à jour (ce cycle)", "Update QR (this cycle)")
+                    else tr("Premier partage (6 cycles)", "Initial share (6 cycles)")
+                },
+                isSelected = { it == updateOnlyMode },
+                onToggle = { updateOnlyMode = it },
             )
             OutlinedTextField(
                 value = state.settings.myShareName,
@@ -255,7 +274,12 @@ private fun QrSyncSection(
                 )
             }
             LunaButton(
-                if (showQr) tr("Masquer mon QR Code", "Hide my QR Code") else tr("Afficher mon QR Code dans l'appli", "Show my QR Code in the app"),
+                when {
+                    showQr && updateOnlyMode -> tr("Masquer le QR Code de mise à jour", "Hide update QR Code")
+                    showQr -> tr("Masquer mon QR Code", "Hide my QR Code")
+                    updateOnlyMode -> tr("Afficher le QR Code de mise à jour", "Show update QR Code")
+                    else -> tr("Afficher mon QR Code de partage", "Show my sharing QR Code")
+                },
                 onClick = { showQr = !showQr },
                 style = LunaButtonStyle.Outlined,
             )
@@ -263,17 +287,31 @@ private fun QrSyncSection(
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     QrCodeBox(content = encoded)
                 }
-                Muted(tr("Ouvrez Lunaison > Partager > Scanner un QR Code sur le téléphone de votre partenaire.", "Open Lunaison > Share > Scan a QR Code on your partner's phone."))
-            }
-            val shareBody = remember(known, encoded) {
-                tr(
-                    "Voici mon suivi Lunaison (${Format.nextPeriod(known)}) Pour afficher mes estimations sur ton téléphone, colle ce message dans Lunaison > Partager > Scanner ou coller un code : $encoded",
-                    "Here is my Lunaison update (${Format.nextPeriod(known)}) To view my estimates on your phone, paste this message in Lunaison > Share > Scan or paste a code: $encoded",
+                Muted(
+                    if (updateOnlyMode) {
+                        tr("Sur le téléphone de votre partenaire, appuyez sur « Mettre à jour (QR / SMS) » sur votre carte de suivi.", "On your partner's phone, tap 'Update (QR / SMS)' on your cycle card.")
+                    } else {
+                        tr("Ouvrez Lunaison > Partager > Scanner un QR Code sur le téléphone de votre partenaire.", "Open Lunaison > Share > Scan a QR Code on your partner's phone.")
+                    },
                 )
+            }
+            val shareBody = remember(known, encoded, updateOnlyMode) {
+                if (updateOnlyMode) {
+                    tr(
+                        "Mise à jour de mon cycle Lunaison (${Format.nextPeriod(known)}) Pour actualiser mon calendrier sur ton téléphone, appuie sur « Mettre à jour (QR / SMS) » et colle ce message : $encoded",
+                        "Lunaison cycle update (${Format.nextPeriod(known)}) To update my calendar on your phone, tap 'Update (QR / SMS)' and paste this message: $encoded",
+                    )
+                } else {
+                    tr(
+                        "Voici mon suivi Lunaison (${Format.nextPeriod(known)}) Pour afficher mes estimations sur ton téléphone, colle ce message dans Lunaison > Partager > Scanner ou coller un code : $encoded",
+                        "Here is my Lunaison update (${Format.nextPeriod(known)}) To view my estimates on your phone, paste this message in Lunaison > Share > Scan or paste a code: $encoded",
+                    )
+                }
             }
             if (partner != null) {
                 LunaButton(
-                    tr("Envoyer le code via ${partner.channel.label}", "Send code via ${partner.channel.label}"),
+                    if (updateOnlyMode) tr("Envoyer la mise à jour via ${partner.channel.label}", "Send update via ${partner.channel.label}")
+                    else tr("Envoyer le code via ${partner.channel.label}", "Send code via ${partner.channel.label}"),
                     onClick = { ShareLauncher.send(context, partner, shareBody) },
                     style = LunaButtonStyle.Outlined,
                     icon = Icons.AutoMirrored.Filled.Send,
@@ -318,6 +356,7 @@ private fun QrSyncSection(
 
     if (showScanner) {
         QrScannerDialog(
+            existingPartner = followed,
             onScanned = { scanned ->
                 showScanner = false
                 actions.updateSettings { it.copy(followedPartner = scanned) }

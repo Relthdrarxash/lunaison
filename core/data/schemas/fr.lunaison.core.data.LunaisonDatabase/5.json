@@ -1,0 +1,252 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 5,
+    "identityHash": "4f8ff5fa9da7737740e3c049173a1b34",
+    "entities": [
+      {
+        "tableName": "day_logs",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `flow` TEXT, `pain` TEXT, `symptoms` TEXT NOT NULL, `moods` TEXT NOT NULL, `note` TEXT NOT NULL, `medicationTaken` INTEGER NOT NULL, `mucus` TEXT, `basalTemperature` REAL, PRIMARY KEY(`date`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flow",
+            "columnName": "flow",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "pain",
+            "columnName": "pain",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "symptoms",
+            "columnName": "symptoms",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "moods",
+            "columnName": "moods",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "medicationTaken",
+            "columnName": "medicationTaken",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mucus",
+            "columnName": "mucus",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "basalTemperature",
+            "columnName": "basalTemperature",
+            "affinity": "REAL",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "date"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "settings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `onboarded` INTEGER NOT NULL, `ageGroup` TEXT NOT NULL, `lastPeriodStart` TEXT, `usualCycleLength` INTEGER, `usualPeriodLength` INTEGER, `periodReminder` INTEGER NOT NULL, `periodReminderDaysBefore` INTEGER NOT NULL, `logReminder` TEXT NOT NULL, `logReminderTime` TEXT NOT NULL, `partnerName` TEXT, `partnerPhone` TEXT, `partnerChannel` TEXT, `dismissedAlerts` TEXT NOT NULL, `recapSeen` TEXT, `medicationReminder` INTEGER NOT NULL, `medicationReminderTime` TEXT NOT NULL, `medicationLabel` TEXT NOT NULL, `pausePredictions` INTEGER NOT NULL, `showFertility` INTEGER NOT NULL, `themePalette` TEXT NOT NULL, `pinHash` TEXT, `followedPartnerSnapshot` TEXT, `myShareName` TEXT NOT NULL, `trackOvulationSigns` INTEGER NOT NULL, `irregularCyclesMode` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "onboarded",
+            "columnName": "onboarded",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ageGroup",
+            "columnName": "ageGroup",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastPeriodStart",
+            "columnName": "lastPeriodStart",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "usualCycleLength",
+            "columnName": "usualCycleLength",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "usualPeriodLength",
+            "columnName": "usualPeriodLength",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "periodReminder",
+            "columnName": "periodReminder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "periodReminderDaysBefore",
+            "columnName": "periodReminderDaysBefore",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "logReminder",
+            "columnName": "logReminder",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "logReminderTime",
+            "columnName": "logReminderTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "partnerName",
+            "columnName": "partnerName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "partnerPhone",
+            "columnName": "partnerPhone",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "partnerChannel",
+            "columnName": "partnerChannel",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dismissedAlerts",
+            "columnName": "dismissedAlerts",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recapSeen",
+            "columnName": "recapSeen",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "medicationReminder",
+            "columnName": "medicationReminder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "medicationReminderTime",
+            "columnName": "medicationReminderTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "medicationLabel",
+            "columnName": "medicationLabel",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pausePredictions",
+            "columnName": "pausePredictions",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showFertility",
+            "columnName": "showFertility",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "themePalette",
+            "columnName": "themePalette",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pinHash",
+            "columnName": "pinHash",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "followedPartnerSnapshot",
+            "columnName": "followedPartnerSnapshot",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "myShareName",
+            "columnName": "myShareName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trackOvulationSigns",
+            "columnName": "trackOvulationSigns",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "irregularCyclesMode",
+            "columnName": "irregularCyclesMode",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4f8ff5fa9da7737740e3c049173a1b34')"
+    ]
+  }
+}

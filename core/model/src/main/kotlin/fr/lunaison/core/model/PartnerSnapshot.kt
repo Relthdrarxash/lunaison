@@ -36,6 +36,28 @@ data class PartnerSnapshot(
         usualCycleLength = usualCycleLength.coerceIn(21, 45),
     )
 
+    /**
+     * Fusionne cet historique avec un QR Code ou SMS de mise à jour plus récent :
+     * les règles déjà connues dont le début est très proche (à 2 jours près) sont remplacées
+     * par la version mise à jour, et les nouvelles règles sont ajoutées (jusqu'aux 6 dernières).
+     */
+    fun mergeWith(update: PartnerSnapshot): PartnerSnapshot {
+        val merged = periods.toMutableList()
+        for (incoming in update.periods) {
+            val existingIdx = merged.indexOfFirst { kotlin.math.abs(it.start.toEpochDay() - incoming.start.toEpochDay()) <= 2 }
+            if (existingIdx >= 0) {
+                merged[existingIdx] = incoming
+            } else {
+                merged.add(incoming)
+            }
+        }
+        val sorted = merged.sortedBy { it.start }.takeLast(6)
+        return update.copy(
+            partnerName = update.partnerName.ifBlank { partnerName },
+            periods = sorted,
+        )
+    }
+
     /** Encode l'empreinte sous la forme d'une chaîne courte `LUNA1:...` compatible QR Code et SMS. */
     fun encode(): String {
         val cleanName = partnerName.replace("|", " ").trim().take(30)
