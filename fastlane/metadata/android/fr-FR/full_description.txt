@@ -1,27 +1,24 @@
 Lunaison suit votre cycle menstruel sans rien savoir de vous : pas de compte, pas de publicité, pas de traceur, et pas même d'accès à Internet. Tout reste sur votre téléphone.
 
 NOTER EN QUELQUES SECONDES
-Flux, douleur, symptômes, humeur et une note si vous le souhaitez. Tout est facultatif, et un jour oublié se remplit plus tard.
+Flux, douleur, symptômes, humeur et une note si vous le souhaitez. Tout est facultatif, et un jour oublié se remplit plus tard. Vous pouvez aussi activer le suivi des signes d'ovulation (glaire cervicale et température basale) ou le suivi de symptômes liés aux cycles irréguliers et à la périménopause.
 
-DES PRÉVISIONS HONNÊTES
-Lunaison estime vos prochaines règles à partir de vos derniers cycles et affiche une plage de dates probable, qui se resserre à mesure que vous notez des cycles.
+DES PRÉVISIONS HONNÊTES ET ADAPTABLES
+Lunaison estime vos prochaines règles à partir de vos derniers cycles et affiche une plage de dates probable. Vous pouvez afficher une fenêtre fertile estimée, activer le mode cycles irréguliers ou périménopause, ou mettre les estimations en pause (grossesse, post-partum, contraception continue). En cas de retard inhabituel, une carte neutre vous accompagne sans alarmer.
 
-COMPRENDRE CHAQUE PHASE
-Ce qui se passe dans votre corps, ce qui aide, et ce qui revient chez vous pendant cette phase d'après vos cycles précédents.
+COMPRENDRE CHAQUE PHASE ET RESPIRER
+Ce qui se passe dans votre corps aux 4 phases du cycle, ce qui aide, ce qui revient chez vous d'après vos cycles précédents, et une minute de respiration guidée (4 s / 6 s) en cas de crampes ou de tension.
 
-DES FICHES SOURCÉES
-Cycle, douleurs, alimentation, syndrome prémenstruel, quand consulter, choc toxique : chaque fiche cite les études sur lesquelles elle s'appuie.
+DES FICHES SOURCÉES ET UN BILAN POUR VOTRE CONSULTATION
+Cycle, douleurs, alimentation, syndrome prémenstruel, quand consulter, choc toxique : chaque fiche cite les études sur lesquelles elle s'appuie. Un résumé clair sur 3 ou 6 mois se copie ou se partage pour votre médecin, gynécologue ou sage-femme.
 
-SAVOIR QUAND CONSULTER
-Douleurs fortes répétées, règles de plus de 8 jours, cycles hors des repères, saignements entre les règles : Lunaison vous le signale, sans jamais poser de diagnostic.
+DES RAPPELS DISCRETS ET UN VERROUILLAGE PAR CODE PIN
+Avant vos règles, pour noter vos journées, ou chaque jour pour votre contraception ou traitement. Sur l'écran verrouillé, seul le nom « Lunaison » s'affiche. Vous pouvez protéger l'ouverture de l'application par un code PIN à 4 chiffres et choisir parmi 4 thèmes de couleur doux. Un widget discret sur l'écran d'accueil est aussi proposé.
 
-DES RAPPELS DISCRETS
-Avant vos règles et pour noter vos journées. Sur l'écran verrouillé, seul le nom de l'appli s'affiche.
-
-PRÉVENIR SON OU SA PARTENAIRE
-Pour les 18 ans et plus : un message prêt à envoyer par SMS, WhatsApp ou Signal, que vous relisez et envoyez vous-même. Rien ne part automatiquement.
+PARTAGER AVEC SON OU SA PARTENAIRE SANS SERVEUR
+Pour les 18 ans et plus : partagez un résumé par message (SMS, Signal, WhatsApp...) ou via un QR code chiffré généré et scanné directement dans l'application, avec des conseils d'accompagnement par phase. Rien ne transite par un serveur.
 
 VOS DONNÉES VOUS APPARTIENNENT
-Export au format tableur et effacement complet en un geste. Lunaison est libre (GPL-3.0) : son code est public.
+Export et import au format tableur (CSV), sauvegarde automatique chiffrée d'Android et effacement complet en un geste. Lunaison est libre (GPL-3.0) : son code est public.
 
 Lunaison n'est ni un dispositif médical ni une méthode de contraception.
