@@ -190,7 +190,7 @@
             </tr>
             <tr>
               <td><strong>7. Jeton de partage et de mise à jour partenaire hors-ligne</strong></td>
-              <td>Chaîne <code>LUNA1:&lt;base64url&gt;</code> encodant uniquement <code>v1|prénom|datePartage|duréeHabituelle|fertilité|début1:durée1,...</code> (6 derniers cycles au premier partage, ou uniquement le nouveau cycle lors d'un QR Code de mise à jour fusionné localement via <code>PartnerSnapshot.mergeWith</code>). Aucune note personnelle, aucun symptôme et aucune humeur n'y figurent.</td>
+              <td>Chaîne unique <code>LUNA1:&lt;base64url&gt;</code> encodant uniquement <code>v1|prénom|datePartage|duréeHabituelle|fertilité|début1:durée1,...</code> sur les 6 dernières règles (fusionnées et dédoublonnées localement via <code>PartnerSnapshot.mergeWith</code> lors de chaque mise à jour). Aucune note personnelle, aucun symptôme et aucune humeur n'y figurent.</td>
               <td><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/model/src/main/kotlin/fr/lunaison/core/model/PartnerSnapshot.kt"><code>PartnerSnapshot.kt</code></a></td>
             </tr>
           </tbody>
