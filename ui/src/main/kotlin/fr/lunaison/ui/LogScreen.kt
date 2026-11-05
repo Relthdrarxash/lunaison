@@ -8,15 +8,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +54,8 @@ fun LogScreen(
     onBack: () -> Unit,
 ) {
     var date by remember { mutableStateOf(initialDate) }
+    var confirmClear by rememberSaveable { mutableStateOf(false) }
+    val savedLog = state.logFor(date)
     // Le brouillon repart de ce qui est enregistré à chaque changement de jour.
     var draft by remember(date) {
         val saved = state.logFor(date)
@@ -194,6 +200,70 @@ fun LogScreen(
         )
 
         LunaButton(tr("Enregistrer", "Save"), onClick = { onSave(draft) }, icon = Icons.Filled.Check)
+        if (!savedLog.isEmpty) {
+            LunaButton(
+                tr(
+                    "Effacer cette journée",
+                    "Clear this day",
+                    pl = "Wyczyść ten dzień",
+                    uk = "Очистити цей день",
+                    es = "Borrar este día",
+                    de = "Diesen Tag löschen",
+                ),
+                onClick = { confirmClear = true },
+                style = LunaButtonStyle.Quiet,
+                icon = Icons.Filled.Delete,
+            )
+        }
+    }
+
+    if (confirmClear) {
+        AlertDialog(
+            onDismissRequest = { confirmClear = false },
+            title = {
+                Text(
+                    tr(
+                        "Effacer la saisie de ce jour ?",
+                        "Clear this day's log?",
+                        pl = "Wyczyścić wpis z tego dnia?",
+                        uk = "Очистити запис за цей день?",
+                        es = "¿Borrar el registro de este día?",
+                        de = "Eintrag für diesen Tag löschen?",
+                    ),
+                )
+            },
+            text = {
+                Text(
+                    tr(
+                        "Les règles, douleurs, symptômes et notes enregistrés pour cette date seront supprimés de vos cycles.",
+                        "The period, pain, symptoms and notes recorded for this date will be removed from your cycles.",
+                        pl = "Miesiączka, ból, objawy i notatki zapisane na ten dzień zostaną usunięte z Twoich cykli.",
+                        uk = "Менструацію, біль, симптоми та нотатки, записані на цю дату, буде видалено з ваших циклів.",
+                        es = "La menstruación, dolores, síntomas y notas registrados para esta fecha se eliminarán de tus ciclos.",
+                        de = "Periode, Schmerzen, Symptome und Notizen für dieses Datum werden aus deinen Zyklen gelöscht.",
+                    ),
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmClear = false
+                        onSave(DayLog(date))
+                        onBack()
+                    },
+                ) {
+                    Text(
+                        tr("Effacer", "Clear", pl = "Wyczyść", uk = "Очистити", es = "Borrar", de = "Löschen"),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmClear = false }) {
+                    Text(tr("Annuler", "Cancel", pl = "Anuluj", uk = "Скасувати", es = "Cancelar", de = "Abbrechen"))
+                }
+            },
+        )
     }
 }
 

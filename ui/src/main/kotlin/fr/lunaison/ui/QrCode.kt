@@ -419,6 +419,7 @@ fun PartnerSnapshotCard(
     onRescan: (() -> Unit)? = null,
     onRemove: (() -> Unit)? = null,
 ) {
+    var confirmRemove by rememberSaveable { mutableStateOf(false) }
     val guide = remember(cycle.phase) { ShareMessages.partnerGuide(cycle.phase) }
     LunaCard(container = MaterialTheme.colorScheme.secondaryContainer) {
         Text(
@@ -464,8 +465,17 @@ fun PartnerSnapshotCard(
                 horizontalArrangement = Arrangement.End,
             ) {
                 if (onRemove != null) {
-                    TextButton(onClick = onRemove) {
-                        Text(tr("Arrêter ce suivi", "Stop following"))
+                    TextButton(onClick = { confirmRemove = true }) {
+                        Text(
+                            tr(
+                                "Arrêter ce suivi",
+                                "Stop following",
+                                pl = "Zatrzymaj śledzenie",
+                                uk = "Припинити стеження",
+                                es = "Dejar de seguir",
+                                de = "Begleitung beenden",
+                            ),
+                        )
                     }
                 }
                 if (onRescan != null) {
@@ -484,5 +494,62 @@ fun PartnerSnapshotCard(
                 }
             }
         }
+    }
+
+    if (confirmRemove) {
+        AlertDialog(
+            onDismissRequest = { confirmRemove = false },
+            title = {
+                Text(
+                    tr(
+                        "Arrêter de suivre le cycle de ${snapshot.partnerName} ?",
+                        "Stop following ${snapshot.partnerName}'s cycle?",
+                        pl = "Przestać śledzić cykl: ${snapshot.partnerName}?",
+                        uk = "Припинити стежити за циклом ${snapshot.partnerName}?",
+                        es = "¿Dejar de seguir el ciclo de ${snapshot.partnerName}?",
+                        de = "Zyklus von ${snapshot.partnerName} nicht mehr begleiten?",
+                    ),
+                )
+            },
+            text = {
+                Text(
+                    tr(
+                        "Les prévisions et repères de ${snapshot.partnerName} seront retirés de votre écran. Vous pourrez reprendre ce suivi à tout moment en scannant à nouveau son QR Code, par NFC ou par SMS.",
+                        "${snapshot.partnerName}'s forecasts and notes will be removed from your screen. You can resume this tracking at any time by scanning their QR Code again, via NFC, or by SMS.",
+                        pl = "Prognozy i wskazówki dla: ${snapshot.partnerName} zostaną usunięte z Twojego ekranu. Możesz wznowić to śledzenie w dowolnym momencie, skanując ponownie kod QR, przez NFC lub SMS.",
+                        uk = "Прогнози та орієнтири для ${snapshot.partnerName} буде видалено з вашого екрана. Ви зможете відновити відстеження в будь-який час, повторно відсканувавши QR-код, через NFC або SMS.",
+                        es = "Las previsiones y referencias de ${snapshot.partnerName} se eliminarán de tu pantalla. Podrás reanudar el seguimiento en cualquier momento volviendo a escanear su código QR, por NFC o por SMS.",
+                        de = "Die Vorhersagen und Notizen für ${snapshot.partnerName} werden von deinem Bildschirm entfernt. Du kannst die Begleitung jederzeit wieder aufnehmen, indem du den QR-Code erneut scannst, per NFC oder per SMS.",
+                    ),
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmRemove = false
+                        onRemove?.invoke()
+                    },
+                ) {
+                    Text(
+                        tr(
+                            "Arrêter ce suivi",
+                            "Stop following",
+                            pl = "Zatrzymaj śledzenie",
+                            uk = "Припинити стеження",
+                            es = "Dejar de seguir",
+                            de = "Begleitung beenden",
+                        ),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmRemove = false }) {
+                    Text(
+                        tr("Annuler", "Cancel", pl = "Anuluj", uk = "Скасувати", es = "Cancelar", de = "Abbrechen"),
+                    )
+                }
+            },
+        )
     }
 }
