@@ -188,7 +188,7 @@ internal object ArticlesFr {
                 listOf(
                     "Avec votre médecin, une sage-femme ou un gynécologue, si vous remarquez :",
                     "des douleurs qui vous empêchent de faire vos activités ou qui résistent aux anti-inflammatoires ;",
-                    "des règles qui durent plus de 8 jours, ou si abondantes que vous changez de protection en moins de trois heures, ou avec des caillots de plus de 2,5 cm ;",
+                    "des règles qui durent plus de 8 jours, ou si abondantes que vous devez changer de protection toutes les 1 à 2 heures, ou avec des caillots de plus de 2,5 cm environ ;",
                     "des cycles régulièrement plus courts que 24 jours ou plus longs que 38 jours chez l'adulte (21 et 45 jours à l'adolescence) ;",
                     "plus de trois mois sans règles, hors grossesse ;",
                     "des saignements entre les règles ou après un rapport ;",
@@ -211,7 +211,7 @@ internal object ArticlesFr {
                 ),
             ),
         ),
-        sources = listOf(Sources.FIGO_2018, Sources.MSD_PARAMETERS, Sources.ACOG_ADOLESCENTS_2015, Sources.ENDOMETRIOSIS_2024, Sources.ACOG_DYSMENORRHEA_2018),
+        sources = listOf(Sources.FIGO_2018, Sources.MSD_PARAMETERS, Sources.NHS_HEAVY_PERIODS, Sources.ACOG_ADOLESCENTS_2015, Sources.ENDOMETRIOSIS_2024, Sources.ACOG_DYSMENORRHEA_2018),
     )
 
     val protection = Article(
