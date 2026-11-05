@@ -18,6 +18,7 @@ import fr.lunaison.core.model.PartnerSnapshot
 import fr.lunaison.core.model.PillStatus
 import fr.lunaison.core.model.Symptom
 import fr.lunaison.core.model.ThemePalette
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.security.MessageDigest
 import java.time.LocalDate
@@ -187,6 +188,56 @@ class LunaisonRepository(private val dao: LunaisonDao) {
             }
         }
         return imported
+    }
+
+    /**
+     * Importe des données depuis une archive Zip (Period Calendar / Calendrier) avec mot de passe optionnel.
+     */
+    suspend fun importPeriodCalendarZip(bytes: ByteArray, password: String? = null): PeriodCalendarImportResult {
+        val result = PeriodCalendarImporter.importFromZip(bytes, password)
+        for (log in result.dayLogs) {
+            save(log)
+        }
+        if (result.baseline != null) {
+            updateSettings { current ->
+                current.copy(
+                    baseline = current.baseline.copy(
+                        lastPeriodStart = current.baseline.lastPeriodStart ?: result.baseline.lastPeriodStart,
+                        usualCycleLength = current.baseline.usualCycleLength ?: result.baseline.usualCycleLength,
+                        usualPeriodLength = current.baseline.usualPeriodLength ?: result.baseline.usualPeriodLength,
+                    ),
+                )
+            }
+        }
+        return result
+    }
+
+    /**
+     * Importe des données depuis du JSON brut (Period Calendar / Calendrier).
+     */
+    suspend fun importPeriodCalendarJson(jsonContent: String): PeriodCalendarImportResult {
+        val result = PeriodCalendarImporter.importFromTexts(dayEntriesJson = jsonContent)
+        for (log in result.dayLogs) {
+            save(log)
+        }
+        return result
+    }
+
+    /**
+     * Tente d'importer automatiquement n'importe quel fichier (Zip Calendrier, JSON ou CSV).
+     */
+    suspend fun importAuto(bytes: ByteArray, password: String? = null): ImportSummary {
+        if (PeriodCalendarImporter.isZip(bytes)) {
+            val result = importPeriodCalendarZip(bytes, password)
+            return ImportSummary(daysCount = result.dayLogs.size, cyclesCount = result.cyclesCount)
+        }
+        val text = String(bytes, Charsets.UTF_8).trim()
+        if (text.startsWith("{") || text.startsWith("[")) {
+            val result = importPeriodCalendarJson(text)
+            return ImportSummary(daysCount = result.dayLogs.size, cyclesCount = result.cyclesCount)
+        }
+        val count = importCsv(text)
+        return ImportSummary(daysCount = count, cyclesCount = 0)
     }
 
     companion object {
