@@ -271,12 +271,13 @@ class ReminderPlannerTest {
         assertEquals(11, partnerState.dayOfCycle)
         assertEquals(start.plusDays(28), partnerState.next.start)
 
-        // Mise à jour par QR Code au début du cycle suivant (un seul cycle transmis dans le QR de mise à jour).
+        // Mise à jour par QR Code au cycle suivant : même si le QR contient les derniers cycles déjà connus + le nouveau,
+        // mergeWith dédoublonne proprement sans créer de doublon.
         val nextStart = start.plusDays(29)
         val updateQr = PartnerSnapshot(
             partnerName = "Camille",
             sharedAt = nextStart,
-            periods = listOf(PartnerPeriod(nextStart, 5)),
+            periods = snapshot.periods + PartnerPeriod(nextStart, 5),
             usualCycleLength = 28,
             showFertility = true,
         ).encode()

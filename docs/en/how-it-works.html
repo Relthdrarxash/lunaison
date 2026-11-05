@@ -190,7 +190,7 @@
             </tr>
             <tr>
               <td><strong>7. Serverless partner sharing &amp; update token</strong></td>
-              <td>Compact <code>LUNA1:&lt;base64url&gt;</code> string encoding only <code>v1|firstName|sharedDate|usualLength|fertility|start1:len1,...</code> (last 6 cycles for initial share, or only the new cycle for an update QR Code merged locally via <code>PartnerSnapshot.mergeWith</code>). No personal notes, symptoms or moods are ever included.</td>
+              <td>Single compact <code>LUNA1:&lt;base64url&gt;</code> string encoding only <code>v1|firstName|sharedDate|usualLength|fertility|start1:len1,...</code> for the last 6 periods (merged and deduplicated locally via <code>PartnerSnapshot.mergeWith</code> on every update). No personal notes, symptoms or moods are ever included.</td>
               <td><a href="https://github.com/Relthdrarxash/lunaison/blob/main/core/model/src/main/kotlin/fr/lunaison/core/model/PartnerSnapshot.kt"><code>PartnerSnapshot.kt</code></a></td>
             </tr>
           </tbody>
