@@ -22,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import fr.lunaison.core.content.DailyTip
 import fr.lunaison.core.content.InsightTexts
 import fr.lunaison.core.content.PhaseGuides
+import fr.lunaison.core.content.ShareMessages
 import fr.lunaison.core.cycle.AlertKind
 import fr.lunaison.core.cycle.CycleConfig
 import fr.lunaison.core.cycle.CycleRecap
@@ -59,8 +61,53 @@ fun HomeScreen(
     val cycle = state.cycle
     val todayLog = state.logFor(state.today)
     val paused = state.settings.pausePredictions
+    val followed = state.settings.followedPartner
+    val followedCycle = state.followedPartnerCycle
+    var showPartnerScanner by rememberSaveable { mutableStateOf(false) }
+
     Page {
         PageTitle(Format.weekday(state.today))
+
+        if (!paused && cycle is CycleState.Unknown && followed != null && followedCycle != null && todayLog.isEmpty) {
+            PartnerSnapshotCard(
+                snapshot = followed,
+                cycle = followedCycle,
+                onRescan = { showPartnerScanner = true },
+                onRemove = { actions.updateSettings { it.copy(followedPartner = null) } },
+            )
+            val guide = remember(followedCycle.phase) { ShareMessages.partnerGuide(followedCycle.phase) }
+            SectionTitle(tr("Comprendre sa phase actuelle", "Understand their current phase"))
+            LunaCard {
+                Text(guide.phaseTitle, style = MaterialTheme.typography.titleMedium)
+                Text(guide.whatPartnerShouldKnow, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    tr("Comment soutenir concrètement :", "Concrete ways to help:"),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+                guide.supportTips.forEach { Bullet(it) }
+                TextButton(onClick = { onArticle("entourage") }) {
+                    Text(tr("Lire la fiche : accompagner un ou une proche", "Read the guide: supporting a partner"))
+                }
+            }
+            LunaButton(
+                tr("Suivre aussi mon propre cycle", "Also track my own cycle"),
+                onClick = onCalendar,
+                style = LunaButtonStyle.Quiet,
+                icon = Icons.Filled.DateRange,
+            )
+            if (showPartnerScanner) {
+                QrScannerDialog(
+                    existingPartner = followed,
+                    onScanned = { scanned ->
+                        showPartnerScanner = false
+                        actions.updateSettings { it.copy(followedPartner = scanned) }
+                    },
+                    onDismiss = { showPartnerScanner = false },
+                )
+            }
+            return@Page
+        }
 
         when {
             paused -> LunaCard(container = MaterialTheme.colorScheme.primaryContainer) {
@@ -121,9 +168,6 @@ fun HomeScreen(
                 style = LunaButtonStyle.Quiet,
                 icon = Icons.Filled.Share,
             )
-            val followed = state.settings.followedPartner
-            val followedCycle = state.followedPartnerCycle
-            var showPartnerScanner by rememberSaveable { mutableStateOf(false) }
             if (followed != null && followedCycle != null) {
                 PartnerSnapshotCard(
                     snapshot = followed,
