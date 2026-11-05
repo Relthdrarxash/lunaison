@@ -39,6 +39,7 @@ import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.DayLog
 import java.time.LocalDate
+import fr.lunaison.core.model.tr
 
 @Composable
 fun HomeScreen(
@@ -57,9 +58,9 @@ fun HomeScreen(
 
         when (cycle) {
             CycleState.Unknown -> LunaCard {
-                Text("Notez vos dernières règles pour commencer", style = MaterialTheme.typography.titleLarge)
-                Text("Dès que Lunaison connaît le début de vos dernières règles, il estime les suivantes.", style = MaterialTheme.typography.bodyMedium)
-                LunaButton("Ouvrir le calendrier", onClick = onCalendar)
+                Text(tr("Notez vos dernières règles pour commencer", "Log your last period to get started"), style = MaterialTheme.typography.titleLarge)
+                Text(tr("Dès que Lunaison connaît le début de vos dernières règles, il estime les suivantes.", "As soon as Lunaison knows when your last period started, it estimates the next ones."), style = MaterialTheme.typography.bodyMedium)
+                LunaButton(tr("Ouvrir le calendrier", "Open the calendar"), onClick = onCalendar)
             }
             is CycleState.Known -> CycleCard(cycle)
         }
@@ -68,7 +69,7 @@ fun HomeScreen(
         val inPeriod = (cycle as? CycleState.Known)?.inPeriod == true
         if (!inPeriod && todayLog.flow?.isBleeding != true) {
             LunaButton(
-                "Mes règles ont commencé",
+                tr("Mes règles ont commencé", "My period has started"),
                 onClick = {
                     actions.startPeriod(todayLog)
                     onLog(state.today, true)
@@ -78,7 +79,7 @@ fun HomeScreen(
             )
         }
         LunaButton(
-            if (todayLog.isEmpty) "Noter ma journée" else "Modifier ma journée",
+            if (todayLog.isEmpty) tr("Noter ma journée", "Log my day") else tr("Modifier ma journée", "Edit my day"),
             onClick = { onLog(state.today, false) },
             style = if (inPeriod) LunaButtonStyle.Primary else LunaButtonStyle.Outlined,
             icon = Icons.Filled.Edit,
@@ -88,7 +89,7 @@ fun HomeScreen(
         if (state.settings.isAdult) {
             val partner = state.settings.partner
             LunaButton(
-                if (partner != null) "Prévenir ${partner.name}" else "Partager avec un ou une partenaire",
+                if (partner != null) tr("Prévenir ${partner.name}", "Let ${partner.name} know") else tr("Partager avec un ou une partenaire", "Share with a partner"),
                 onClick = onShare,
                 style = LunaButtonStyle.Quiet,
                 icon = Icons.Filled.Share,
@@ -142,10 +143,10 @@ private fun CycleCard(cycle: CycleState.Known) {
             Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(84.dp)) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.clearAndSetSemantics { contentDescription = "Jour ${cycle.dayOfCycle} du cycle" },
+                    modifier = Modifier.clearAndSetSemantics { contentDescription = tr("Jour ${cycle.dayOfCycle} du cycle", "Cycle day ${cycle.dayOfCycle}") },
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Jour", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimary)
+                        Text(tr("Jour", "Day"), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimary)
                         Text("${cycle.dayOfCycle}", style = MaterialTheme.typography.displaySmall, color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
@@ -153,7 +154,7 @@ private fun CycleCard(cycle: CycleState.Known) {
             Column {
                 Text(phaseName, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 if (!cycle.inPeriod) {
-                    Text("Phase estimée", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text(tr("Phase estimée", "Estimated phase"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
             }
         }
@@ -168,13 +169,13 @@ private fun CycleCard(cycle: CycleState.Known) {
 @Composable
 private fun TodaySummary(log: DayLog) {
     val parts = buildList {
-        log.flow?.let { add("Flux : ${it.label.lowercase()}") }
-        log.pain?.let { add("Douleur : ${it.label.lowercase()}") }
+        log.flow?.let { add(tr("Flux : ${it.label.lowercase()}", "Flow: ${it.label.lowercase()}")) }
+        log.pain?.let { add(tr("Douleur : ${it.label.lowercase()}", "Pain: ${it.label.lowercase()}")) }
         if (log.symptoms.isNotEmpty()) add(log.symptoms.joinToString(", ") { it.label.lowercase() })
-        if (log.moods.isNotEmpty()) add("Humeur : " + log.moods.joinToString(", ") { it.label.lowercase() })
+        if (log.moods.isNotEmpty()) add(tr("Humeur : ", "Mood: ") + log.moods.joinToString(", ") { it.label.lowercase() })
     }
     LunaCard {
-        Text("Noté aujourd'hui", style = MaterialTheme.typography.titleMedium)
+        Text(tr("Noté aujourd'hui", "Logged today"), style = MaterialTheme.typography.titleMedium)
         parts.forEach { Bullet(it.replaceFirstChar { c -> c.uppercase() }) }
         if (log.note.isNotBlank()) Muted(log.note)
     }
@@ -189,8 +190,8 @@ private fun AlertCard(alert: AlertKind, onRead: () -> Unit, onDismiss: () -> Uni
         }
         Text(alert.message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            TextButton(onClick = onDismiss) { Text("Masquer") }
-            TextButton(onClick = onRead) { Text("Quand consulter") }
+            TextButton(onClick = onDismiss) { Text(tr("Masquer", "Hide")) }
+            TextButton(onClick = onRead) { Text(tr("Quand consulter", "When to see a doctor")) }
         }
     }
 }
@@ -200,30 +201,30 @@ private fun PhaseCard(state: AppState, cycle: CycleState.Known, onArticle: (Stri
     val guide = PhaseGuides.forPhase(cycle.phase)
     val pattern = PhasePatterns.compute(state.logs, cycle, cycle.phase)
     val tip = DailyTip.pick(guide, state.today, state.logs.firstOrNull { it.date == state.today })
-    SectionTitle("Ce qui se passe en ce moment")
+    SectionTitle(tr("Ce qui se passe en ce moment", "What is happening right now"))
     // Ce qui est propre à la personne passe avant les conseils généraux.
     if (!pattern.isEmpty) {
         LunaCard {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Icon(Icons.Filled.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
-                Text("Ce qui revient chez vous", style = MaterialTheme.typography.titleMedium)
+                Text(tr("Ce qui revient chez vous", "What comes back for you"), style = MaterialTheme.typography.titleMedium)
             }
             Text(
-                "Pendant cette phase, lors de vos cycles précédents, vous avez souvent noté :",
+                tr("Pendant cette phase, lors de vos cycles précédents, vous avez souvent noté :", "During this phase, in your previous cycles, you often logged:"),
                 style = MaterialTheme.typography.bodyMedium,
             )
-            pattern.symptoms.forEach { (symptom, count) -> Bullet("${symptom.label} (${count} cycles sur ${pattern.cycles})") }
-            pattern.moods.forEach { (mood, count) -> Bullet("${mood.label} (${count} cycles sur ${pattern.cycles})") }
+            pattern.symptoms.forEach { (symptom, count) -> Bullet(tr("${symptom.label} (${count} cycles sur ${pattern.cycles})", "${symptom.label} (${count} of ${pattern.cycles} cycles)")) }
+            pattern.moods.forEach { (mood, count) -> Bullet(tr("${mood.label} (${count} cycles sur ${pattern.cycles})", "${mood.label} (${count} of ${pattern.cycles} cycles)")) }
         }
     }
     LunaCard {
         Text(guide.name, style = MaterialTheme.typography.titleMedium)
         Text(guide.whatHappens, style = MaterialTheme.typography.bodyMedium)
         if (tip != null) {
-            Text("Le conseil du jour", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
+            Text(tr("Le conseil du jour", "Tip of the day"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
             Text(tip.text, style = MaterialTheme.typography.bodyMedium)
         }
-        TextButton(onClick = { onArticle(guide.articleId) }) { Text("En savoir plus") }
+        TextButton(onClick = { onArticle(guide.articleId) }) { Text(tr("En savoir plus", "Learn more")) }
     }
     state.anticipation?.let { coming ->
         Muted(InsightTexts.anticipationLine(coming))
