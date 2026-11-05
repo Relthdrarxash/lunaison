@@ -102,4 +102,4 @@ Contact: [pilmil.studio@proton.me](mailto:pilmil.studio@proton.me). Distributed 
 
 ## A note on development
 
-Most of Lunaison's code was written with Claude, Anthropic's AI assistant. I reviewed it, tested it and maintain it: the cycle engine and the content are covered by automated tests, and I answer issues and messages myself.
+Lunaison's code was developed with the help of an AI assistant (Claude, by Anthropic): the app itself embeds no artificial intelligence, all health guides are written and verified from public clinical sources (HAS, NHS, CNGOF, INSERM), the cycle engine is purely deterministic and covered by automated tests, and I personally maintain the project and answer issues and messages myself.
