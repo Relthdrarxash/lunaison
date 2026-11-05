@@ -1,4 +1,4 @@
-• 28-day vector hormone curves and interactive diagrams for cycle phases and internal anatomy in "Learn".
-• Interactive contraception guide: understanding how pills, copper/hormonal IUDs and implants affect bleeding.
-• Thematic reorganization of health guides and special starter guides for teens.
-• UI polish: outlined breathe & share buttons on home screen, smooth reminder animations, and fixed-size color palette swatches.
+• Direct import from "Period Calendar" app (encrypted zip or JSON).
+• Endometriosis tracking: 4 new clinical symptoms (dyspareunia, bowel/urinary pain, radiating pain) and dedicated clinical report section.
+• New guide in "Learn": endometriosis indicators (the 5 "Ds"), diagnosis pathway, and everyday relief options.
+• UI polish: streamlined side-by-side action buttons on Home and Settings, stable chip selectors.

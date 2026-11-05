@@ -106,7 +106,16 @@ fun LogScreen(
         }
 
         var showAllSymptoms by remember { mutableStateOf(false) }
-        val extraSymptoms = setOf(Symptom.PELVIC_PAIN, Symptom.HOT_FLASHES, Symptom.NIGHT_SWEATS, Symptom.BRAIN_FOG)
+        val extraSymptoms = setOf(
+            Symptom.PELVIC_PAIN,
+            Symptom.HOT_FLASHES,
+            Symptom.NIGHT_SWEATS,
+            Symptom.BRAIN_FOG,
+            Symptom.DYSPAREUNIA,
+            Symptom.DIGESTIVE_PAIN,
+            Symptom.URINARY_PAIN,
+            Symptom.RADIATING_PAIN,
+        )
         val visibleSymptoms = if (state.settings.irregularCyclesMode || showAllSymptoms || draft.symptoms.any { it in extraSymptoms }) {
             Symptom.entries
         } else {
@@ -123,7 +132,7 @@ fun LogScreen(
             )
             if (visibleSymptoms.size < Symptom.entries.size) {
                 LunaButton(
-                    tr("Plus de symptômes (périménopause, sommeil…)", "More symptoms (perimenopause, sleep…)"),
+                    tr("Plus de symptômes (endométriose, bouffées, sommeil…)", "More symptoms (endometriosis, hot flashes, sleep…)"),
                     onClick = { showAllSymptoms = true },
                     style = LunaButtonStyle.Quiet,
                 )

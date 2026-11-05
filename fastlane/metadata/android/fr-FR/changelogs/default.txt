@@ -1,4 +1,4 @@
-• Courbe vectorielle des hormones sur 28j et schémas interactifs des 4 phases et de l'anatomie interne dans « Comprendre ».
-• Guide interactif contraception : explications sur l'impact de la pilule, stérilet cuivre, stérilet hormonal et implant sur les saignements.
-• Réorganisation thématique des fiches santé et repères pour les adolescentes.
-• Amélioration ergonomique : cerclage des boutons respirer et partager, animations douces des rappels et pastilles fixes pour les thèmes.
+• Importation directe depuis « Calendrier des règles » (archive zip chiffrée ou JSON).
+• Suivi de l'endométriose : 4 nouveaux symptômes (dyspareunie, transit, dysurie, douleurs irradiantes) et section dédiée dans le bilan soignant.
+• Nouvelle fiche santé dans « Comprendre » : repères sur l'endométriose (les 5 « D »), diagnostic et pistes de soulagement.
+• Ergonomie épurée : boutons harmonisés sur l'accueil et les réglages, sélecteurs stables sans décalage.

@@ -111,6 +111,17 @@ fun LearnScreen(onArticle: (String) -> Unit) {
 
         // Catégorie 2 : Soulagement et bien-être
         SectionTitle(tr("Soulagement et bien-être", "Relief and well-being"))
+        LunaCard(modifier = Modifier.clickable(role = Role.Button) { onArticle("endometriose") }) {
+            Text(tr("Endométriose & douleurs pelviennes", "Endometriosis & pelvic pain"), style = MaterialTheme.typography.titleMedium)
+            Text(
+                tr(
+                    "Comprendre les signaux d'alerte (les 5 « D »), le diagnostic et les pistes de soulagement au quotidien.",
+                    "Understand warning signs (the 5 'Ds'), diagnosis and everyday relief options.",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         val healthArticles = Articles.all.filter { it.id in listOf("douleurs", "spm", "alimentation") }
         healthArticles.forEach { article ->
             ArticleCard(article, onArticle)
@@ -139,6 +150,10 @@ private fun ArticleCard(article: Article, onArticle: (String) -> Unit) {
 fun ArticleScreen(id: String, onBack: () -> Unit) {
     if (id == "contraception") {
         ContraceptionGuideScreen(onBack = onBack)
+        return
+    }
+    if (id == "endometriose") {
+        EndometriosisGuideScreen(onBack = onBack)
         return
     }
     val article = Articles.byId(id)
@@ -819,5 +834,105 @@ private fun HormoneLegendItem(color: Color, name: String, role: String) {
             Text(name, style = MaterialTheme.typography.titleSmall)
             Text(role, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
+    }
+}
+
+@Composable
+fun EndometriosisGuideScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
+
+    Page {
+        PageTitle(
+            tr("Endométriose & douleurs pelviennes", "Endometriosis & pelvic pain"),
+            onBack = onBack,
+            subtitle = tr("Repères, signaux d'alerte et pistes de soulagement.", "Indicators, warning signs and everyday relief."),
+        )
+
+        SectionTitle(tr("Qu'est-ce que l'endométriose ?", "What is endometriosis?"))
+        LunaCard {
+            Text(
+                tr(
+                    "L'endométriose est une affection gynécologique chronique dans laquelle du tissu semblable à la muqueuse utérine (l'endomètre) se développe hors de l'utérus (sur les ovaires, les trompes, les ligaments utérins, le péritoine, la vessie ou les intestins).",
+                    "Endometriosis is a chronic condition in which tissue similar to the lining of the uterus (the endometrium) grows outside the uterus (on ovaries, tubes, ligaments, peritoneum, bladder or bowels).",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                tr(
+                    "Sous l'influence des hormones du cycle, ces lésions s'épaississent et saignent à chaque cycle, provoquant une inflammation locale, des adhérences et des douleurs.",
+                    "Influenced by hormonal variations, these lesions thicken and bleed each cycle, causing local inflammation, adhesions and pain.",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Bullet(tr("Fréquence : elle concerne environ 1 personne sur 10 en âge de procréer (OMS / Inserm).", "Prevalence: affects approximately 1 in 10 individuals of reproductive age (WHO / Inserm)."))
+            Bullet(tr("Une règle essentielle : une douleur de règles qui empêche d'aller en cours, au travail ou de vivre normalement n'est pas normale.", "Key takeaway: menstrual pain that prevents you from going to work, school or daily activities is not normal."))
+        }
+
+        SectionTitle(tr("Les 5 « D » : les principaux signaux d'alerte", "The 5 'Ds': primary warning signs"))
+        LunaCard {
+            Text(
+                tr(
+                    "Les sociétés savantes (HAS, ESHRE) retiennent 5 manifestations douloureuses caractéristiques à surveiller :",
+                    "Medical societies (HAS, ESHRE) highlight 5 characteristic pain symptoms to monitor:",
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Bullet(tr("Dysménorrhée : règles très douloureuses qui résistent aux antalgiques usuels (paracétamol, anti-inflammatoires).", "Dysmenorrhea: severe period pain that resists standard pain relievers."))
+            Bullet(tr("Dyspareunie : douleurs profondes pendant ou après les rapports sexuels.", "Dyspareunia: deep pain during or after sexual intercourse."))
+            Bullet(tr("Dyschésie : douleurs lors du transit ou de la défécation, accentuées pendant les règles.", "Dyschezia: painful bowel movements, especially during periods."))
+            Bullet(tr("Dysurie : douleurs, brûlures ou difficultés à uriner pendant les règles, sans infection bactérienne.", "Dysuria: painful or difficult urination during periods, without bacterial infection."))
+            Bullet(tr("Douleurs pelviennes chroniques : douleurs continues dans le bas-ventre, tiraillements ou irradiations vers le dos, les lombaires et les cuisses.", "Chronic pelvic pain: persistent lower abdominal pain, pulling or radiating pain down the back and legs."))
+        }
+
+        SectionTitle(tr("Le parcours de diagnostic", "Diagnostic journey"))
+        LunaCard {
+            Text(
+                tr(
+                    "Le diagnostic met encore souvent plusieurs années à être posé. Noter précisément vos symptômes dans Lunaison et utiliser le « Bilan de santé » permet d'apporter un historique clair à votre soignant.",
+                    "Diagnosis still takes several years on average. Tracking symptoms in Lunaison and using the 'Health report' helps provide clear history to your clinician.",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Bullet(tr("Qui consulter en premier : médecin généraliste, sage-femme ou gynécologue.", "Who to see first: GP, midwife or gynecologist."))
+            Bullet(tr("Examens clés : échographie pelvienne par voie endovaginale et IRM pelvienne. Il est recommandé de les faire réaliser par un radiologue référent formé à l'endométriose (une imagerie normale n'exclut pas une forme superficielle).", "Key exams: transvaginal pelvic ultrasound and pelvic MRI, ideally performed by a specialized radiologist."))
+            Bullet(tr("Filières régionales : des réseaux de soins spécialisés labellisés (ARS) regroupent soignants, radiologues et centres experts pour faciliter l'orientation.", "Regional networks: specialized care networks help patients access experienced clinicians and reference centers."))
+        }
+
+        SectionTitle(tr("Pistes de soulagement au quotidien", "Everyday relief options"))
+        LunaCard {
+            Bullet(tr("Chaleur : bouillotte ou patchs chauffants sur le ventre ou les lombaires pour détendre les muscles contractés.", "Heat: hot water bottle or heat patches on the abdomen or back to relax tight muscles."))
+            Bullet(tr("Électrostimulation TENS : ces appareils de neurostimulation transcutanée envoient de légers influx non douloureux qui court-circuitent le message de douleur. Ils peuvent être prescrits et pris en charge.", "TENS neurostimulation: wearable devices sending gentle pulses that block pain signals to the brain. Often available on prescription."))
+            Bullet(tr("Kinésithérapie et ostéopathie pelvienne : exercices de respiration, étirements du psoas et travail doux du plancher pelvien pour soulager les tensions réflexes.", "Pelvic physiotherapy: breathing exercises, psoas stretches and pelvic floor release to ease reflex tension."))
+            Bullet(tr("Cohérence cardiaque : le module « Respirer » de Lunaison aide à apaiser le système nerveux autonome lors des pics douloureux.", "Cardiac coherence: Lunaison's 'Breathe' exercise helps calm the nervous system during pain flares."))
+            Bullet(tr("Traitements médicaux : pilule en continu ou DIU hormonal pour mettre les règles au repos, antalgiques adaptés ou chirurgie conservatrice si nécessaire, selon un projet de soins personnalisé.", "Medical management: continuous hormonal contraception to suppress periods, tailored medications or surgery when indicated."))
+        }
+
+        SectionTitle(tr("Ressources et associations de patientes", "Patient resources & associations"))
+        LunaCard {
+            Text(
+                tr(
+                    "Des associations reconnues informent, accompagnent et orientent les personnes touchées vers des soignants formés :",
+                    "Recognized associations provide support, guidance and specialized clinician directories:",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            TextButton(onClick = { openLink(context, "https://www.endofrance.org") }) {
+                Text(
+                    tr("EndoFrance : association française de lutte contre l'endométriose (endofrance.org)", "EndoFrance: patient association website (endofrance.org)"),
+                    style = MaterialTheme.typography.bodySmall,
+                    textDecoration = TextDecoration.Underline,
+                )
+            }
+            TextButton(onClick = { openLink(context, "https://www.has-sante.fr/jcms/c_2819733/fr/prise-en-charge-de-l-endometriose") }) {
+                Text(
+                    tr("Recommandations officielles de la Haute Autorité de Santé (HAS)", "Official clinical recommendations (HAS)"),
+                    style = MaterialTheme.typography.bodySmall,
+                    textDecoration = TextDecoration.Underline,
+                )
+            }
+        }
+
+        Muted(tr("Cette fiche est informative et ne remplace pas une consultation médicale avec un professionnel de santé.", "This guide is for informational purposes and does not replace consultation with a healthcare professional."))
     }
 }
