@@ -67,6 +67,11 @@ object Format {
         "Likely range: ${dayMonth(state.next.earliest)} to ${dayMonth(state.next.latest)}.",
     )
 
+    fun fertileWindow(state: CycleState.Known): String = tr(
+        "Fenêtre fertile estimée : du ${dayMonth(state.fertileWindow.start)} au ${dayMonth(state.fertileWindow.endInclusive)} (ovulation estimée vers le ${dayMonth(state.ovulationDate)}).",
+        "Estimated fertile window: ${dayMonth(state.fertileWindow.start)} to ${dayMonth(state.fertileWindow.endInclusive)} (estimated ovulation around ${dayMonth(state.ovulationDate)}).",
+    )
+
     fun confidence(confidence: Confidence): String = when (confidence) {
         Confidence.PROVISIONAL -> tr(
             "Estimation provisoire : elle s'affinera dès vos prochains cycles.",

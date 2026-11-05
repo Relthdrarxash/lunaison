@@ -81,6 +81,120 @@ private val DarkColors: ColorScheme = darkColorScheme(
     outlineVariant = LunaColors.NightContainer,
 )
 
+private val SageLightColors: ColorScheme = lightColorScheme(
+    primary = Color(0xFF2E5443),
+    onPrimary = Color(0xFFFAFBF8),
+    primaryContainer = Color(0xFFDCE9E1),
+    onPrimaryContainer = Color(0xFF1F3B2E),
+    secondary = Color(0xFF8C4F38),
+    onSecondary = Color(0xFFFAFBF8),
+    secondaryContainer = Color(0xFFF3DDD4),
+    onSecondaryContainer = Color(0xFF2B221E),
+    background = Color(0xFFF4F6F1),
+    onBackground = Color(0xFF1E2923),
+    surface = Color(0xFFFAFBF8),
+    onSurface = Color(0xFF1E2923),
+    surfaceVariant = Color(0xFFDCE9E1),
+    onSurfaceVariant = Color(0xFF495950),
+    outline = Color(0xFF96A69D),
+    outlineVariant = Color(0xFFD8E0DA),
+)
+
+private val SageDarkColors: ColorScheme = darkColorScheme(
+    primary = Color(0xFFB4D6C4),
+    onPrimary = Color(0xFF121C17),
+    primaryContainer = Color(0xFF24382E),
+    onPrimaryContainer = Color(0xFFB4D6C4),
+    secondary = Color(0xFFE0A189),
+    onSecondary = Color(0xFF121C17),
+    secondaryContainer = Color(0xFF472C22),
+    onSecondaryContainer = Color(0xFFE8EFEA),
+    background = Color(0xFF121C17),
+    onBackground = Color(0xFFE8EFEA),
+    surface = Color(0xFF1A2620),
+    onSurface = Color(0xFFE8EFEA),
+    surfaceVariant = Color(0xFF24382E),
+    onSurfaceVariant = Color(0xFFB1C2B8),
+    outline = Color(0xFFB1C2B8),
+    outlineVariant = Color(0xFF24382E),
+)
+
+private val OceanLightColors: ColorScheme = lightColorScheme(
+    primary = Color(0xFF234A63),
+    onPrimary = Color(0xFFFAFCFE),
+    primaryContainer = Color(0xFFD9E7F2),
+    onPrimaryContainer = Color(0xFF183547),
+    secondary = Color(0xFF8E4B42),
+    onSecondary = Color(0xFFFAFCFE),
+    secondaryContainer = Color(0xFFF4DCD8),
+    onSecondaryContainer = Color(0xFF2B1F1D),
+    background = Color(0xFFF3F7FA),
+    onBackground = Color(0xFF1B2630),
+    surface = Color(0xFFFAFCFE),
+    onSurface = Color(0xFF1B2630),
+    surfaceVariant = Color(0xFFD9E7F2),
+    onSurfaceVariant = Color(0xFF495866),
+    outline = Color(0xFF98A8B5),
+    outlineVariant = Color(0xFFD8E1E8),
+)
+
+private val OceanDarkColors: ColorScheme = darkColorScheme(
+    primary = Color(0xFFB3D1E8),
+    onPrimary = Color(0xFF111A22),
+    primaryContainer = Color(0xFF213445),
+    onPrimaryContainer = Color(0xFFB3D1E8),
+    secondary = Color(0xFFE39E94),
+    onSecondary = Color(0xFF111A22),
+    secondaryContainer = Color(0xFF4A2B27),
+    onSecondaryContainer = Color(0xFFE6EEF5),
+    background = Color(0xFF111A22),
+    onBackground = Color(0xFFE6EEF5),
+    surface = Color(0xFF19242E),
+    onSurface = Color(0xFFE6EEF5),
+    surfaceVariant = Color(0xFF213445),
+    onSurfaceVariant = Color(0xFFB0C0CE),
+    outline = Color(0xFFB0C0CE),
+    outlineVariant = Color(0xFF213445),
+)
+
+private val TerracottaLightColors: ColorScheme = lightColorScheme(
+    primary = Color(0xFF6E3828),
+    onPrimary = Color(0xFFFFFBF8),
+    primaryContainer = Color(0xFFF5DFD6),
+    onPrimaryContainer = Color(0xFF4D2519),
+    secondary = Color(0xFF5A4632),
+    onSecondary = Color(0xFFFFFBF8),
+    secondaryContainer = Color(0xFFEFE3D5),
+    onSecondaryContainer = Color(0xFF2B2118),
+    background = Color(0xFFFCF6F2),
+    onBackground = Color(0xFF2B201C),
+    surface = Color(0xFFFFFBF8),
+    onSurface = Color(0xFF2B201C),
+    surfaceVariant = Color(0xFFF5DFD6),
+    onSurfaceVariant = Color(0xFF635049),
+    outline = Color(0xFFB8A29A),
+    outlineVariant = Color(0xFFE8DAD4),
+)
+
+private val TerracottaDarkColors: ColorScheme = darkColorScheme(
+    primary = Color(0xFFEBBBA8),
+    onPrimary = Color(0xFF1F1410),
+    primaryContainer = Color(0xFF3D261E),
+    onPrimaryContainer = Color(0xFFEBBBA8),
+    secondary = Color(0xFFD9C3AC),
+    onSecondary = Color(0xFF1F1410),
+    secondaryContainer = Color(0xFF3B3024),
+    onSecondaryContainer = Color(0xFFF2E8E4),
+    background = Color(0xFF1F1410),
+    onBackground = Color(0xFFF2E8E4),
+    surface = Color(0xFF291C17),
+    onSurface = Color(0xFFF2E8E4),
+    surfaceVariant = Color(0xFF3D261E),
+    onSurfaceVariant = Color(0xFFC7B4AC),
+    outline = Color(0xFFC7B4AC),
+    outlineVariant = Color(0xFF3D261E),
+)
+
 /** Atkinson Hyperlegible Next (Braille Institute, licence SIL OFL 1.1, voir FONT-LICENSE.txt). */
 val Atkinson = FontFamily(
     Font(R.font.atkinson_regular, FontWeight.Normal),
@@ -124,9 +238,19 @@ private val LunaShapes = Shapes(
 )
 
 @Composable
-fun LunaisonTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun LunaisonTheme(
+    dark: Boolean = isSystemInDarkTheme(),
+    palette: String = "PLUM",
+    content: @Composable () -> Unit,
+) {
+    val scheme = when (palette) {
+        "SAGE" -> if (dark) SageDarkColors else SageLightColors
+        "OCEAN" -> if (dark) OceanDarkColors else OceanLightColors
+        "TERRACOTTA" -> if (dark) TerracottaDarkColors else TerracottaLightColors
+        else -> if (dark) DarkColors else LightColors
+    }
     MaterialTheme(
-        colorScheme = if (dark) DarkColors else LightColors,
+        colorScheme = scheme,
         typography = LunaTypography,
         shapes = LunaShapes,
         content = content,

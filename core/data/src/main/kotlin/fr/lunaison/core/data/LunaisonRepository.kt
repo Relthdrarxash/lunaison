@@ -11,7 +11,9 @@ import fr.lunaison.core.model.Flow
 import fr.lunaison.core.model.Mood
 import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.Symptom
+import fr.lunaison.core.model.ThemePalette
 import kotlinx.coroutines.flow.map
+import java.security.MessageDigest
 import java.time.LocalDate
 import java.time.LocalTime
 import fr.lunaison.core.model.tr
@@ -38,6 +40,14 @@ data class AppSettings(
     val dismissedAlerts: Map<AlertKind, LocalDate> = emptyMap(),
     /** Début du cycle dont le bilan a été lu ou masqué. */
     val recapSeen: LocalDate? = null,
+    /** Met en pause les prévisions et les signaux (grossesse, allaitement, contraception continue). */
+    val pausePredictions: Boolean = false,
+    /** Affiche la fenêtre fertile estimée et les chances de concevoir. */
+    val showFertility: Boolean = false,
+    /** Palette de couleurs choisie. */
+    val themePalette: ThemePalette = ThemePalette.PLUM,
+    /** Empreinte SHA-256 du code PIN à 4 chiffres, ou null si aucun verrouillage n'est actif. */
+    val pinHash: String? = null,
 ) {
     val isAdult: Boolean get() = baseline.ageGroup == AgeGroup.ADULT
 
@@ -46,6 +56,11 @@ data class AppSettings(
 
     companion object {
         const val ALERT_SNOOZE_DAYS = 60L
+
+        fun hashPin(pin: String): String =
+            MessageDigest.getInstance("SHA-256")
+                .digest(pin.toByteArray())
+                .joinToString("") { "%02x".format(it) }
     }
 }
 
@@ -75,7 +90,7 @@ class LunaisonRepository(private val dao: LunaisonDao) {
 
     /** Export lisible par un tableur. Rien ne quitte le téléphone sans que la personne choisisse où l'enregistrer. */
     suspend fun exportCsv(): String = buildString {
-        appendLine(tr("date;flux;douleur;symptomes;humeurs;note", "date;flow;pain;symptoms;moods;note"))
+        appendLine(tr("date;flux;douleur;symptomes;humeurs;traitement;note", "date;flow;pain;symptoms;moods;medication;note"))
         logsOnce().forEach { log ->
             appendLine(
                 listOf(
@@ -84,6 +99,7 @@ class LunaisonRepository(private val dao: LunaisonDao) {
                     log.pain?.label.orEmpty(),
                     log.symptoms.joinToString(", ") { it.label },
                     log.moods.joinToString(", ") { it.label },
+                    if (log.medicationTaken) tr("oui", "yes") else "",
                     log.note.replace(";", ",").replace("\n", " "),
                 ).joinToString(";"),
             )
@@ -112,6 +128,7 @@ internal fun DayLogEntity.toModel() = DayLog(
     symptoms = symptoms.toEnumSet<Symptom>(),
     moods = moods.toEnumSet<Mood>(),
     note = note,
+    medicationTaken = medicationTaken,
 )
 
 internal fun DayLog.toEntity() = DayLogEntity(
@@ -121,6 +138,7 @@ internal fun DayLog.toEntity() = DayLogEntity(
     symptoms = symptoms.joinToString(",") { it.name },
     moods = moods.joinToString(",") { it.name },
     note = note,
+    medicationTaken = medicationTaken,
 )
 
 internal fun SettingsEntity.toModel() = AppSettings(
@@ -136,6 +154,9 @@ internal fun SettingsEntity.toModel() = AppSettings(
         periodReminderDaysBefore = periodReminderDaysBefore,
         logReminder = logReminder.toEnumOrNull<LogReminderMode>() ?: LogReminderMode.AROUND_PERIOD,
         logReminderTime = runCatching { LocalTime.parse(logReminderTime) }.getOrDefault(LocalTime.of(20, 0)),
+        medicationReminder = medicationReminder,
+        medicationReminderTime = runCatching { LocalTime.parse(medicationReminderTime) }.getOrDefault(LocalTime.of(9, 0)),
+        medicationLabel = medicationLabel,
     ),
     partner = if (partnerName != null && partnerChannel != null) {
         Partner(partnerName, partnerPhone, partnerChannel.toEnumOrNull<PartnerChannel>() ?: PartnerChannel.OTHER)
@@ -149,6 +170,10 @@ internal fun SettingsEntity.toModel() = AppSettings(
         if (kind != null && date != null) kind to date else null
     }.toMap(),
     recapSeen = recapSeen?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
+    pausePredictions = pausePredictions,
+    showFertility = showFertility,
+    themePalette = themePalette.toEnumOrNull<ThemePalette>() ?: ThemePalette.PLUM,
+    pinHash = pinHash,
 )
 
 internal fun AppSettings.toEntity() = SettingsEntity(
@@ -166,4 +191,11 @@ internal fun AppSettings.toEntity() = SettingsEntity(
     partnerChannel = partner?.channel?.name,
     dismissedAlerts = dismissedAlerts.entries.joinToString(",") { "${it.key.name}@${it.value}" },
     recapSeen = recapSeen?.toString(),
+    medicationReminder = reminders.medicationReminder,
+    medicationReminderTime = reminders.medicationReminderTime.toString(),
+    medicationLabel = reminders.medicationLabel,
+    pausePredictions = pausePredictions,
+    showFertility = showFertility,
+    themePalette = themePalette.name,
+    pinHash = pinHash,
 )

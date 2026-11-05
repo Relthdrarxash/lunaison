@@ -29,14 +29,22 @@ data class AppState(
         fun compute(logs: List<DayLog>, settings: AppSettings, today: LocalDate): AppState {
             val cycle = CycleAnalyzer.analyze(logs, settings.baseline, today)
             val known = cycle as? CycleState.Known
-            val alerts = known
-                ?.let { CycleAlerts.evaluate(it, settings.baseline.ageGroup) }
-                .orEmpty()
-                .filterNot { settings.isDismissed(it, today) }
-            val recap = known
-                ?.let { CycleInsights.recap(logs, it, settings.baseline.ageGroup) }
-                ?.takeIf { it.record.start != settings.recapSeen }
-            val anticipation = known?.let { CycleInsights.anticipation(logs, it) }
+            val alerts = if (settings.pausePredictions) {
+                emptyList()
+            } else {
+                known
+                    ?.let { CycleAlerts.evaluate(it, settings.baseline.ageGroup) }
+                    .orEmpty()
+                    .filterNot { settings.isDismissed(it, today) }
+            }
+            val recap = if (settings.pausePredictions) {
+                null
+            } else {
+                known
+                    ?.let { CycleInsights.recap(logs, it, settings.baseline.ageGroup) }
+                    ?.takeIf { it.record.start != settings.recapSeen }
+            }
+            val anticipation = if (settings.pausePredictions) null else known?.let { CycleInsights.anticipation(logs, it) }
             return AppState(today, logs, settings, cycle, alerts, recap, anticipation)
         }
     }

@@ -50,24 +50,41 @@ fun HomeScreen(
     onShare: () -> Unit,
     onCalendar: () -> Unit,
     onInsights: () -> Unit = {},
+    onBreathe: () -> Unit = {},
 ) {
     val cycle = state.cycle
     val todayLog = state.logFor(state.today)
+    val paused = state.settings.pausePredictions
     Page {
         PageTitle(Format.weekday(state.today))
 
-        when (cycle) {
-            CycleState.Unknown -> LunaCard {
+        when {
+            paused -> LunaCard(container = MaterialTheme.colorScheme.primaryContainer) {
+                Text(
+                    tr("Prévisions en pause", "Predictions paused"),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+                Text(
+                    tr("Les estimations de règles sont en pause (grossesse, allaitement ou contraception continue). Vous pouvez continuer à noter vos journées librement.", "Period estimates are paused (pregnancy, breastfeeding, or continuous contraception). You can keep logging your days freely."),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+                TextButton(onClick = { actions.updateSettings { it.copy(pausePredictions = false) } }) {
+                    Text(tr("Réactiver les prévisions", "Resume predictions"), color = MaterialTheme.colorScheme.onPrimaryContainer)
+                }
+            }
+            cycle is CycleState.Unknown -> LunaCard {
                 Text(tr("Notez vos dernières règles pour commencer", "Log your last period to get started"), style = MaterialTheme.typography.titleLarge)
                 Text(tr("Dès que Lunaison connaît le début de vos dernières règles, il estime les suivantes.", "As soon as Lunaison knows when your last period started, it estimates the next ones."), style = MaterialTheme.typography.bodyMedium)
                 LunaButton(tr("Ouvrir le calendrier", "Open the calendar"), onClick = onCalendar)
             }
-            is CycleState.Known -> CycleCard(cycle, onArticle)
+            cycle is CycleState.Known -> CycleCard(cycle, state.settings.showFertility, onArticle)
         }
 
         // Actions du jour.
         val inPeriod = (cycle as? CycleState.Known)?.inPeriod == true
-        if (!inPeriod && todayLog.flow?.isBleeding != true) {
+        if (!paused && !inPeriod && todayLog.flow?.isBleeding != true) {
             LunaButton(
                 tr("Mes règles ont commencé", "My period has started"),
                 onClick = {
@@ -81,10 +98,16 @@ fun HomeScreen(
         LunaButton(
             if (todayLog.isEmpty) tr("Noter ma journée", "Log my day") else tr("Modifier ma journée", "Edit my day"),
             onClick = { onLog(state.today, false) },
-            style = if (inPeriod) LunaButtonStyle.Primary else LunaButtonStyle.Outlined,
+            style = if (inPeriod || paused) LunaButtonStyle.Primary else LunaButtonStyle.Outlined,
             icon = Icons.Filled.Edit,
         )
-        if (!todayLog.isEmpty) TodaySummary(todayLog)
+        if (!todayLog.isEmpty) TodaySummary(todayLog, state.settings.reminders.medicationLabel)
+
+        LunaButton(
+            tr("Respirer et relâcher (douleur, stress)", "Breathe and relax (pain, stress)"),
+            onClick = onBreathe,
+            style = LunaButtonStyle.Quiet,
+        )
 
         if (state.settings.isAdult) {
             val partner = state.settings.partner
@@ -94,6 +117,24 @@ fun HomeScreen(
                 style = LunaButtonStyle.Quiet,
                 icon = Icons.Filled.Share,
             )
+        }
+
+        if (!paused && (cycle as? CycleState.Known)?.possiblePregnancyHint == true) {
+            LunaCard {
+                Text(tr("Retard prolongé : à savoir", "Extended delay: good to know"), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    tr("Un retard peut venir du stress, d'un changement de rythme, d'une maladie ou d'une grossesse. En cas de rapport susceptible d'entraîner une grossesse, un test urinaire est fiable dès le premier jour de retard présumé (ou 3 semaines après le rapport).", "A delay can be caused by stress, a change in routine, illness, or pregnancy. If pregnancy is possible, a home urine test is reliable from the first day of a missed period (or 3 weeks after intercourse)."),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = { actions.updateSettings { it.copy(pausePredictions = true) } }) {
+                        Text(tr("Mettre les prévisions en pause", "Pause predictions"))
+                    }
+                    TextButton(onClick = { onArticle("consulter") }) {
+                        Text(tr("En savoir plus", "Learn more"))
+                    }
+                }
+            }
         }
 
         state.alerts.forEach { alert ->
@@ -114,7 +155,7 @@ fun HomeScreen(
             )
         }
 
-        if (cycle is CycleState.Known) {
+        if (!paused && cycle is CycleState.Known) {
             PhaseCard(state, cycle, onArticle)
             if (cycle.stats.completedCycles >= CycleConfig.MIN_CYCLES_FOR_STATS) {
                 LunaButton(tr("Mes cycles", "My cycles"), onClick = onInsights, style = LunaButtonStyle.Quiet, icon = Icons.Filled.DateRange)
@@ -136,7 +177,7 @@ private fun RecapCard(recap: CycleRecap, onInsights: () -> Unit, onDismiss: () -
 }
 
 @Composable
-private fun CycleCard(cycle: CycleState.Known, onArticle: (String) -> Unit) {
+private fun CycleCard(cycle: CycleState.Known, showFertility: Boolean, onArticle: (String) -> Unit) {
     val phaseName = Format.phaseName(cycle.phase)
     LunaCard(container = MaterialTheme.colorScheme.primaryContainer) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -161,6 +202,14 @@ private fun CycleCard(cycle: CycleState.Known, onArticle: (String) -> Unit) {
         Text(Format.nextPeriod(cycle), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
         if (!cycle.inPeriod && cycle.daysLate == 0) {
             Text(Format.range(cycle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            if (showFertility) {
+                Text(Format.fertileWindow(cycle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Text(
+                    tr("Repère de calendrier : ne remplace pas une contraception.", "Calendar estimate: does not replace contraception."),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
         }
         Text(Format.confidence(cycle.stats.confidence), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
         if (!cycle.inPeriod && cycle.daysLate == 0) {
@@ -172,12 +221,16 @@ private fun CycleCard(cycle: CycleState.Known, onArticle: (String) -> Unit) {
 }
 
 @Composable
-private fun TodaySummary(log: DayLog) {
+private fun TodaySummary(log: DayLog, medicationLabel: String = "") {
     val parts = buildList {
         log.flow?.let { add(tr("Flux : ${it.label.lowercase()}", "Flow: ${it.label.lowercase()}")) }
         log.pain?.let { add(tr("Douleur : ${it.label.lowercase()}", "Pain: ${it.label.lowercase()}")) }
         if (log.symptoms.isNotEmpty()) add(log.symptoms.joinToString(", ") { it.label.lowercase() })
         if (log.moods.isNotEmpty()) add(tr("Humeur : ", "Mood: ") + log.moods.joinToString(", ") { it.label.lowercase() })
+        if (log.medicationTaken) {
+            val label = medicationLabel.trim().ifBlank { tr("contraception ou traitement", "contraception or medication") }
+            add(tr("Pris aujourd'hui : $label", "Taken today: $label"))
+        }
     }
     LunaCard {
         Text(tr("Noté aujourd'hui", "Logged today"), style = MaterialTheme.typography.titleMedium)

@@ -3,4 +3,5 @@
     <string name="app_name">Lunaison</string>
     <string name="reminders_channel">Rappels</string>
     <string name="reminders_channel_description">Annonce des prochaines règles et rappel de saisie</string>
+    <string name="widget_description">Repère discret du jour du cycle et de la phase</string>
 </resources>

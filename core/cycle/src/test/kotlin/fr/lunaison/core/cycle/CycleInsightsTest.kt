@@ -146,4 +146,23 @@ class CycleInsightsTest {
         val onsets = CycleInsights.onsets(logs, state(logs, lastStart(*lengths).plusDays(5)))
         assertEquals(listOf(Onset("Seins sensibles", 3, 3)), onsets)
     }
+
+    @Test
+    fun `bilan de sante complet et motifs sur toutes les phases`() {
+        val lengths = intArrayOf(28, 28, 28)
+        val logs = cycles(*lengths) { start, next ->
+            listOf(
+                DayLog(start.plusDays(8), moods = setOf(Mood.ENERGETIC), medicationTaken = true),
+                DayLog(next.minusDays(2), symptoms = setOf(Symptom.BREAST_TENDERNESS)),
+            )
+        }
+        val s = state(logs, lastStart(*lengths).plusDays(5))
+        val allPatterns = CycleInsights.allPhasePatterns(logs, s)
+        assertTrue(allPatterns.any { it.phase == Phase.FOLLICULAR })
+        assertTrue(allPatterns.any { it.phase == Phase.LUTEAL })
+        val report = CycleInsights.healthReport(logs, s, AgeGroup.ADULT)
+        assertNotNull(report.overview)
+        assertEquals(6, report.dayOfCycle)
+        assertEquals(1, report.medicationDaysLast30Days)
+    }
 }

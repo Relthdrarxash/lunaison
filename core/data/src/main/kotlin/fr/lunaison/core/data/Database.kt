@@ -22,6 +22,7 @@ data class DayLogEntity(
     val symptoms: String,
     val moods: String,
     val note: String,
+    val medicationTaken: Boolean = false,
 )
 
 /** Réglages : une seule ligne. */
@@ -43,6 +44,13 @@ data class SettingsEntity(
     val dismissedAlerts: String,
     /** Début du cycle dont le bilan a déjà été lu (format ISO), pour ne pas le remontrer. */
     val recapSeen: String? = null,
+    val medicationReminder: Boolean = false,
+    val medicationReminderTime: String = "09:00",
+    val medicationLabel: String = "",
+    val pausePredictions: Boolean = false,
+    val showFertility: Boolean = false,
+    val themePalette: String = "PLUM",
+    val pinHash: String? = null,
 )
 
 @Dao
@@ -75,20 +83,34 @@ interface LunaisonDao {
     suspend fun deleteSettings()
 }
 
-@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 2, exportSchema = true)
+@Database(entities = [DayLogEntity::class, SettingsEntity::class], version = 3, exportSchema = true)
 abstract class LunaisonDatabase : RoomDatabase() {
     abstract fun dao(): LunaisonDao
 
     companion object {
         fun create(context: Context): LunaisonDatabase =
             Room.databaseBuilder(context.applicationContext, LunaisonDatabase::class.java, "lunaison.db")
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
 
         /** Version 2 : mémorise le bilan de cycle déjà lu. Une colonne ajoutée, aucune donnée touchée. */
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE settings ADD COLUMN recapSeen TEXT")
+            }
+        }
+
+        /** Version 3 : suivi de contraception/traitement, pause des prévisions, fenêtre fertile, thème et verrou PIN. */
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE day_logs ADD COLUMN medicationTaken INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE settings ADD COLUMN medicationReminder INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE settings ADD COLUMN medicationReminderTime TEXT NOT NULL DEFAULT '09:00'")
+                db.execSQL("ALTER TABLE settings ADD COLUMN medicationLabel TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE settings ADD COLUMN pausePredictions INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE settings ADD COLUMN showFertility INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE settings ADD COLUMN themePalette TEXT NOT NULL DEFAULT 'PLUM'")
+                db.execSQL("ALTER TABLE settings ADD COLUMN pinHash TEXT")
             }
         }
     }
