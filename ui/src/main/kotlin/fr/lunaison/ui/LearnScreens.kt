@@ -108,6 +108,28 @@ fun LearnScreen(onArticle: (String) -> Unit) {
         cycleArticles.forEach { article ->
             ArticleCard(article, onArticle)
         }
+        LunaCard(modifier = Modifier.clickable(role = Role.Button) { onArticle("sopk") }) {
+            Text(tr("Le SOPK (ovaires polykystiques)", "PCOS (polycystic ovary syndrome)"), style = MaterialTheme.typography.titleMedium)
+            Text(
+                tr(
+                    "Critères de Rotterdam, ovulations rares, hyperandrogénie et repères au quotidien.",
+                    "Rotterdam criteria, infrequent ovulation, hyperandrogenism and everyday management.",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        LunaCard(modifier = Modifier.clickable(role = Role.Button) { onArticle("perimenopause") }) {
+            Text(tr("La périménopause et ses changements", "Perimenopause and its changes"), style = MaterialTheme.typography.titleMedium)
+            Text(
+                tr(
+                    "Cycles irréguliers, bouffées de chaleur, sommeil et transition hormonale expliqués.",
+                    "Irregular cycles, hot flashes, sleep and hormonal transition explained.",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
 
         // Catégorie 2 : Soulagement et bien-être
         SectionTitle(tr("Soulagement et bien-être", "Relief and well-being"))
@@ -117,6 +139,17 @@ fun LearnScreen(onArticle: (String) -> Unit) {
                 tr(
                     "Comprendre les signaux d'alerte (les 5 « D »), le diagnostic et les pistes de soulagement au quotidien.",
                     "Understand warning signs (the 5 'Ds'), diagnosis and everyday relief options.",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        LunaCard(modifier = Modifier.clickable(role = Role.Button) { onArticle("adenomyose") }) {
+            Text(tr("L'adénomyose : repères et saignements", "Adenomyosis: bleeding and pain"), style = MaterialTheme.typography.titleMedium)
+            Text(
+                tr(
+                    "L'endométriose interne du muscle utérin, règles très abondantes, crampes et prise en charge.",
+                    "Internal endometriosis in the uterine wall, heavy bleeding, cramps and management.",
                 ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -154,6 +187,18 @@ fun ArticleScreen(id: String, onBack: () -> Unit) {
     }
     if (id == "endometriose") {
         EndometriosisGuideScreen(onBack = onBack)
+        return
+    }
+    if (id == "sopk") {
+        PcosGuideScreen(onBack = onBack)
+        return
+    }
+    if (id == "adenomyose") {
+        AdenomyosisGuideScreen(onBack = onBack)
+        return
+    }
+    if (id == "perimenopause") {
+        PerimenopauseGuideScreen(onBack = onBack)
         return
     }
     val article = Articles.byId(id)
@@ -931,6 +976,210 @@ fun EndometriosisGuideScreen(onBack: () -> Unit) {
                     textDecoration = TextDecoration.Underline,
                 )
             }
+        }
+
+        Muted(tr("Cette fiche est informative et ne remplace pas une consultation médicale avec un professionnel de santé.", "This guide is for informational purposes and does not replace consultation with a healthcare professional."))
+    }
+}
+
+@Composable
+fun PcosGuideScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
+
+    Page {
+        PageTitle(
+            tr("Le SOPK (ovaires polykystiques)", "PCOS (polycystic ovary syndrome)"),
+            onBack = onBack,
+            subtitle = tr("Repères cliniques, critères de Rotterdam et pistes d'action.", "Clinical signs, Rotterdam criteria and management options."),
+        )
+
+        SectionTitle(tr("Qu'est-ce que le SOPK ?", "What is PCOS?"))
+        LunaCard {
+            Text(
+                tr(
+                    "Le syndrome des ovaires polykystiques (SOPK) est la première cause d'infertilité anovulatoire et le dérèglement hormonal le plus fréquent chez les femmes en âge de procréer (environ 1 personne sur 10 selon l'Inserm et l'OMS).",
+                    "Polycystic ovary syndrome (PCOS) is the leading cause of anovulatory infertility and the most common hormonal disorder in women of reproductive age (approx. 1 in 10 per WHO/Inserm).",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                tr(
+                    "Malgré son nom historique, il ne s'agit pas de kystes organiques mais d'une multitude de petits follicules immatures bloqués au stade de maturation dans l'ovaire, liés à un déséquilibre entre hormones hypophysaires (LH/FSH) et androgènes.",
+                    "Despite its name, it does not involve ovarian cysts, but rather multiple small immature follicles paused in their growth, driven by an imbalance in pituitary hormones and androgens.",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+
+        SectionTitle(tr("Les critères de Rotterdam (diagnostic)", "Rotterdam diagnostic criteria"))
+        LunaCard {
+            Text(
+                tr(
+                    "Selon le consensus international de Rotterdam, le diagnostic est posé en présence d'au moins 2 des 3 critères suivants (après exclusion d'autres causes) :",
+                    "Under international Rotterdam criteria, diagnosis requires at least 2 of the following 3 signs:",
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Bullet(tr("1. Ovulations rares ou absentes : cycles très longs (> 35 jours, spanioménorrhée), imprévisibles ou absence de règles pendant plus de 3 mois (aménorrhée).", "1. Infrequent or absent ovulation: very long cycles (> 35 days), unpredictable bleeding or absence of periods for 3+ months."))
+            Bullet(tr("2. Hyperandrogénie : excès d'hormones androgènes visible (acné d'adulte tenace, pilosité marquée sur le menton, le thorax ou la ligne ombilicale, chute de cheveux) ou biologique (taux de testostérone libre élevé à la prise de sang).", "2. Hyperandrogenism: excess androgens manifesting as persistent acne, hirsutism, hair loss or elevated blood levels."))
+            Bullet(tr("3. Morphologie ovarienne polykystique : présence de 20 follicules ou plus par ovaire ou volume ovarien supérieur à 10 ml à l'échographie endovaginale.", "3. Polycystic ovarian morphology: 20+ follicles per ovary or ovarian volume > 10 ml on pelvic ultrasound."))
+        }
+
+        SectionTitle(tr("Santé métabolique & globale", "Metabolic & general health"))
+        LunaCard {
+            Bullet(tr("Résistance à l'insuline : jusqu'à 70 % des femmes avec SOPK présentent une insulinorésistance qui stimule la production d'androgènes par les ovaires et favorise la prise de poids abdominale et la fatigue.", "Insulin resistance: present in up to 70% of individuals with PCOS, stimulating androgen production and abdominal weight gain."))
+            Bullet(tr("Risques à long terme : surveillance préventive recommandée pour le diabète de type 2, l'hypertension et la santé cardiovasculaire.", "Long-term monitoring: recommended for type 2 diabetes risk and cardiovascular health."))
+            Bullet(tr("Bien-être émotionnel : l'impact sur l'image corporelle, l'anxiété et le moral est réel et mérite un accompagnement bienveillant et sans jugement.", "Emotional well-being: the psychological impact on self-image and anxiety warrants compassionate care."))
+        }
+
+        SectionTitle(tr("Pistes de prise en charge", "Management options"))
+        LunaCard {
+            Bullet(tr("Alimentation à index glycémique modéré : privilégier les légumes, les légumineuses, les protéines et les bonnes graisses pour éviter les pics d'insuline.", "Low-glycemic nutrition: emphasizing vegetables, legumes, protein and fiber to smooth insulin spikes."))
+            Bullet(tr("Activité physique régulière : la marche, la natation et le renforcement musculaire augmentent directement la sensibilité cellulaire à l'insuline.", "Regular physical activity: strength training and aerobic exercise directly improve cellular insulin sensitivity."))
+            Bullet(tr("Protéger l'endomètre : en l'absence de règles régulières, un traitement progestatif séquentiel permet d'évacuer régulièrement la muqueuse utérine.", "Endometrial protection: sequential progestins ensure regular shedding when periods are absent."))
+            Bullet(tr("Traitements médicaux : pilule oestroprogestative anti-androgène, metformine en cas d'insulinorésistance ou inducteurs d'ovulation en projet de grossesse.", "Medical options: anti-androgenic pill, metformin or ovulation induction when seeking pregnancy."))
+            Bullet(tr("Dans Lunaison : activez l'option « Cycles naturellement irréguliers » dans les Réglages pour bénéficier de prévisions adaptées sans alertes anxiogènes.", "In Lunaison: enable 'Naturally irregular cycles' in Settings for adapted prediction intervals."))
+        }
+
+        SectionTitle(tr("Ressources et associations", "Resources & associations"))
+        LunaCard {
+            TextButton(onClick = { openLink(context, "https://www.espopk.org") }) {
+                Text(
+                    tr("Association Esp'OPK : association francophone dédiée au SOPK (espopk.org)", "Esp'OPK association website (espopk.org)"),
+                    style = MaterialTheme.typography.bodySmall,
+                    textDecoration = TextDecoration.Underline,
+                )
+            }
+            TextButton(onClick = { openLink(context, "https://www.inserm.fr/dossier/syndrome-ovaires-polykystiques-sopk/") }) {
+                Text(
+                    tr("Dossier scientifique de l'Inserm sur le SOPK", "Inserm scientific guide on PCOS"),
+                    style = MaterialTheme.typography.bodySmall,
+                    textDecoration = TextDecoration.Underline,
+                )
+            }
+        }
+
+        Muted(tr("Cette fiche est informative et ne remplace pas une consultation médicale avec un professionnel de santé.", "This guide is for informational purposes and does not replace consultation with a healthcare professional."))
+    }
+}
+
+@Composable
+fun AdenomyosisGuideScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
+
+    Page {
+        PageTitle(
+            tr("L'adénomyose", "Adenomyosis"),
+            onBack = onBack,
+            subtitle = tr("Repères, règles très abondantes et options de soulagement.", "Indicators, heavy menstrual bleeding and relief options."),
+        )
+
+        SectionTitle(tr("Qu'est-ce que l'adénomyose ?", "What is adenomyosis?"))
+        LunaCard {
+            Text(
+                tr(
+                    "L'adénomyose se caractérise par l'infiltration de cellules de l'endomètre (la muqueuse qui tapisse l'intérieur de l'utérus) dans l'épaisseur du muscle utérin (le myomètre). On la décrit couramment comme une « endométriose interne » de l'utérus.",
+                    "Adenomyosis occurs when endometrial tissue (the lining inside the uterus) infiltrates the muscular uterine wall (myometrium). It is often called 'internal endometriosis'.",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                tr(
+                    "Ces foyers de muqueuse réagissent aux hormones de chaque cycle : ils saignent dans le muscle, provoquant une inflammation locale, des crampes douloureuses et une augmentation du volume de l'utérus.",
+                    "These tissue patches respond to hormonal cycles by bleeding inside the uterine muscle, causing inflammation, intense cramps and an enlarged uterus.",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Bullet(tr("Fréquence : elle touche 15 à 20 % des femmes et coexiste souvent avec l'endométriose pelvienne.", "Prevalence: affects 15 to 20% of women and frequently coexists with pelvic endometriosis."))
+        }
+
+        SectionTitle(tr("Les symptômes principaux", "Main symptoms"))
+        LunaCard {
+            Bullet(tr("Règles très abondantes (ménorragies) : saignements prolongés (> 7 jours), abondants avec émission fréquente de caillots sanguins nécessitant de doubler les protections ou de se lever la nuit.", "Heavy menstrual bleeding (menorrhagia): prolonged bleeding (> 7 days), large blood clots and frequent protection changes."))
+            Bullet(tr("Crampes utérines violentes : contractions douloureuses avant et pendant les règles, résistant souvent aux antalgiques courants.", "Severe menstrual cramps: intense pain before and during periods that resists standard analgesics."))
+            Bullet(tr("Pesanteur pelvienne : sensation d'inconfort continu ou de bas-ventre lourd et gonflé.", "Pelvic heaviness: continuous lower abdominal discomfort or feelings of pressure."))
+            Bullet(tr("Fatigue et carence en fer : les saignements abondants répétés épuisent les réserves de fer (anémie ferriprive), causant épuisement et essoufflement.", "Fatigue and iron deficiency: heavy blood loss depletes iron stores, causing persistent fatigue and shortness of breath."))
+        }
+
+        SectionTitle(tr("Le diagnostic", "Diagnosis"))
+        LunaCard {
+            Text(
+                tr(
+                    "Le diagnostic est posé grâce à des examens d'imagerie ciblés réalisés par des praticiens formés :",
+                    "Diagnosis relies on specialized pelvic imaging performed by experienced practitioners:",
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Bullet(tr("Échographie pelvienne endovaginale : visualise l'asymétrie des parois utérines, l'aspect hétérogène du muscle et les micro-kystes myométriaux.", "Transvaginal ultrasound: shows wall asymmetry, heterogeneous muscle texture and myometrial microcysts."))
+            Bullet(tr("IRM pelvienne : examen de référence mesurant l'épaississement de la « zone jonctionnelle » (> 12 mm) entre l'endomètre et le myomètre.", "Pelvic MRI: gold standard measuring the thickening of the junctional zone (> 12 mm)."))
+        }
+
+        SectionTitle(tr("Pistes de soulagement", "Relief and treatments"))
+        LunaCard {
+            Bullet(tr("Anti-hémorragiques (acide tranexamique) : pris uniquement pendant les règles, il diminue d'environ 50 % l'abondance des saignements.", "Antifibrinolytics (tranexamic acid): taken during flow days to reduce blood loss volume by approx. 50%."))
+            Bullet(tr("Contraception hormonale : stérilet hormonal au lévonorgestrel ou pilule progestative en continu pour atrophier la muqueuse et stopper les hémorragies.", "Hormonal therapy: levonorgestrel IUD or continuous progestin pill to thin the lining and stop heavy bleeding."))
+            Bullet(tr("Recharger le fer : dosage de la ferritine et complémentation en fer (orale ou injectable si sévère) pour restaurer l'énergie.", "Iron repletion: ferritin checks and oral or IV iron supplements to resolve anemia."))
+            Bullet(tr("Chaleur et antispasmodiques : bouillotte chaude sur le bas-ventre et repos pour relâcher les spasmes myométriaux.", "Heat and antispasmodics: heating pad on the lower abdomen to ease myometrial spasms."))
+            Bullet(tr("Gestes interventionnels : embolisation des artères utérines ou chirurgie discutées au cas par cas en cas d'échec des traitements médicaux.", "Interventional options: uterine artery embolization or surgery evaluated in severe cases."))
+        }
+
+        Muted(tr("Cette fiche est informative et ne remplace pas une consultation médicale avec un professionnel de santé.", "This guide is for informational purposes and does not replace consultation with a healthcare professional."))
+    }
+}
+
+@Composable
+fun PerimenopauseGuideScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
+
+    Page {
+        PageTitle(
+            tr("La périménopause", "Perimenopause"),
+            onBack = onBack,
+            subtitle = tr("Comprendre les variations hormonales et vivre sereinement la transition.", "Understanding hormonal fluctuations and navigating the transition."),
+        )
+
+        SectionTitle(tr("Qu'est-ce que la périménopause ?", "What is perimenopause?"))
+        LunaCard {
+            Text(
+                tr(
+                    "La périménopause est la phase naturelle de transition hormonale qui précède la ménopause (l'arrêt définitif des règles pendant 12 mois consécutifs).",
+                    "Perimenopause is the natural transition period preceding menopause (defined as 12 consecutive months without periods).",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                tr(
+                    "Elle débute le plus souvent entre 40 et 48 ans et dure en moyenne entre 2 et 8 ans. La réserve de follicules ovariens diminue et la production d'œstrogènes et de progestérone commence à fluctuer de manière imprévisible.",
+                    "It typically begins between ages 40 and 48 and lasts 2 to 8 years on average. Ovarian follicle reserve declines, causing estrogen and progesterone to fluctuate.",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+
+        SectionTitle(tr("Les deux phases de la transition", "The two phases of transition"))
+        LunaCard {
+            Bullet(tr("1. Chute précoce de la progestérone : les ovulations deviennent irrégulières. Les œstrogènes ne sont plus contrebalancés : les cycles se raccourcissent (21 à 25 jours), les seins deviennent très sensibles, l'irritabilité et le syndrome prémenstruel s'accentuent.", "1. Early progesterone decline: ovulation becomes irregular. Estrogen dominates unopposed: cycles shorten (21-25 days), breast tenderness increases and PMS intensifies."))
+            Bullet(tr("2. Chute tardive des œstrogènes : les cycles s'allongent considérablement (parfois 2 à 4 mois sans règles), les flux deviennent imprévisibles, et les symptômes vasomoteurs apparaissent.", "2. Late estrogen decline: cycles lengthen significantly (2-4 months between periods), flow becomes unpredictable, and vasomotor symptoms emerge."))
+        }
+
+        SectionTitle(tr("Les manifestations fréquentes", "Common symptoms"))
+        LunaCard {
+            Bullet(tr("Bouffées de chaleur et sueurs nocturnes : sensation soudaine de chaleur intense remontant au cou et au visage, parfois suivie de frissons.", "Hot flashes & night sweats: sudden waves of intense heat over the face and neck, sometimes followed by chills."))
+            Bullet(tr("Troubles du sommeil : difficultés d'endormissement et réveils nocturnes fréquents (souvent vers 3h-4h).", "Sleep disruption: difficulty falling asleep and frequent night awakenings."))
+            Bullet(tr("Brouillard mental (« brain fog ») : sensation de tête confuse, trous de mémoire ponctuels et baisse de concentration passagère.", "Brain fog: temporary concentration lapses and occasional memory blanks."))
+            Bullet(tr("Variations de l'humeur : anxiété nouvelle, irritabilité ou moral fluctuant liés aux vagues d'œstrogènes.", "Mood changes: heightened anxiety or irritability linked to shifting hormone levels."))
+            Bullet(tr("Sécheresse intime : inconfort vaginal lors des rapports, attribuable à la baisse progressive d'imprégnation œstrogénique.", "Vaginal dryness: intimate discomfort during sex due to lower estrogen support."))
+        }
+
+        SectionTitle(tr("Pistes d'accompagnement et bien-être", "Support and well-being options"))
+        LunaCard {
+            Bullet(tr("Activité physique régulière : le renforcement musculaire et les exercices avec impact (marche active, danse) protègent la densité osseuse et la masse musculaire.", "Regular physical activity: strength training and weight-bearing exercise protect bone density and muscle mass."))
+            Bullet(tr("Alimentation protectrice : apport suffisant en protéines, calcium (produits laitiers, eaux minérales calciques) et vitamine D.", "Bone & metabolic nutrition: adequate protein, calcium and vitamin D intake."))
+            Bullet(tr("Modérer les déclencheurs de bouffées : l'alcool, le café, les repas très épicés et le stress aigu accentuent la fréquence des bouffées de chaleur.", "Moderate triggers: alcohol, caffeine, spicy foods and acute stress commonly trigger hot flashes."))
+            Bullet(tr("Traitement hormonal de la ménopause (THM) : peut être discuté avec un soignant si les symptômes altèrent la qualité de vie, avec un bilan bénéfice/risque personnalisé.", "Menopausal hormone therapy (MHT): can be evaluated with a doctor if symptoms substantially affect daily quality of life."))
+            Bullet(tr("Dans Lunaison : notez vos bouffées et troubles du sommeil dans votre carnet, et activez le mode « Cycles irréguliers » dans les Réglages.", "In Lunaison: track hot flashes and sleep in your log, and enable 'Irregular cycles' mode in Settings."))
         }
 
         Muted(tr("Cette fiche est informative et ne remplace pas une consultation médicale avec un professionnel de santé.", "This guide is for informational purposes and does not replace consultation with a healthcare professional."))

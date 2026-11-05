@@ -18,10 +18,17 @@ object Format {
     private val spanish = Formatters(Locale.forLanguageTag("es"), "d 'de' MMMM", "EEEE, d 'de' MMMM", "MMMM yyyy")
     private val german = Formatters(Locale.GERMAN, "d. MMMM", "EEEE, d. MMMM", "MMMM yyyy")
 
-    private class Formatters(locale: Locale, dayMonth: String, weekday: String, monthYear: String) {
+    private class Formatters(
+        locale: Locale,
+        dayMonth: String,
+        weekday: String,
+        monthYear: String,
+        dayOfWeek: String = "EEEE",
+    ) {
         val dayMonth: DateTimeFormatter = DateTimeFormatter.ofPattern(dayMonth, locale)
         val weekday: DateTimeFormatter = DateTimeFormatter.ofPattern(weekday, locale)
         val monthYear: DateTimeFormatter = DateTimeFormatter.ofPattern(monthYear, locale)
+        val dayOfWeek: DateTimeFormatter = DateTimeFormatter.ofPattern(dayOfWeek, locale)
     }
 
     private val current: Formatters
@@ -35,6 +42,8 @@ object Format {
         }
 
     fun dayMonth(date: LocalDate): String = date.format(current.dayMonth)
+
+    fun dayOfWeek(date: LocalDate): String = date.format(current.dayOfWeek).replaceFirstChar { it.uppercase() }
 
     fun weekday(date: LocalDate): String = date.format(current.weekday).replaceFirstChar { it.uppercase() }
 
