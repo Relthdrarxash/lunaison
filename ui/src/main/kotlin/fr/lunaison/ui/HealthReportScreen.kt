@@ -27,7 +27,9 @@ import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.IntimacyKind
+import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.PillStatus
+import fr.lunaison.core.model.Symptom
 import fr.lunaison.core.model.tr
 import java.util.Locale
 
@@ -42,6 +44,7 @@ enum class ReportSection(
 ) {
     OVERVIEW("Synthèse & FIGO", "Overview & FIGO", "Podsumowanie", "Підсумок", "Resumen y FIGO", "Übersicht"),
     CYCLES_HISTORY("Historique des cycles", "Cycles history", "Historia cykli", "Історія циклів", "Historial de ciclos", "Zyklushistorie"),
+    PAIN_AND_ENDOMETRIOSIS("Douleurs & endométriose", "Pain & endometriosis", "Ból i endometrioza", "Біль та ендометріоз", "Dolor y endometriosis", "Schmerzen & Endometriose"),
     SYMPTOMS_AND_MOODS("Symptômes par phase", "Symptoms by phase", "Objawy według faz", "Симптоми за фазами", "Síntomas por fase", "Symptome je Phase"),
     MEDICATIONS("Traitements & pilule", "Medications & pill", "Leki i antykoncepcja", "Ліки та контрацепція", "Tratamiento y píldora", "Medikamente & Pille"),
     WEIGHT("Poids", "Weight", "Waga", "Вага", "Peso", "Gewicht"),
@@ -79,6 +82,7 @@ fun HealthReportScreen(
             setOf(
                 ReportSection.OVERVIEW,
                 ReportSection.CYCLES_HISTORY,
+                ReportSection.PAIN_AND_ENDOMETRIOSIS,
                 ReportSection.SYMPTOMS_AND_MOODS,
                 ReportSection.MEDICATIONS,
                 ReportSection.WEIGHT,
@@ -157,6 +161,53 @@ fun HealthReportScreen(
                     val periodPart = rec.periodLength?.let { tr(", règles de ${Format.days(it)}", ", period ${Format.days(it)}") }.orEmpty()
                     val painPart = if (rec.painDays > 0) tr(", douleur gênante/forte : ${Format.days(rec.painDays)}", ", bothersome/severe pain: ${Format.days(rec.painDays)}") else ""
                     Bullet(tr("Début le ${Format.dayMonth(rec.start)} : cycle de ${Format.days(rec.length)}$periodPart$painPart", "Started ${Format.dayMonth(rec.start)}: ${Format.days(rec.length)} cycle$periodPart$painPart"))
+                }
+            }
+        }
+
+        if (ReportSection.PAIN_AND_ENDOMETRIOSIS in selectedSections) {
+            val severePainDays = logsLast90Days.count { it.pain == Pain.SEVERE }
+            val moderatePainDays = logsLast90Days.count { it.pain == Pain.MODERATE }
+            val pelvicPainDays = logsLast90Days.count { Symptom.PELVIC_PAIN in it.symptoms }
+            val dyspareuniaDays = logsLast90Days.count { Symptom.DYSPAREUNIA in it.symptoms }
+            val digestivePainDays = logsLast90Days.count { Symptom.DIGESTIVE_PAIN in it.symptoms }
+            val urinaryPainDays = logsLast90Days.count { Symptom.URINARY_PAIN in it.symptoms }
+            val radiatingPainDays = logsLast90Days.count { Symptom.RADIATING_PAIN in it.symptoms }
+            val crampsDays = logsLast90Days.count { Symptom.CRAMPS in it.symptoms }
+            val hasPainData = severePainDays > 0 || moderatePainDays > 0 || pelvicPainDays > 0 ||
+                dyspareuniaDays > 0 || digestivePainDays > 0 || urinaryPainDays > 0 ||
+                radiatingPainDays > 0 || crampsDays > 0
+
+            if (hasPainData) {
+                SectionTitle(tr("Repères douleurs & endométriose (90 derniers jours)", "Pain & endometriosis indicators (last 90 days)"))
+                LunaCard {
+                    if (severePainDays > 0 || moderatePainDays > 0) {
+                        val totalPainDays = severePainDays + moderatePainDays
+                        Bullet(tr("Douleur gênante ou forte : ${Format.days(totalPainDays)} (dont ${Format.days(severePainDays)} sévère(s))", "Bothersome or severe pain: ${Format.days(totalPainDays)} (including ${Format.days(severePainDays)} severe)"))
+                    }
+                    if (crampsDays > 0) {
+                        Bullet(tr("Crampes abdominales : notées ${Format.days(crampsDays)}", "Abdominal cramps: logged ${Format.days(crampsDays)}"))
+                    }
+                    if (pelvicPainDays > 0) {
+                        Bullet(tr("Douleurs pelviennes (bas-ventre) : notées ${Format.days(pelvicPainDays)}", "Pelvic pain: logged ${Format.days(pelvicPainDays)}"))
+                    }
+                    if (dyspareuniaDays > 0) {
+                        Bullet(tr("Douleurs aux rapports (dyspareunie) : notées ${Format.days(dyspareuniaDays)}", "Pain during sex (dyspareunia): logged ${Format.days(dyspareuniaDays)}"))
+                    }
+                    if (digestivePainDays > 0) {
+                        Bullet(tr("Douleurs au transit ou à la défécation : notées ${Format.days(digestivePainDays)}", "Pain with bowel movements: logged ${Format.days(digestivePainDays)}"))
+                    }
+                    if (urinaryPainDays > 0) {
+                        Bullet(tr("Douleurs en urinant (dysurie) : notées ${Format.days(urinaryPainDays)}", "Pain when urinating: logged ${Format.days(urinaryPainDays)}"))
+                    }
+                    if (radiatingPainDays > 0) {
+                        Bullet(tr("Douleurs irradiantes (dos, lombaires, jambes) : notées ${Format.days(radiatingPainDays)}", "Radiating pain (back, legs): logged ${Format.days(radiatingPainDays)}"))
+                    }
+                    Text(
+                        tr("Repères utiles pour le dialogue soignant selon les recommandations HAS / ESHRE.", "Helpful indicators for clinician dialogue per HAS / ESHRE guidelines."),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             }
         }
@@ -307,6 +358,34 @@ private fun formatPlainReport(
                 val d = if (rec.painDays > 0) tr(", douleur gênante/forte ${rec.painDays}j", ", moderate/severe pain ${rec.painDays}d") else ""
                 appendLine("- ${Format.dayMonth(rec.start)} : ${rec.length}j$p$d")
             }
+        }
+    }
+
+    if (ReportSection.PAIN_AND_ENDOMETRIOSIS in sections) {
+        val severePainDays = logsLast90Days.count { it.pain == Pain.SEVERE }
+        val moderatePainDays = logsLast90Days.count { it.pain == Pain.MODERATE }
+        val pelvicPainDays = logsLast90Days.count { Symptom.PELVIC_PAIN in it.symptoms }
+        val dyspareuniaDays = logsLast90Days.count { Symptom.DYSPAREUNIA in it.symptoms }
+        val digestivePainDays = logsLast90Days.count { Symptom.DIGESTIVE_PAIN in it.symptoms }
+        val urinaryPainDays = logsLast90Days.count { Symptom.URINARY_PAIN in it.symptoms }
+        val radiatingPainDays = logsLast90Days.count { Symptom.RADIATING_PAIN in it.symptoms }
+        val crampsDays = logsLast90Days.count { Symptom.CRAMPS in it.symptoms }
+        val hasPainData = severePainDays > 0 || moderatePainDays > 0 || pelvicPainDays > 0 ||
+            dyspareuniaDays > 0 || digestivePainDays > 0 || urinaryPainDays > 0 ||
+            radiatingPainDays > 0 || crampsDays > 0
+
+        if (hasPainData) {
+            appendLine()
+            appendLine(tr("Douleurs & repères endométriose (90 j) :", "Pain & endometriosis indicators (90 d):"))
+            if (severePainDays > 0 || moderatePainDays > 0) {
+                appendLine("- " + tr("Douleur gênante ou forte : ${severePainDays + moderatePainDays} j (dont $severePainDays sévère(s))", "Bothersome or severe pain: ${severePainDays + moderatePainDays} d (including $severePainDays severe)"))
+            }
+            if (crampsDays > 0) appendLine("- " + tr("Crampes : $crampsDays j", "Cramps: $crampsDays d"))
+            if (pelvicPainDays > 0) appendLine("- " + tr("Douleurs pelviennes : $pelvicPainDays j", "Pelvic pain: $pelvicPainDays d"))
+            if (dyspareuniaDays > 0) appendLine("- " + tr("Douleurs aux rapports : $dyspareuniaDays j", "Pain during sex: $dyspareuniaDays d"))
+            if (digestivePainDays > 0) appendLine("- " + tr("Douleurs digestives / défécation : $digestivePainDays j", "Painful bowel movement: $digestivePainDays d"))
+            if (urinaryPainDays > 0) appendLine("- " + tr("Douleurs en urinant : $urinaryPainDays j", "Painful urination: $urinaryPainDays d"))
+            if (radiatingPainDays > 0) appendLine("- " + tr("Douleurs irradiantes (dos/jambes) : $radiatingPainDays j", "Radiating pain (back/legs): $radiatingPainDays d"))
         }
     }
 
