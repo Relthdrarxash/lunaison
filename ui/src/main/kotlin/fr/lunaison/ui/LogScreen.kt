@@ -91,7 +91,7 @@ fun LogScreen(
                 isSelected = { draft.flow == it },
                 onToggle = { draft = draft.copy(flow = if (draft.flow == it) null else it) },
             )
-            Muted(tr("Des traces seules ne comptent pas comme le début des règles.", "Spotting alone does not count as the start of a period."))
+            Muted(tr("De simples traces ne marquent pas le début des règles.", "Spotting alone does not mark the start of a period."))
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -123,7 +123,7 @@ fun LogScreen(
             )
             if (visibleSymptoms.size < Symptom.entries.size) {
                 LunaButton(
-                    tr("Autres symptômes (périménopause, douleurs pelviennes…)", "More symptoms (perimenopause, pelvic pain…)"),
+                    tr("Plus de symptômes (périménopause, sommeil…)", "More symptoms (perimenopause, sleep…)"),
                     onClick = { showAllSymptoms = true },
                     style = LunaButtonStyle.Quiet,
                 )
@@ -180,10 +180,10 @@ fun LogScreen(
 
         val hasMeasurements = draft.weight != null || draft.medications.isNotEmpty() || draft.basalTemperature != null || draft.mucus != null
         val toggleLabel = if (showMeasurements) {
-            tr("Masquer les mesures & traitements facultatifs", "Hide optional measurements & treatments")
+            tr("Masquer les options secondaires", "Hide secondary options")
         } else {
-            val badge = if (hasMeasurements) tr(" (notés)", " (logged)") else ""
-            tr("Ouvrir : médicaments, poids, température…$badge", "Open: medications, weight, temperature…$badge")
+            val badge = if (hasMeasurements) tr(" (notées)", " (logged)") else ""
+            tr("Plus d'options : poids, température, traitements…$badge", "More options: weight, temperature, medications…$badge")
         }
         LunaButton(
             toggleLabel,

@@ -341,12 +341,20 @@ fun SettingsScreen(
         LunaCard {
             Text(tr("Tout est enregistré sur ce téléphone, nulle part ailleurs. Lunaison n'a pas accès à Internet et ne fait pas de sauvegarde dans le nuage.", "Everything is saved on this phone, nowhere else. Lunaison has no Internet access and makes no cloud backup."), style = MaterialTheme.typography.bodyMedium)
             LunaButton(tr("Bilan de santé pour un soignant", "Health report for a clinician"), onClick = onHealthReport, style = LunaButtonStyle.Outlined)
-            LunaButton(tr("Exporter (tableur)", "Export (spreadsheet)"), onClick = { exporter.launch("lunaison.csv") }, style = LunaButtonStyle.Outlined)
-            LunaButton(
-                tr("Importer des données", "Import data"),
-                onClick = { showImportSourceDialog = true },
-                style = LunaButtonStyle.Outlined,
-            )
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                LunaButton(
+                    tr("Exporter (CSV)", "Export (CSV)"),
+                    onClick = { exporter.launch("lunaison.csv") },
+                    style = LunaButtonStyle.Outlined,
+                    modifier = Modifier.weight(1f),
+                )
+                LunaButton(
+                    tr("Importer", "Import"),
+                    onClick = { showImportSourceDialog = true },
+                    style = LunaButtonStyle.Outlined,
+                    modifier = Modifier.weight(1f),
+                )
+            }
             importResultMessage?.let { msg ->
                 Muted(msg)
             }
@@ -357,11 +365,23 @@ fun SettingsScreen(
         LunaCard {
             Text("Lunaison $versionName", style = MaterialTheme.typography.titleSmall)
             Text(tr("Libre (GPL-3.0), gratuit, sans publicité ni traceur. Ce n'est ni un dispositif médical ni une méthode de contraception.", "Free and open source (GPL-3.0), no ads, no trackers. It is neither a medical device nor a method of contraception."), style = MaterialTheme.typography.bodySmall)
-            TextButton(onClick = { onArticle("previsions") }) { Text(tr("Ce que les prévisions peuvent dire", "What predictions can tell you")) }
-            TextButton(onClick = { openLink(context, Links.PRIVACY) }) { Text(tr("Politique de confidentialité", "Privacy policy")) }
-            TextButton(onClick = { openLink(context, Links.SOURCE) }) { Text(tr("Code source", "Source code")) }
-            TextButton(onClick = { openLink(context, Links.CONTACT) }) { Text(tr("Nous écrire", "Contact us")) }
-            TextButton(onClick = { openStore(context) }) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TextButton(onClick = { onArticle("previsions") }, modifier = Modifier.weight(1f)) {
+                    Text(tr("Prévisions", "Predictions"), style = MaterialTheme.typography.labelMedium)
+                }
+                TextButton(onClick = { openLink(context, Links.PRIVACY) }, modifier = Modifier.weight(1f)) {
+                    Text(tr("Confidentialité", "Privacy"), style = MaterialTheme.typography.labelMedium)
+                }
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TextButton(onClick = { openLink(context, Links.SOURCE) }, modifier = Modifier.weight(1f)) {
+                    Text(tr("Code source", "Source code"), style = MaterialTheme.typography.labelMedium)
+                }
+                TextButton(onClick = { openLink(context, Links.CONTACT) }, modifier = Modifier.weight(1f)) {
+                    Text(tr("Nous écrire", "Contact us"), style = MaterialTheme.typography.labelMedium)
+                }
+            }
+            TextButton(onClick = { openStore(context) }, modifier = Modifier.fillMaxWidth()) {
                 Text(
                     tr(
                         "Laisser un avis sur le Play Store",
@@ -371,6 +391,7 @@ fun SettingsScreen(
                         es = "Dejar una opinión en Google Play",
                         de = "Bewertung im Play Store abgeben",
                     ),
+                    style = MaterialTheme.typography.labelMedium,
                 )
             }
         }
