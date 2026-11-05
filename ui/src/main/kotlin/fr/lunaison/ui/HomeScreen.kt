@@ -292,7 +292,7 @@ fun HomeScreen(
 
         if (!paused && cycle is CycleState.Known) {
             UpcomingForecastCard(cycle)
-            PhaseHormonesCard(cycle.phase)
+            PhaseHormonesCard(cycle.phase, onArticle)
             PhaseCard(state, cycle, onArticle)
             if (cycle.stats.completedCycles >= CycleConfig.MIN_CYCLES_FOR_STATS) {
                 LunaButton(tr("Mes cycles", "My cycles"), onClick = onInsights, style = LunaButtonStyle.Quiet, icon = Icons.Filled.DateRange)
@@ -470,7 +470,7 @@ private fun UpcomingForecastCard(cycle: CycleState.Known) {
 }
 
 @Composable
-private fun PhaseHormonesCard(phase: Phase) {
+private fun PhaseHormonesCard(phase: Phase, onArticle: (String) -> Unit = {}) {
     val profile = remember(phase) { PhaseHormoneInfo.profile(phase) }
     var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -500,8 +500,13 @@ private fun PhaseHormonesCard(phase: Phase) {
             Text(tr("Ce qui vous soutient :", "What supports you:"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
             profile.supportAdvice.forEach { Bullet(it) }
         }
-        TextButton(onClick = { expanded = !expanded }) {
-            Text(if (expanded) tr("Moins de détails", "Show less") else tr("Atouts, défis et conseils de cette phase", "Strengths, challenges & advice"))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            TextButton(onClick = { expanded = !expanded }) {
+                Text(if (expanded) tr("Moins de détails", "Show less") else tr("Atouts & conseils", "Strengths & advice"))
+            }
+            TextButton(onClick = { onArticle("cycle") }) {
+                Text(tr("Courbe des hormones", "Hormone curve"))
+            }
         }
     }
 }
