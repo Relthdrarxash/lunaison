@@ -29,7 +29,7 @@ L'appli reste au strict nécessaire. Ce qu'elle ne dit pas elle-même, d'où vie
 ## Vie privée
 
 - Aucune permission Internet, aucun SDK tiers, aucun compte.
-- Sauvegarde dans le nuage et transfert automatique désactivés : les données de santé ne quittent pas le téléphone. Un export au format tableur est disponible dans les réglages.
+- Sauvegarde dans le nuage désactivée : les données de santé ne passent par aucun serveur. Le transfert direct vers un nouveau téléphone (Android 12 et plus) reste possible, et un export au format tableur est disponible dans les réglages.
 - Le sélecteur de contacts du système donne accès au seul contact choisi, sans autorisation sur le carnet d'adresses.
 - Effacement complet en un geste.
 
