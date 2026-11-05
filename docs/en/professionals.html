@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Health professionals: Lunaison</title>
+  <meta name="description" content="Lunaison for health professionals (GPs, gynecologists, midwives): FIGO/ACOG/NICE reference ranges, one-page consultation summary and printable patient sheet.">
+  <link rel="icon" href="../icone.svg" type="image/svg+xml">
+  <link rel="alternate" hreflang="fr" href="../professionnels.html">
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    @media print {
+      .site-header, .site-footer, .no-print { display: none !important; }
+      body { background: #fff; color: #000; }
+      .prose { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenu">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="./">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F1E2EA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        Lunaison
+      </a>
+      <nav class="site-nav" aria-label="Site navigation">
+        <a href="./">The app</a>
+        <a href="how-it-works.html">How it works</a>
+        <a href="evidence.html">What the studies say</a>
+        <a href="professionals.html" aria-current="page">Clinicians</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="../professionnels.html" lang="fr" hreflang="fr">Français</a>
+      </nav>
+    </div>
+  </header>
+  <main id="contenu" class="wrap">
+    <article class="prose">
+      <h1>For health professionals</h1>
+      <p>Lunaison is a free, open source (GPL-3.0) Android menstrual cycle tracker designed so patients can log their cycles, symptoms and prepare for medical appointments <strong>with no account, no subscription and without any health data ever leaving their phone</strong>.</p>
+
+      <div class="actions no-print" style="margin: 20px 0;">
+        <button class="button" type="button" onclick="window.print()">Print / Save this sheet as PDF</button>
+        <a class="button secondary" href="evidence.html">Read the medical evidence dossier</a>
+      </div>
+
+      <div class="callout">
+        <p><strong>Status.</strong> Lunaison is a self-observation and health education tool, not a medical device or a method of contraception. It never makes a diagnosis and encourages patients to seek medical advice whenever an unusual pattern is logged.</p>
+      </div>
+
+      <h2>Why recommend Lunaison to patients?</h2>
+      <ul>
+        <li><strong>Zero intimate data collection:</strong> the app does not even request the Android <code>INTERNET</code> permission. Unlike commercial trackers funded by ads or subscriptions, no data (period dates, pregnancy plans, symptoms) can ever be sent to a third-party server.</li>
+        <li><strong>A consultation summary readable in 30 seconds:</strong> from <em>Understand → My cycle report</em>, the patient can display or share a one-page summary (median length and regularity of the last 6 cycles, bleeding duration, moderate/severe pain days, intermenstrual spotting, recurring symptoms by phase).</li>
+        <li><strong>Suited to diverse life stages:</strong> <em>Naturally irregular cycles or perimenopause mode</em> (PCOS, menopausal transition, with optional tracking of hot flashes, night sweats and pelvic pain), <em>Pause predictions mode</em> (pregnancy, postpartum, continuous contraception), and optional ovulation signs (cervical mucus and basal body temperature).</li>
+      </ul>
+
+      <h2>Clinical reference ranges and referral cues</h2>
+      <p>Regularity thresholds and non-alarming prompts to consult a clinician are based on international guidelines (FIGO 2018, ACOG Committee Opinion No. 651, NICE NG88, NHS, HAS / CNGOF):</p>
+      <ul>
+        <li><strong>Cycle length:</strong> adult reference range of 24 to 38 days (cycle-to-cycle variation up to 7 to 9 days depending on age); adolescent reference range of 21 to 45 days.</li>
+        <li><strong>Period duration:</strong> gentle prompt beyond 8 consecutive days of bleeding.</li>
+        <li><strong>Heavy menstrual bleeding:</strong> practical NHS indicators (soaking through protection every 1 to 2 hours for several hours, clots larger than 2.5 cm).</li>
+        <li><strong>Dysmenorrhea and pelvic pain:</strong> calm prompt when severe pain interferes with daily activities or recurs across cycles, supporting timely evaluation for secondary causes (endometriosis, adenomyosis, fibroids).</li>
+        <li><strong>Extended delay:</strong> 5 or more days past the estimated window, a neutral card outlines common causes (delayed ovulation, stress, pregnancy, normal cycle variation) without alarmist messaging.</li>
+      </ul>
+
+      <h2>Patient handout box (printable)</h2>
+      <div class="callout">
+        <p><strong>Lunaison: private menstrual cycle tracking (Android, free and ad-free)</strong></p>
+        <ul>
+          <li>Website and download: <strong>https://relthdrarxash.github.io/lunaison/en/</strong></li>
+          <li>Before your next appointment: open <em>Understand → View my cycle report</em> to display or export your 6-cycle summary.</li>
+        </ul>
+      </div>
+
+      <h2 class="no-print">Your clinical feedback</h2>
+      <p class="no-print">General practitioner, gynecologist, midwife, endocrinologist or school nurse: your feedback on the consultation summary, reference thresholds or educational guides is welcome at <a href="mailto:pilmil.studio@proton.me">pilmil.studio@proton.me</a> or on <a href="https://github.com/Relthdrarxash/lunaison/issues">GitHub</a>.</p>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Lunaison is neither a medical device nor a method of contraception. It does not replace the advice of a health professional.</p>
+      <div class="footer-links">
+        <a href="./">The app</a>
+        <a href="how-it-works.html">How it works</a>
+        <a href="evidence.html">What the studies say</a>
+        <a href="professionals.html">Clinicians</a>
+        <a href="faq.html">Questions</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="https://github.com/Relthdrarxash/lunaison">Source code</a>
+        <a href="mailto:pilmil.studio@proton.me">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
