@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lunaison</string>
+    <string name="reminders_channel">Recordatorios</string>
+    <string name="reminders_channel_description">Aviso de tu próxima menstruación y recordatorio para anotar el día</string>
+    <string name="widget_description">Indicador discreto del día y la fase del ciclo</string>
+</resources>

@@ -24,6 +24,11 @@ Chaque affirmation de santé de l'appli renvoie à l'une de ces références. El
 | Daily JW et al. *Efficacy of ginger for alleviating the symptoms of primary dysmenorrhea.* Pain Medicine, 2015;16(12):2243-55. [PubMed 26177393](https://pubmed.ncbi.nlm.nih.gov/26177393/) | Gingembre, preuves faibles |
 | ACOG, Committee Opinion n° 760. *Dysmenorrhea and Endometriosis in the Adolescent*, 2018. [Lien](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/12/dysmenorrhea-and-endometriosis-in-the-adolescent) | Douleur qui empêche les activités ou résiste aux traitements : consulter |
 | Kvaskoff M (Inserm). *Endométriose : état des connaissances épidémiologiques.* Questions de santé publique n° 48, 2024. [doi:10.1051/qsp/2024048](https://doi.org/10.1051/qsp/2024048) | Environ 10 % des personnes réglées, délai de diagnostic de 7 à 12 ans |
+| Becker CM et al. (ESHRE). *ESHRE guideline: management of women with endometriosis.* Hum Reprod Open, 2022. [doi:10.1093/hropen/hoac009](https://doi.org/10.1093/hropen/hoac009) | Recommandations européennes (ESHRE) sur le repérage clinique et la prise en charge des douleurs pelviennes et de l'endométriose |
+| Kędzia M et al. (PTGiP, *Polskie Towarzystwo Ginekologów i Położników*). *Rekomendacje PTGiP dotyczące postępowania u kobiet z endometriozą.* Ginekologia Polska, 2024;95(9):729-758. [doi:10.5603/gpl.100261](https://doi.org/10.5603/gpl.100261) | Recommandations polonaises : douleurs de règles sévères et endométriose, repérage dès l'adolescence |
+| DGGG / OEGGG / SGGG (AWMF). *S2k-Leitlinie Diagnostik und Therapie der Endometriose (015-045)*, 2020. [Lien](https://register.awmf.org/de/leitlinien/detail/015-045) | Recommandations germano-autrichiennes-suisses sur le repérage et le suivi des douleurs menstruelles invalidantes |
+| Ministerio de Sanidad (Espagne), avec la SEGO. *Guía de atención a las mujeres con endometriosis en el Sistema Nacional de Salud*, 2013. [PDF](https://www.sanidad.gob.es/organizacion/sns/planCalidadSNS/pdf/equidad/ENDOMETRIOSIS.pdf) | Guide espagnol : dysménorrhée secondaire, signes qui doivent faire consulter |
+| МОЗ України (ministère de la Santé d'Ukraine). Arrêté n° 319 du 06.04.2016, protocole clinique unifié *Тактика ведення пацієнток з генітальним ендометріозом*. [Registre DEC](https://www.dec.gov.ua/cat_mtd/galuzevi-standarti-ta-klinichni-nastanovi/) | Protocole ukrainien sur l'endométriose (adapté des recommandations ESHRE) |
 
 ## Alimentation et syndrome prémenstruel
 
@@ -63,6 +68,7 @@ Dans l'appli, chaque fiche renvoie vers cette partie, sans liste de références
 - [Armour M et al., 2019](https://doi.org/10.1002/14651858.CD004142.pub4)
 - [Daily JW et al., 2015](https://pubmed.ncbi.nlm.nih.gov/26177393/)
 - [ACOG n° 760, 2018](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/12/dysmenorrhea-and-endometriosis-in-the-adolescent)
+- [Becker CM et al. (ESHRE), 2022](https://doi.org/10.1093/hropen/hoac009)
 
 ### Alimentation et règles {#fiche-alimentation}
 
@@ -84,6 +90,11 @@ Dans l'appli, chaque fiche renvoie vers cette partie, sans liste de références
 - [ACOG n° 651, 2015](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2015/12/menstruation-in-girls-and-adolescents-using-the-menstrual-cycle-as-a-vital-sign)
 - [Kvaskoff M (Inserm), 2024](https://doi.org/10.1051/qsp/2024048)
 - [ACOG n° 760, 2018](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/12/dysmenorrhea-and-endometriosis-in-the-adolescent)
+- [Becker CM et al. (ESHRE), 2022](https://doi.org/10.1093/hropen/hoac009)
+- [Kędzia M et al. (PTGiP, Pologne), 2024](https://doi.org/10.5603/gpl.100261)
+- [AWMF / DGGG (Allemagne), 2020](https://register.awmf.org/de/leitlinien/detail/015-045)
+- [Ministerio de Sanidad (Espagne), 2013](https://www.sanidad.gob.es/organizacion/sns/planCalidadSNS/pdf/equidad/ENDOMETRIOSIS.pdf)
+- [МОЗ України, arrêté n° 319, 2016](https://www.dec.gov.ua/cat_mtd/galuzevi-standarti-ta-klinichni-nastanovi/)
 
 ### Protections et choc toxique {#fiche-protections}
 
