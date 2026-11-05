@@ -2,30 +2,63 @@
 
 **Français** · [English](README.en.md)
 
+[![CI](https://github.com/Relthdrarxash/lunaison/actions/workflows/ci.yml/badge.svg)](https://github.com/Relthdrarxash/lunaison/actions/workflows/ci.yml)
+
 Suivi du cycle menstruel, libre et sans compte. Pour noter ses règles, ses symptômes et son humeur, comprendre ce qui se passe à chaque phase, savoir quand arrivent les prochaines règles, et prévenir son ou sa partenaire si on le souhaite.
 
 Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans traceur et **sans accès à Internet**. Tout reste sur le téléphone.
 
+**[Site de Lunaison](https://relthdrarxash.github.io/lunaison/)** · **[Télécharger l'APK](https://github.com/Relthdrarxash/lunaison/releases/latest)** · [Pour les professionnels de santé](https://relthdrarxash.github.io/lunaison/professionnels.html) · [Sources médicales](https://relthdrarxash.github.io/lunaison/sources.html) · [Confidentialité](https://relthdrarxash.github.io/lunaison/confidentialite.html)
+
 ## Ce que fait l'appli
 
-- **Noter ses journées** : flux, douleur (décrite par son effet), symptômes (y compris douleurs pelviennes, bouffées de chaleur, sueurs nocturnes et brouillard mental), humeurs, prise de contraception ou de traitement, signes d'ovulation facultatifs (glaire cervicale et température basale sans clavier), note personnelle. Tout est facultatif, et on peut remplir un jour oublié.
-- **Prévoir les règles et mettre en pause si besoin** : une date estimée et une plage plausible, calculées à partir des derniers cycles, avec option pour afficher la fenêtre fertile estimée, mode **cycles naturellement irréguliers** (périménopause, SOPK, post-partum) et possibilité de mettre les prévisions en pause (grossesse, allaitement, contraception continue).
-- **Comprendre la phase en cours et ses quatre phases** : ce qui se passe, ce qui aide, et ce qui revient chez soi pendant chacune des quatre phases d'après les cycles précédents.
-- **Voir ce que disent ses cycles et générer un bilan pour un soignant** : durée habituelle, justesse des prévisions, motifs par phase, bilan de chaque cycle terminé et synthèse complète exportable pour une consultation médicale (repères FIGO/ACOG, douleurs, saignements hors règles, traitements).
-- **Un conseil sourcé par jour et un exercice de respiration guidée** : le conseil change chaque jour selon la phase et répond en priorité à ce qui a été noté ; un exercice de respiration abdominale (4 s / 6 s) aide à relâcher les crampes ou la tension prémenstruelle.
-- **Repérer ce qui mérite un avis médical** : douleurs fortes répétées, règles de plus de 8 jours, règles abondantes répétées, cycles hors des repères, saignements entre les règles, absence de règles, retard prolongé. Jamais un diagnostic.
+- **Noter ses journées en quelques secondes** : flux, douleur (décrite par son effet), symptômes (8 symptômes courants affichés par défaut, plus 4 symptômes dédiés aux douleurs pelviennes et à la périménopause), humeurs, prise de contraception ou de traitement, signes d'ovulation facultatifs (glaire cervicale et température basale sans clavier), note personnelle. Tout est facultatif, et on peut remplir un jour oublié.
+- **Prévoir les règles et s'adapter à chaque étape de vie** : une date estimée et une plage plausible calculées sur les six derniers cycles, avec option pour afficher la fenêtre fertile estimée, mode **cycles naturellement irréguliers** (périménopause, SOPK, post-partum) et possibilité de mettre les prévisions en pause (grossesse, allaitement, contraception continue).
+- **Comprendre la phase en cours et les quatre phases** : ce qui se passe dans le corps, ce qui aide, et ce qui revient chez soi pendant chacune des quatre phases d'après les cycles précédents.
+- **Générer un bilan sur une page pour un soignant** : durée médiane et régularité des 6 derniers cycles (repères FIGO/ACOG), durée des règles, jours de douleur modérée ou forte, saignements hors règles et symptômes récurrents, prêt à montrer ou partager en consultation.
+- **Un conseil sourcé par jour et une minute de respiration guidée** : le conseil change chaque jour selon la phase et répond en priorité à ce qui a été noté ; un exercice de respiration abdominale (4 s / 6 s) aide à relâcher les crampes ou la tension prémenstruelle.
+- **Repérer ce qui mérite un avis médical** : douleurs fortes répétées, règles de plus de 8 jours, règles abondantes répétées (repères du NHS), cycles hors des repères, saignements entre les règles, absence de règles, retard prolongé. Jamais un diagnostic.
 - **Lire des fiches sourcées** : cycle, douleurs, alimentation, syndrome prémenstruel, quand consulter, choc toxique, limites des prévisions, fiche pour l'entourage.
 - **Rappels discrets** : avant les règles, pour noter sa journée, ou chaque jour pour sa contraception ou son traitement, toujours neutres sur l'écran verrouillé (« Lunaison »).
-- **Partager avec un ou une partenaire, par message ou par QR Code** (18 ans et plus) : préparation de messages dans la messagerie choisie, repères et conseils de soutien concrets pour le ou la partenaire, et partage décentralisé des estimations par **QR Code** (affiché et scanné directement dans l'appli) ou par le menu de partage d'Android (SMS, Signal, WhatsApp…), sans aucun serveur.
+- **Partager avec un ou une partenaire, par message ou par QR Code hors-ligne** (18 ans et plus) : préparation de messages dans la messagerie choisie, conseils de soutien concrets pour le ou la partenaire, et partage décentralisé des estimations par **QR Code** (affiché et scanné directement dans l'appli) ou par le menu de partage d'Android (SMS, Signal, WhatsApp…), sans aucun serveur.
 - **Personnalisation, code PIN et widget d'accueil** : 4 palettes de couleurs (clair et sombre), verrouillage facultatif par code à 4 chiffres (avec masquage dans les applications récentes) et widget d'accueil discret.
 
 Lunaison n'est **ni un dispositif médical ni une méthode de contraception**.
 
+## Aperçu
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/captures/accueil.png" width="220" alt="Accueil : phase du cycle, prochaines règles estimées, conseil du jour et bouton Noter aujourd'hui"><br>Accueil</td>
+    <td align="center"><img src="docs/captures/journee.png" width="220" alt="Ma journée : pastilles pour le flux, la douleur, les symptômes et l'humeur"><br>Ma journée</td>
+    <td align="center"><img src="docs/captures/calendrier.png" width="220" alt="Calendrier mensuel des règles et des journées notées"><br>Calendrier</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/captures/comprendre.png" width="220" alt="Comprendre : bilan des cycles, quatre phases et fiches médicales sourcées"><br>Comprendre</td>
+    <td align="center"><img src="docs/captures/fiche_douleurs.png" width="220" alt="Fiche sourcée sur les règles douloureuses avec niveau de preuve et références"><br>Fiche sourcée</td>
+    <td align="center"><img src="docs/captures/partage.png" width="220" alt="Partage partenaire par message ou QR Code hors-ligne"><br>Partage partenaire</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/captures/reglages.png" width="220" alt="Réglages : thème, rappels discrets, options du cycle et export CSV"><br>Réglages</td>
+    <td align="center"><img src="docs/captures/accueil_sombre.png" width="220" alt="Accueil en thème sombre chaud"><br>Thème sombre</td>
+    <td align="center"><img src="docs/captures/bienvenue.png" width="220" alt="Écran de bienvenue sans création de compte"><br>Bienvenue</td>
+  </tr>
+</table>
+
+Les captures sont générées automatiquement à partir du code des écrans à chaque modification.
+
+## Ce que Lunaison refuse de faire
+
+- **Pas de permission Internet** : le manifeste Android ne demande aucun accès réseau. Vos dates de règles, symptômes et notes ne peuvent techniquement quitter votre téléphone que si vous les exportez vous-même.
+- **Pas d'abonnement ni de fonction verrouillée** : le mode périménopause, le bilan de consultation, les signes d'ovulation et le partage partenaire sont inclus gratuitement.
+- **Pas de chatbot médical ni d'alerte anxiogène** : un retard ou un symptôme inhabituel est expliqué calmement avec ses références médicales, sans rouge agressif ni incitation commerciale.
+- **Pas de série de jours à maintenir** : oublier de noter quelques jours est normal.
+
 ## Pourquoi Lunaison est gratuite
 
-Lunaison est née d'un besoin de ma compagne : suivre son cycle plus facilement, et me permettre de l'accompagner au quotidien. Les applications existantes réservent souvent leurs fonctions utiles à un abonnement, ou se financent avec les données de leurs utilisatrices, alors que ce sont parmi les plus intimes qui soient. Lunaison fait l'inverse : elle est gratuite, libre, fonctionne sans Internet et garde tout sur le téléphone. Le partage avec le ou la partenaire passe par la messagerie du téléphone, quand la personne le décide, et ne contient jamais de données de fertilité.
+Lunaison est née d'un besoin de ma compagne : suivre son cycle plus facilement, et me permettre de l'accompagner au quotidien. Les applications existantes réservent souvent leurs fonctions utiles à un abonnement, ou se financent avec les données de leurs utilisatrices, alors que ce sont parmi les plus intimes qui soient. Lunaison fait l'inverse : elle est gratuite, libre, fonctionne sans Internet et garde tout sur le téléphone.
 
-L'appli reste au strict nécessaire. Ce qu'elle ne dit pas elle-même, d'où viennent ses repères et pourquoi elle est faite ainsi, est expliqué dans [Sources et choix de conception](https://relthdrarxash.github.io/lunaison/references.html).
+L'appli reste au strict nécessaire. Ce qu'elle ne dit pas elle-même, d'où viennent ses repères et pourquoi elle est faite ainsi, est expliqué dans [Sources et choix de conception](https://relthdrarxash.github.io/lunaison/sources.html).
 
 ## Vie privée
 
@@ -41,25 +74,31 @@ Kotlin, Jetpack Compose, Material 3, Room, WorkManager. minSdk 26, targetSdk 36.
 L'appli est en français et en anglais, selon la langue du téléphone. Chaque texte est écrit dans les deux langues côte à côte (fonction `tr` de `:core:model`), pour qu'aucune traduction ne puisse manquer ; les fiches ont un fichier par langue, vérifié par les tests.
 
 ```
-:app                 Écrans, navigation, rappels, partage
+:app                 Écrans, navigation, rappels, widget
+:ui                  Composants d'interface (Accueil, Ma journée, Calendrier, Comprendre, Partage, Réglages)
 :core:model          Journée notée : flux, douleur, symptômes, humeurs (pur Kotlin)
 :core:cycle          Moteur : repérage des règles, prévision, phases, signaux, rappels (pur Kotlin, testé)
 :core:content        Fiches, conseils par phase, messages de partage, sources (pur Kotlin, testé)
-:core:data           Base Room locale et dépôt unique
-:core:designsystem   Thème, police Atkinson Hyperlegible, composants accessibles
+:core:data           Base Room locale, migrations non destructives et dépôt unique
+:core:designsystem   Thème, 4 palettes WCAG AA, police Atkinson Hyperlegible, composants accessibles
 ```
 
-Les règles du moteur et leurs références sont dans [`CycleConfig.kt`](core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt). Les sources des contenus et les choix de conception sont dans [documentation/sources.md](documentation/sources.md), publié sur le site : [Sources et choix de conception](https://relthdrarxash.github.io/lunaison/references.html). Après une modification, régénérer la page avec `python3 scripts/site-sources.py`.
+Les règles du moteur et leurs références sont dans [`CycleConfig.kt`](core/cycle/src/main/kotlin/fr/lunaison/core/cycle/CycleConfig.kt). Les sources des contenus et les choix de conception sont dans [documentation/sources.md](documentation/sources.md), publié sur le site : [Sources et choix de conception](https://relthdrarxash.github.io/lunaison/sources.html). Après une modification, régénérer la page avec `python3 scripts/site-sources.py`.
 
 Tests : `./gradlew test`. Construction : `./gradlew :app:assembleDebug`.
+
+## Du même atelier (Pilmil Studio)
+
+- **[Sommelle](https://github.com/Relthdrarxash/sommelle)** : accompagnement de l'insomnie chronique par la TCC-I en 6 à 8 semaines, gratuit, libre et sans accès à Internet.
+- **[Respire](https://github.com/Relthdrarxash/respire)** : une courte pause de respiration avant les applications que l'on ouvre par réflexe, avec filtre des Reels et Shorts.
 
 ## Pistes envisagées
 
 Les fonctions étudiées mais pas encore réalisées, comme l'import de l'historique depuis Clue ou Flo, sont décrites dans [documentation/pistes.md](documentation/pistes.md).
 
-## Contact
+## Contact et licence
 
-pilmil.studio@proton.me
+Contact : [pilmil.studio@proton.me](mailto:pilmil.studio@proton.me). Distribuée sous licence [GNU GPL v3.0](LICENSE).
 
 ## Note sur le développement
 
