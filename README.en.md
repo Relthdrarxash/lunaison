@@ -47,12 +47,12 @@ Lunaison is **neither a medical device nor a method of contraception**.
 
 Screenshots are generated automatically from the screen code on every change.
 
-## What Lunaison refuses to do
+## Design commitments
 
-- **No Internet permission**: the Android manifest requests zero network access. Your period dates, symptoms and notes can never leave your phone unless you export them yourself.
-- **No subscription or paywalled features**: perimenopause mode, clinician summaries, ovulation signs and partner sharing are all included for free.
-- **No medical chatbot or alarmist pop-ups**: an extended delay or unusual symptom is explained calmly with its medical references, without red warning screens or upsells.
-- **No streaks to maintain**: skipping a few days is normal.
+- **No Internet permission**: the app requests no network access from Android. Your period dates, symptoms and notes stay on your phone.
+- **Everything included upfront**: perimenopause mode, consultation summaries, ovulation signs and partner sharing are all available with no subscription.
+- **A calm tone, with no red warnings**: an extended delay or unusual symptom is explained plainly with its medical references.
+- **No daily streak counter**: skipping a few days is normal and does not stop the app from working.
 
 ## Why Lunaison is free
 
