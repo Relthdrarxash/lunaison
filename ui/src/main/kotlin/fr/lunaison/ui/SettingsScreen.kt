@@ -5,12 +5,29 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
@@ -24,9 +41,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import fr.lunaison.core.cycle.LogReminderMode
 import fr.lunaison.core.data.AppSettings
@@ -39,6 +58,14 @@ import fr.lunaison.core.model.AgeGroup
 import fr.lunaison.core.model.ThemePalette
 import kotlinx.coroutines.launch
 import fr.lunaison.core.model.tr
+
+private val ThemePalette.swatchColor: Color
+    get() = when (this) {
+        ThemePalette.PLUM -> Color(0xFF4A2C4F)
+        ThemePalette.SAGE -> Color(0xFF2E5443)
+        ThemePalette.OCEAN -> Color(0xFF234A63)
+        ThemePalette.TERRACOTTA -> Color(0xFF6E3828)
+    }
 
 @Composable
 fun SettingsScreen(
@@ -88,6 +115,7 @@ fun SettingsScreen(
 
         SectionTitle(tr("Rappels", "Reminders"))
         LunaCard {
+            Text(tr("Règles et carnet", "Period & daily log"), style = MaterialTheme.typography.titleSmall)
             SwitchRow(
                 tr("Prévenir avant mes règles", "Notify me before my period"),
                 checked = reminders.periodReminder,
@@ -96,7 +124,11 @@ fun SettingsScreen(
                     actions.updateSettings { it.copy(reminders = it.reminders.copy(periodReminder = on)) }
                 },
             )
-            if (reminders.periodReminder) {
+            AnimatedVisibility(
+                visible = reminders.periodReminder,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically(),
+            ) {
                 val days = reminders.periodReminderDaysBefore
                 Stepper(
                     label = if (days == 0) tr("Le jour même", "On the day") else tr("${Format.days(days)} avant", "${Format.days(days)} before"),
@@ -104,7 +136,7 @@ fun SettingsScreen(
                     onPlus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(periodReminderDaysBefore = (days + 1).coerceAtMost(7))) } },
                 )
             }
-            Text(tr("Rappel pour noter ma journée", "Reminder to log my day"), style = MaterialTheme.typography.titleSmall)
+            Text(tr("Rappel pour noter ma journée", "Reminder to log my day"), style = MaterialTheme.typography.bodyMedium)
             ChoiceChips(
                 options = LogReminderMode.entries,
                 label = {
@@ -120,7 +152,11 @@ fun SettingsScreen(
                     actions.updateSettings { it.copy(reminders = it.reminders.copy(logReminder = mode)) }
                 },
             )
-            if (reminders.logReminder != LogReminderMode.OFF) {
+            AnimatedVisibility(
+                visible = reminders.logReminder != LogReminderMode.OFF,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically(),
+            ) {
                 val time = reminders.logReminderTime
                 Stepper(
                     label = tr("À ${time.hour} h", "At ${time.hour}:00"),
@@ -128,30 +164,40 @@ fun SettingsScreen(
                     onPlus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(logReminderTime = time.plusHours(1))) } },
                 )
             }
+        }
+
+        LunaCard {
+            Text(tr("Contraception et traitements", "Contraception & medication"), style = MaterialTheme.typography.titleSmall)
             SwitchRow(
-                tr("Rappel quotidien (contraception ou traitement)", "Daily reminder (contraception or medication)"),
+                tr("Rappel quotidien (pilule ou traitement)", "Daily reminder (pill or medication)"),
                 checked = reminders.medicationReminder,
                 onChange = { on ->
                     if (on) ensureNotifications()
                     actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationReminder = on)) }
                 },
             )
-            if (reminders.medicationReminder) {
-                val medTime = reminders.medicationReminderTime
-                Stepper(
-                    label = tr("À ${medTime.hour} h", "At ${medTime.hour}:00"),
-                    onMinus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationReminderTime = medTime.minusHours(1))) } },
-                    onPlus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationReminderTime = medTime.plusHours(1))) } },
-                )
-                OutlinedTextField(
-                    value = reminders.medicationLabel,
-                    onValueChange = { text ->
-                        actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationLabel = text.take(40))) }
-                    },
-                    label = { Text(tr("Nom du traitement ou contraceptif (facultatif)", "Medication or contraceptive name (optional)")) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+            AnimatedVisibility(
+                visible = reminders.medicationReminder,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically(),
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    val medTime = reminders.medicationReminderTime
+                    Stepper(
+                        label = tr("À ${medTime.hour} h", "At ${medTime.hour}:00"),
+                        onMinus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationReminderTime = medTime.minusHours(1))) } },
+                        onPlus = { actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationReminderTime = medTime.plusHours(1))) } },
+                    )
+                    OutlinedTextField(
+                        value = reminders.medicationLabel,
+                        onValueChange = { text ->
+                            actions.updateSettings { it.copy(reminders = it.reminders.copy(medicationLabel = text.take(40))) }
+                        },
+                        label = { Text(tr("Nom du traitement ou contraceptif (facultatif)", "Medication or contraceptive name (optional)")) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
             Muted(tr("Sur l'écran verrouillé, les notifications n'affichent que « Lunaison ».", "On the lock screen, notifications only show \"Lunaison\"."))
         }
@@ -181,11 +227,13 @@ fun SettingsScreen(
                 checked = settings.trackOvulationSigns,
                 onChange = { on -> actions.updateSettings { it.copy(trackOvulationSigns = on) } },
             )
+            Muted(tr("Permet de noter chaque jour l'aspect de la glaire et la température basale au réveil pour repérer l'ovulation.", "Allows logging cervical mucus and morning basal temperature to track ovulation signs."))
             SwitchRow(
                 tr("Cycles naturellement irréguliers (périménopause, SOPK…)", "Naturally irregular cycles (perimenopause, PCOS…)"),
                 checked = settings.irregularCyclesMode,
                 onChange = { on -> actions.updateSettings { it.copy(irregularCyclesMode = on) } },
             )
+            Muted(tr("Élargit les plages prévisionnelles sans alertes de retard anxiogènes (syndrome des ovaires polykystiques, arrêt de pilule, périménopause).", "Widens predicted ranges without alarming alerts (polycystic ovary syndrome, post-pill, perimenopause)."))
             SwitchRow(
                 tr("Mettre les prévisions en pause (grossesse, allaitement, contraception)", "Pause predictions (pregnancy, breastfeeding, contraception)"),
                 checked = settings.pausePredictions,
@@ -196,12 +244,48 @@ fun SettingsScreen(
         SectionTitle(tr("Apparence et sécurité", "Appearance and security"))
         LunaCard {
             Text(tr("Palette de couleurs", "Color palette"), style = MaterialTheme.typography.titleSmall)
-            ChoiceChips(
-                options = ThemePalette.entries,
-                label = { it.label },
-                isSelected = { it == settings.themePalette },
-                onToggle = { palette -> actions.updateSettings { it.copy(themePalette = palette) } },
-            )
+            @OptIn(ExperimentalLayoutApi::class)
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                ThemePalette.entries.forEach { palette ->
+                    val selected = palette == settings.themePalette
+                    FilterChip(
+                        selected = selected,
+                        onClick = { actions.updateSettings { it.copy(themePalette = palette) } },
+                        label = {
+                            Text(
+                                palette.label,
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier.padding(vertical = 10.dp),
+                            )
+                        },
+                        leadingIcon = {
+                            Box(
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .background(palette.swatchColor, CircleShape),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                if (selected) {
+                                    Icon(
+                                        Icons.Filled.Check,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(12.dp),
+                                    )
+                                }
+                            }
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        ),
+                    )
+                }
+            }
             SwitchRow(
                 tr("Verrouiller l'application par code à 4 chiffres", "Lock the app with a 4-digit PIN"),
                 checked = settings.pinHash != null,
