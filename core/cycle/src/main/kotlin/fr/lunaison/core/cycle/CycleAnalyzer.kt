@@ -2,6 +2,7 @@ package fr.lunaison.core.cycle
 
 import fr.lunaison.core.model.Baseline
 import fr.lunaison.core.model.DayLog
+import fr.lunaison.core.model.tr
 import java.time.LocalDate
 import kotlin.math.ceil
 
@@ -15,6 +16,81 @@ enum class Phase {
     /** Les règles auraient dû commencer : la phase n'est plus estimable. */
     LATE,
 }
+
+/** Probabilité estimée de grossesse / fertilité au jour le jour, selon les repères cliniques (Wilcox, Trussell). */
+enum class PregnancyOdds(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+    private val frDescription: String,
+    private val enDescription: String,
+    private val plDescription: String,
+    private val ukDescription: String,
+    private val esDescription: String,
+    private val deDescription: String,
+) {
+    VERY_LOW(
+        "Très faibles", "Very low", "Bardzo niskie", "Дуже низькі", "Muy bajas", "Sehr gering",
+        "Période peu propice à la conception : ovule absent ou non viable (survie max de 24 h).",
+        "Unfavorable window for conception: egg not present or no longer viable (max 24h survival).",
+        "Okres mało sprzyjający poczęciu: brak komórki jajowej lub brak jej żywotności.",
+        "Період з низькою ймовірністю зачаття: яйцеклітини немає або вона не життєздатна.",
+        "Periodo poco propicio para la concepción: óvulo ausente o no viable.",
+        "Wenig fruchtbare Phase: Eizelle nicht vorhanden oder nicht mehr lebensfähig.",
+    ),
+    LOW(
+        "Faibles", "Low", "Niskie", "Низькі", "Bajas", "Gering",
+        "Encore à distance de l'ovulation, mais les spermatozoïdes peuvent parfois survivre jusqu'à 5 jours.",
+        "Still distant from ovulation, though sperm can sometimes survive up to 5 days.",
+        "Wciąż daleko od owulacji, ale plemniki mogą przeżyć do 5 dni.",
+        "До овуляції ще є час, але сперматозоїди можуть жити до 5 днів.",
+        "Aún lejos de la ovulación, pero los espermatozoides pueden sobrevivir hasta 5 días.",
+        "Noch vor dem fruchtbaren Fenster, Spermien können jedoch bis zu 5 Tage überleben.",
+    ),
+    MEDIUM(
+        "Modérées", "Moderate", "Umiarkowane", "Помірні", "Medias", "Mäßig",
+        "Entrée dans la fenêtre fertile : rapport susceptible de conduire à une fécondation.",
+        "Entering the fertile window: intercourse may lead to fertilization.",
+        "Początek okna płodnego: stosunek może prowadzić do zapłodnienia.",
+        "Початок плідного вікна: статевий акт може призвести до запліднення.",
+        "Entrada en la ventana fértil: las relaciones pueden llevar a la fecundación.",
+        "Eintritt ins fruchtbare Fenster: Befruchtung ist möglich.",
+    ),
+    HIGH(
+        "Élevées", "High", "Wysokie", "Високі", "Altas", "Hoch",
+        "Période très favorable : l'ovulation est attendue dans les 24 à 48 heures.",
+        "Highly favorable window: ovulation expected within 24 to 48 hours.",
+        "Bardzo korzystny czas: owulacja spodziewana w ciągu 24 do 48 godzin.",
+        "Сприятливий час: овуляція очікується протягом 24-48 годин.",
+        "Periodo muy favorable: la ovulación se espera en 24 a 48 horas.",
+        "Sehr günstige Phase: Eisprung wird in 24 bis 48 Stunden erwartet.",
+    ),
+    PEAK(
+        "Maximales", "Peak", "Szczytowe", "Максимальні", "Máximas", "Spitzenwert",
+        "Jour estimé de l'ovulation : probabilité de conception au plus haut du cycle.",
+        "Estimated ovulation day: highest conception probability of the cycle.",
+        "Szacowany dzień owulacji: najwyższe prawdopodobieństwo poczęcia w cyklu.",
+        "Очікуваний день овуляції: найвища ймовірність зачаття в циклі.",
+        "Día estimado de la ovulación: máxima probabilidad de concepción del ciclo.",
+        "Geschätzter Eisprungtag: höchste Befruchtungswahrscheinlichkeit im Zyklus.",
+    ),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+    val description: String get() = tr(frDescription, enDescription, plDescription, ukDescription, esDescription, deDescription)
+}
+
+/** Prédiction détaillée pour un jour à venir. */
+data class UpcomingDayForecast(
+    val date: LocalDate,
+    val dayOfCycle: Int,
+    val phase: Phase,
+    val odds: PregnancyOdds,
+    val inLikelyPeriod: Boolean,
+)
 
 /** Fiabilité de la prévision, selon l'historique disponible. */
 enum class Confidence {
@@ -82,6 +158,48 @@ sealed interface CycleState {
 
         /** Retard significatif au-delà de la plage habituelle (au moins 5 jours après la date estimée). */
         val possiblePregnancyHint: Boolean get() = daysLate >= 5
+
+        /** Probabilité estimée de grossesse pour une date donnée. */
+        fun pregnancyOdds(date: LocalDate): PregnancyOdds {
+            if (inPeriod && !date.isAfter(lastStart.plusDays(stats.periodLength.toLong()))) {
+                return PregnancyOdds.VERY_LOW
+            }
+            if (daysLate > 0) {
+                return PregnancyOdds.LOW
+            }
+            val daysToOvulation = daysBetween(date, ovulationDate)
+            return when {
+                daysToOvulation in -1..0 -> PregnancyOdds.PEAK
+                daysToOvulation in 1..2 -> PregnancyOdds.HIGH
+                daysToOvulation in 3..5 -> PregnancyOdds.MEDIUM
+                daysToOvulation < -1 -> PregnancyOdds.VERY_LOW
+                else -> PregnancyOdds.LOW
+            }
+        }
+
+        /** Probabilité estimée de grossesse pour aujourd'hui. */
+        val todayPregnancyOdds: PregnancyOdds get() = pregnancyOdds(today)
+
+        /** Prévisions détaillées jour par jour pour les prochains jours. */
+        fun upcomingDayForecasts(count: Int = 7): List<UpcomingDayForecast> = (1..count).map { offset ->
+            val targetDate = today.plusDays(offset.toLong())
+            val targetDayOfCycle = dayOfCycle + offset
+            val inLikelyPeriod = targetDate in next.likelyDays()
+            val targetPhase = when {
+                inLikelyPeriod -> Phase.MENSTRUAL
+                daysLate > 0 -> Phase.LATE
+                !targetDate.isBefore(next.start) -> Phase.MENSTRUAL
+                else -> CycleAnalyzer.phaseBefore(targetDate, next.start)
+            }
+            val odds = if (inLikelyPeriod) PregnancyOdds.VERY_LOW else pregnancyOdds(targetDate)
+            UpcomingDayForecast(
+                date = targetDate,
+                dayOfCycle = targetDayOfCycle,
+                phase = targetPhase,
+                odds = odds,
+                inLikelyPeriod = inLikelyPeriod,
+            )
+        }
 
         /** Prévisions suivantes, pour le calendrier. La marge s'élargit à chaque cycle. */
         fun upcoming(count: Int): List<Prediction> = (0 until count).map { index ->
