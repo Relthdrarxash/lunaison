@@ -237,7 +237,7 @@ class ReminderPlannerTest {
         val settings = ReminderSettings(medicationReminder = true, medicationReminderTime = LocalTime.of(9, 0))
         val at = ReminderPlanner.nextMedicationReminder(settings, LocalDateTime.of(start, LocalTime.of(8, 0)))
         assertEquals(LocalDateTime.of(start, LocalTime.of(9, 0)), at)
-        assertTrue(ReminderPlanner.shouldRemindMedication(settings, medicationTakenToday = false))
-        assertFalse(ReminderPlanner.shouldRemindMedication(settings, medicationTakenToday = true))
+        assertTrue(ReminderPlanner.shouldRemindMedication(settings, alreadyTaken = false))
+        assertFalse(ReminderPlanner.shouldRemindMedication(settings, alreadyTaken = true))
     }
 }
