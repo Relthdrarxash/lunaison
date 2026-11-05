@@ -8,8 +8,8 @@ Lunaison is a free Android app, open source (GPL-3.0), with no ads, no trackers 
 
 ## What the app does
 
-- **Log your days**: flow, pain (described by its effect), symptoms, moods, contraception or medication taken, and a personal note. Everything is optional, and a forgotten day can be filled in later.
-- **Forecast periods and pause when needed**: an estimated date and a plausible range calculated from your recent cycles, with an option to display the estimated fertile window and a toggle to pause predictions (pregnancy, breastfeeding, continuous contraception).
+- **Log your days**: flow, pain (described by its effect), symptoms (including pelvic pain, hot flashes, night sweats and brain fog), moods, contraception or medication taken, optional ovulation signs (cervical mucus and keypad-free basal temperature), and a personal note. Everything is optional, and a forgotten day can be filled in later.
+- **Forecast periods and pause when needed**: an estimated date and a plausible range calculated from your recent cycles, with an option to display the estimated fertile window, a **naturally irregular cycles mode** (perimenopause, PCOS, postpartum), and a toggle to pause predictions (pregnancy, breastfeeding, continuous contraception).
 - **Understand the current phase and all four phases**: what is happening, what helps, and what tends to come back for you across each of the four phases based on your previous cycles.
 - **See what your cycles show and generate a clinician health report**: usual length, accuracy of forecasts, patterns by phase, review of each completed cycle, and a complete exportable summary for a medical consultation (FIGO/ACOG reference status, pain days, spotting, medication).
 - **One referenced tip a day and guided breathing**: the daily tip changes according to the phase and responds first to what you logged; a guided abdominal breathing exercise (4 s / 6 s) helps ease cramps or premenstrual tension.
@@ -30,7 +30,7 @@ Lunaison grew out of my partner's need: to track her cycle more easily, and to l
 ## Privacy
 
 - No Internet permission, no third-party SDK, no account.
-- Cloud backup and automatic transfer turned off: health data does not leave the phone. A spreadsheet export is available in the settings.
+- Cloud backup and automatic transfer turned off: health data does not leave the phone. Spreadsheet CSV export and **CSV backup import** are available in the settings.
 - The system contact picker gives access only to the chosen contact, with no permission on the address book.
 - Complete erasure in one tap.
 

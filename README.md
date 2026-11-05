@@ -8,8 +8,8 @@ Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans 
 
 ## Ce que fait l'appli
 
-- **Noter ses journées** : flux, douleur (décrite par son effet), symptômes, humeurs, prise de contraception ou de traitement, note personnelle. Tout est facultatif, et on peut remplir un jour oublié.
-- **Prévoir les règles et mettre en pause si besoin** : une date estimée et une plage plausible, calculées à partir des derniers cycles, avec option pour afficher la fenêtre fertile estimée et possibilité de mettre les prévisions en pause (grossesse, allaitement, contraception continue).
+- **Noter ses journées** : flux, douleur (décrite par son effet), symptômes (y compris douleurs pelviennes, bouffées de chaleur, sueurs nocturnes et brouillard mental), humeurs, prise de contraception ou de traitement, signes d'ovulation facultatifs (glaire cervicale et température basale sans clavier), note personnelle. Tout est facultatif, et on peut remplir un jour oublié.
+- **Prévoir les règles et mettre en pause si besoin** : une date estimée et une plage plausible, calculées à partir des derniers cycles, avec option pour afficher la fenêtre fertile estimée, mode **cycles naturellement irréguliers** (périménopause, SOPK, post-partum) et possibilité de mettre les prévisions en pause (grossesse, allaitement, contraception continue).
 - **Comprendre la phase en cours et ses quatre phases** : ce qui se passe, ce qui aide, et ce qui revient chez soi pendant chacune des quatre phases d'après les cycles précédents.
 - **Voir ce que disent ses cycles et générer un bilan pour un soignant** : durée habituelle, justesse des prévisions, motifs par phase, bilan de chaque cycle terminé et synthèse complète exportable pour une consultation médicale (repères FIGO/ACOG, douleurs, saignements hors règles, traitements).
 - **Un conseil sourcé par jour et un exercice de respiration guidée** : le conseil change chaque jour selon la phase et répond en priorité à ce qui a été noté ; un exercice de respiration abdominale (4 s / 6 s) aide à relâcher les crampes ou la tension prémenstruelle.
@@ -30,7 +30,7 @@ L'appli reste au strict nécessaire. Ce qu'elle ne dit pas elle-même, d'où vie
 ## Vie privée
 
 - Aucune permission Internet, aucun SDK tiers, aucun compte.
-- Sauvegarde dans le nuage désactivée : les données de santé ne passent par aucun serveur. Le transfert direct vers un nouveau téléphone (Android 12 et plus) reste possible, et un export au format tableur est disponible dans les réglages.
+- Sauvegarde dans le nuage désactivée : les données de santé ne passent par aucun serveur. Le transfert direct vers un nouveau téléphone (Android 12 et plus) reste possible, ainsi que l'export et l'**import de sauvegarde CSV** dans les réglages.
 - Le sélecteur de contacts du système donne accès au seul contact choisi, sans autorisation sur le carnet d'adresses.
 - Effacement complet en un geste.
 

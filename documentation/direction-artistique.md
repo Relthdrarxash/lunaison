@@ -45,7 +45,9 @@ Ce document fige la direction artistique et les principes ergonomiques de **Luna
 - **Constat scientifique** : le suivi du cycle n'est pas linéaire ; il connaît des oublis, des pauses volontaires, des grossesses, des périodes d'allaitement ou de contraception continue (*Epstein et al., UbiComp 2015*).
 - **Choix ergonomiques** :
   - **Aucune série (« streak ») ni reproche** : un jour non rempli n'est jamais considéré comme un jour « sans symptôme » dans les statistiques (`PhasePatterns`), ce qui évite de fausser les analyses en cas d'oubli.
-  - **Mode « Mettre les prévisions en pause »** : accessible en un geste sur l'accueil (en cas de retard) ou dans les réglages, il suspend les comptes à rebours, les rappels de règles et les signaux d'alerte tout en laissant le journal quotidien ouvert.
+  - **Mode « Mettre les prévisions en pause » et mode « Cycles naturellement irréguliers »** : accessibles en un geste, ils suspendent les comptes à rebours (grossesse, allaitement, contraception continue) ou élargissent la plage de prévision en désactivant les alertes de durée hors repères pour les personnes en périménopause, avec un SOPK ou en post-partum.
+  - **Suivi symptothermique facultatif (glaire cervicale et température basale)** : activable dans les réglages, la température se règle par pas de 0,1 °C (`−` / `+`) sans ouvrir le clavier.
+  - **Import et restauration de sauvegarde CSV** : permet de restaurer son historique sur un nouveau téléphone sans passer par un nuage tiers.
   - **Écartement automatique des cycles atypiques** : si l'utilisatrice reprend l'application après plusieurs mois sans saisie, l'intervalle > 90 jours est reconnu comme une interruption de saisie et ne dérègle pas la médiane des cycles suivants.
 
 ### D. Lutter contre l'usure tout en donnant du sens aux données notées
@@ -80,3 +82,13 @@ Ce document fige la direction artistique et les principes ergonomiques de **Luna
 | Lecteur d'écran (TalkBack) | Titres marqués `heading()`, barres et jauges décrites en une phrase complète (`clearAndSetSemantics`), exercices guidés en `LiveRegionMode.Polite` |
 | Lisibilité typographique | Aucune taille inférieure à `12 sp` ; corps de texte à `16 sp`–`18 sp` ; respect intégral de la mise à l'échelle de police d'Android |
 | Ponctuation et ton | Vouvoiement respectueux (Lunaison, Sommelle), phrases courtes sans tiret cadratin (`—`), bilingue français / anglais vérifié par tests automatisés |
+
+---
+
+## 4. Évolutions face aux leaders du marché (Lunaison, Sommelle, Respire)
+
+| Application | Évolutions implémentées (100 % hors ligne et gratuites) |
+|---|---|
+| **Lunaison** | • **Import/restauration CSV** dans les réglages (compatible exports `;` et `,`).<br>• **Suivi symptothermique facultatif** : glaire cervicale (4 repères) et température basale au réveil par pas de `0,1 °C` sans clavier.<br>• **Mode cycles naturellement irréguliers** (périménopause, SOPK, post-partum) + symptômes dédiés (*Douleurs pelviennes*, *Bouffées de chaleur*, *Sueurs nocturnes*, *Brouillard mental*).<br>• **Partage partenaire décentralisé par QR Code** (affiché et scanné dans l'appli) et menu de partage Android.<br>• **Bilan de santé soignant**, **analyse des 4 phases**, **respiration guidée 4 s / 6 s**, **4 thèmes**, **code PIN (`FLAG_SECURE`)** et **widget d'accueil**. |
+| **Sommelle** | • **Feuille de route de 6 semaines dès l'accueil** (semaine 1 d'observation, semaines 2 à 6 de consolidation, maintien).<br>• **Mode « Écouter les étapes les yeux fermés »** : synthèse vocale hors ligne à débit ralenti + cloche acoustique douce générée mathématiquement (`432 Hz`, 0 Mo d'audio embarqué).<br>• **Carnet du soir interactif** dans l'exercice *Mettre sa journée au repos* (préoccupation + prochaine petite action, rangeable et effaçable en un geste).<br>• **Import d'agenda CSV** dans les réglages et **widget discret d'écran d'accueil** affichant la fenêtre de sommeil du soir. |
+| **Respire** | • **Repères d'intention sur l'écran de pause** (*Message précis*, *Chercher une info*, *Simple réflexe*).<br>• **Choix de session courte « 2 min seulement »** à côté de la durée de session habituelle pour éviter de dériver lors d'une vérification rapide.<br>• **Temps estimé épargné** (aujourd'hui et sur 7 jours) + **partage du bilan hebdomadaire**.<br>• **Widget discret d'écran d'accueil** affichant les renoncements du jour, de la semaine et le temps épargné. |
