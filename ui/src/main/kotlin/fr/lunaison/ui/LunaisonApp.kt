@@ -24,6 +24,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -166,13 +168,25 @@ private fun MainScaffold(state: AppState, actions: Actions, versionName: String)
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             if (showBar) {
-                NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+                val navLabel = tr(
+                    "Navigation principale",
+                    "Main navigation",
+                    pl = "Główna nawigacja",
+                    uk = "Основна навігація",
+                    es = "Navegación principal",
+                    de = "Hauptnavigation",
+                )
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier.semantics { contentDescription = navLabel },
+                ) {
                     Tab.entries.forEach { tab ->
                         NavigationBarItem(
                             selected = route == tab.route,
                             onClick = { navController.openTab(tab.route) },
                             icon = { Icon(tab.icon, contentDescription = null) },
-                            label = { Text(tab.label, style = MaterialTheme.typography.labelSmall) },
+                            label = { Text(tab.label, style = MaterialTheme.typography.labelMedium) },
+                            alwaysShowLabel = true,
                         )
                     }
                 }
