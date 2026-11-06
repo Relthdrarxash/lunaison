@@ -1,0 +1,7 @@
+Initial release of Lunaison:
+• Menstrual cycle calendar with smooth gesture navigation
+• Daily tracking of flow, symptoms, pain, and mood
+• Interactive reproductive anatomy diagram with cycle slider (D1 to D28)
+• Objective symptom correlation engine
+• Evidence-based educational guides and endometriosis awareness
+• 100% offline, zero network permissions, GPL-3.0

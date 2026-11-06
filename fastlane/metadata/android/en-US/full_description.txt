@@ -1,24 +1,19 @@
-Lunaison tracks your menstrual cycle without knowing anything about you: no account, no ads, no trackers, not even Internet access. Everything stays on your phone.
+Lunaison is an intimate menstrual cycle and symptom tracker designed for everyone experiencing cycles, from teenagers to adults and peri-menopause.
 
-LOG IN A FEW SECONDS
-Flow, pain, symptoms, mood and a note if you like. Everything is optional, and a forgotten day can be filled in later. You can also turn on optional ovulation signs (cervical mucus and basal body temperature) or symptoms suited to irregular cycles and perimenopause.
+Fully open-source (GPL-3.0), free, ad-free, account-free, and 100% offline: Lunaison requires zero network permissions in its Android manifest. Your private reproductive health data is stored strictly on your device and is never uploaded anywhere.
 
-HONEST, ADAPTABLE FORECASTS
-Lunaison estimates your next period from your recent cycles and shows a likely range of dates. You can display an estimated fertile window, enable irregular cycles or perimenopause mode, or pause predictions altogether (pregnancy, postpartum, continuous contraception). If your period is much later than usual, a calm, non-alarming card gives practical context.
+CYCLE TRACKING AND PHYSIOLOGY
+• Menstrual calendar with cycle phases: menstruation, follicular phase, estimated ovulation, luteal phase.
+• Daily symptom logging: flow intensity, pain, cervical mucus, mood, energy, sleep, digestion.
+• Interactive reproductive anatomy diagram: explore uterine and ovarian structures and use the cycle slider (D1 to D28) to observe endometrial thickening, follicular growth, ovulation, and corpus luteum regression.
+• Symptom correlation engine: objective pattern detection connecting cycle phases with recurring symptoms.
 
-UNDERSTAND EACH PHASE AND BREATHE
-What is happening in your body across all 4 cycle phases, what helps, what tends to come back for you based on your previous cycles, plus a 1-minute guided breathing exercise (4s in / 6s out) for cramps or tension.
+EVIDENCE-BASED EDUCATION
+• Concise, referenced articles (ACOG, ESRH, Inserm) explaining physiology without condescending metaphors.
+• Adolescent cycle variability guidelines (21 to 45 days according to ACOG 2015).
+• Comprehensive guide on endometriosis, chronic pelvic pain, and red flag symptoms.
 
-REFERENCED GUIDES AND A CONSULTATION SUMMARY
-Your cycle, pain, food, premenstrual syndrome, when to see a doctor, toxic shock: each guide cites the studies it relies on. You can also copy or share a structured 3- or 6-month health summary for your doctor, gynecologist or midwife.
-
-DISCREET REMINDERS AND PIN LOCK
-Reminders before your period, to log your days, or daily for your contraception or medication. On the lock screen, only "Lunaison" is shown. You can lock the app with a 4-digit PIN and choose from 4 soft WCAG AA color themes. A discreet home screen widget is also included.
-
-SHARE WITH YOUR PARTNER WITHOUT ANY SERVER
-For people aged 18 and over: share a summary via your messaging app (SMS, Signal, WhatsApp...) or via an offline QR code generated and scanned right inside Lunaison, complete with phase-by-phase partner support tips. Nothing ever goes through a server.
-
-YOUR DATA BELONGS TO YOU
-Spreadsheet (CSV) export and import, Android encrypted device-to-device backup, and complete erasure in one tap. Lunaison is free and open source (GPL-3.0): its code is public.
-
-Lunaison is neither a medical device nor a method of contraception.
+STRICT PRIVACY
+• Zero data collection, zero analytics, zero trackers.
+• Local export and encrypted backup.
+• 100% functional without an Internet connection.
