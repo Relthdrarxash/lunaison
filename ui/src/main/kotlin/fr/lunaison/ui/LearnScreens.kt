@@ -25,11 +25,13 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -51,6 +53,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 import fr.lunaison.core.content.Article
 import fr.lunaison.core.content.Articles
 import fr.lunaison.core.designsystem.LunaCard
@@ -967,28 +970,154 @@ private fun uterusPartSummary(part: UterusPart): String = when (part) {
     )
 }
 
+private fun cyclePhaseName(day: Int): String = when (day) {
+    in 1..5 -> tr("Menstruation (Règles)", "Menstruation (Period)")
+    in 6..13 -> tr("Phase folliculaire", "Follicular phase")
+    14 -> tr("Ovulation", "Ovulation")
+    else -> tr("Phase lutéale", "Luteal phase")
+}
+
+private fun cyclePhaseDescription(day: Int): String = when (day) {
+    in 1..5 -> tr(
+        "J1 à J5 (Règles) : La chute hormonale provoque la desquamation de l'endomètre superficiel, évacué sous forme de flux menstruel par le col et le vagin.",
+        "D1 to D5 (Period): Hormonal drop triggers the shedding of superficial endometrium, expelled as menstrual flow through the cervix and vagina."
+    )
+    in 6..13 -> tr(
+        "J6 à J13 (Folliculaire) : Sous l'effet des œstrogènes produits par le follicule ovarien en maturation, l'endomètre prolifère et s'épaissit activement.",
+        "D6 to D13 (Follicular): Driven by estrogens from the growing ovarian follicle, the endometrium actively proliferates and thickens."
+    )
+    14 -> tr(
+        "J14 (Ovulation) : Le pic de LH libère l'ovocyte mature hors du follicule. Il est immédiatement capté par les franges mobiles de la trompe.",
+        "D14 (Ovulation): The LH surge triggers egg release from the mature follicle, captured immediately by the fimbriae of the fallopian tube."
+    )
+    else -> tr(
+        "J15 à J28 (Lutéale) : Le follicule rompu devient un corps jaune sécrétant la progestérone. L'endomètre atteint son épaisseur maximale, très vascularisé en artérioles spiralées.",
+        "D15 to D28 (Luteal): The ruptured follicle becomes a corpus luteum secreting progesterone. The endometrium achieves peak thickness, packed with spiral arterioles."
+    )
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun InteractiveUterusDiagram() {
     var selectedPart by remember { mutableStateOf(UterusPart.ENDOMETRIUM) }
+    var cycleDay by remember { mutableFloatStateOf(14f) }
+    val currentDay = cycleDay.roundToInt().coerceIn(1, 28)
     val colors = MaterialTheme.colorScheme
 
     SectionTitle(tr("Schéma interactif de l'appareil reproducteur", "Interactive reproductive anatomy diagram"))
     LunaCard {
         Text(
             tr(
-                "Touchez un organe sur le schéma ou les boutons ci-dessous pour découvrir son rôle physiologique :",
-                "Touch an organ on the diagram or use the buttons below to explore its physiological function:"
+                "Déplacez le curseur pour observer l'évolution de l'endomètre et des ovaires tout au long du cycle (J1 à J28), ou touchez un organe pour étudier son rôle :",
+                "Move the slider to observe endometrium and ovary evolution across the cycle (D1 to D28), or touch an organ to learn its function:"
             ),
             style = MaterialTheme.typography.bodyMedium,
             color = colors.onSurfaceVariant,
         )
 
-        // 1. Canvas vectoriel interactif
+        // 1. Curseur temporel du cycle (Slider J1 - J28)
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            color = colors.surfaceVariant.copy(alpha = 0.45f),
+            border = androidx.compose.foundation.BorderStroke(1.dp, colors.outlineVariant.copy(alpha = 0.5f)),
+        ) {
+            Column(
+                modifier = Modifier.padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        tr("Jour du cycle : J$currentDay", "Cycle day: D$currentDay"),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.onSurface,
+                    )
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = when (currentDay) {
+                            in 1..5 -> Color(0xFFEF5350).copy(alpha = 0.2f)
+                            in 6..13 -> Color(0xFF42A5F5).copy(alpha = 0.2f)
+                            14 -> Color(0xFFFFB300).copy(alpha = 0.25f)
+                            else -> Color(0xFFAB47BC).copy(alpha = 0.2f)
+                        },
+                    ) {
+                        Text(
+                            cyclePhaseName(currentDay),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = when (currentDay) {
+                                in 1..5 -> Color(0xFFC62828)
+                                in 6..13 -> Color(0xFF1565C0)
+                                14 -> Color(0xFFE65100)
+                                else -> Color(0xFF6A1B9A)
+                            },
+                        )
+                    }
+                }
+
+                Slider(
+                    value = cycleDay,
+                    onValueChange = { cycleDay = it },
+                    valueRange = 1f..28f,
+                    steps = 26,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                // Raccourcis de sélection rapide de phase
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    listOf(
+                        Triple(1f, tr("Règles (J1)", "Period (D1)"), 1..5),
+                        Triple(8f, tr("Folliculaire (J8)", "Follicular (D8)"), 6..13),
+                        Triple(14f, tr("Ovulation (J14)", "Ovulation (D14)"), 14..14),
+                        Triple(21f, tr("Lutéale (J21)", "Luteal (D21)"), 15..28),
+                    ).forEach { (targetDay, label, range) ->
+                        val isCurrent = currentDay in range
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = if (isCurrent) colors.primaryContainer else Color.Transparent,
+                            border = androidx.compose.foundation.BorderStroke(
+                                1.dp,
+                                if (isCurrent) colors.primary else colors.outlineVariant.copy(alpha = 0.6f)
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { cycleDay = targetDay },
+                        ) {
+                            Text(
+                                label,
+                                modifier = Modifier.padding(vertical = 6.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isCurrent) colors.onPrimaryContainer else colors.onSurfaceVariant,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                            )
+                        }
+                    }
+                }
+
+                // Synthèse physiologique de la phase active
+                Text(
+                    cyclePhaseDescription(currentDay),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant,
+                )
+            }
+        }
+
+        // 2. Canvas vectoriel interactif et dynamique
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(260.dp)
+                .height(270.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(colors.surfaceVariant.copy(alpha = 0.35f)),
             contentAlignment = Alignment.Center,
@@ -1041,6 +1170,18 @@ private fun InteractiveUterusDiagram() {
                 val vaginaBottomY = h * 0.90f
                 val vaginaWidth = w * 0.09f
 
+                // Facteur d'épaisseur et de réceptivité de l'endomètre selon le jour du cycle
+                val endoFactor: Float = when (currentDay) {
+                    1 -> 0.70f
+                    2 -> 0.45f
+                    3 -> 0.30f
+                    4, 5 -> 0.18f
+                    in 6..13 -> 0.20f + ((currentDay - 5) / 8f) * 0.65f
+                    14 -> 0.90f
+                    in 15..24 -> 1.0f
+                    else -> 1.0f - ((currentDay - 24) / 4f) * 0.20f
+                }
+
                 // --- 1. Dessin du Vagin (canal inférieur) ---
                 val vaginaPath = Path().apply {
                     moveTo(cx - cervixWidth, cervixY + h * 0.04f)
@@ -1072,6 +1213,15 @@ private fun InteractiveUterusDiagram() {
                         strokeWidth = 1.5.dp.toPx(),
                         cap = StrokeCap.Round,
                     )
+                }
+
+                // Menstruation : écoulement sanguin dans le vagin (J1 à J5)
+                if (currentDay in 1..5) {
+                    val dropletColor = Color(0xFF991B1B)
+                    drawCircle(dropletColor, radius = 2.8.dp.toPx(), center = Offset(cx, cervixY + h * 0.04f))
+                    drawCircle(dropletColor, radius = 2.4.dp.toPx(), center = Offset(cx - 3.dp.toPx(), cervixY + h * 0.11f))
+                    drawCircle(dropletColor, radius = 2.8.dp.toPx(), center = Offset(cx + 2.5.dp.toPx(), cervixY + h * 0.18f))
+                    drawCircle(dropletColor, radius = 2.2.dp.toPx(), center = Offset(cx, cervixY + h * 0.25f))
                 }
 
                 // --- 2. Dessin du Myomètre (corps musculaire de l'utérus) ---
@@ -1110,6 +1260,13 @@ private fun InteractiveUterusDiagram() {
                 // --- 3. Dessin du Col de l'utérus (Cervix) ---
                 val isCervixSelected = selectedPart == UterusPart.CERVIX
                 val cervixCenter = Offset(cx, cervixY)
+                val cervixOsRadius = when (currentDay) {
+                    in 1..5 -> cervixWidth * 0.44f // Entrouvert pour laisser passer le flux
+                    14 -> cervixWidth * 0.40f // Perméable lors de l'ovulation
+                    in 15..28 -> cervixWidth * 0.26f // Hermétiquement fermé sous progestérone
+                    else -> cervixWidth * 0.35f
+                }
+
                 drawCircle(
                     color = if (isCervixSelected) Color(0xFF81C784) else Color(0xFFA5D6A7).copy(alpha = 0.6f),
                     radius = cervixWidth * 0.9f,
@@ -1117,7 +1274,7 @@ private fun InteractiveUterusDiagram() {
                 )
                 drawCircle(
                     color = if (isCervixSelected) Color(0xFF2E7D32) else Color(0xFF4CAF50),
-                    radius = cervixWidth * 0.35f,
+                    radius = cervixOsRadius,
                     center = cervixCenter,
                 )
                 if (isCervixSelected) {
@@ -1128,8 +1285,16 @@ private fun InteractiveUterusDiagram() {
                         style = Stroke(width = 2.5.dp.toPx()),
                     )
                 }
+                // Glaire cervicale fertile filante au pic ovulatoire (J14)
+                if (currentDay == 14) {
+                    drawCircle(
+                        color = Color(0xFFE0F2F1).copy(alpha = 0.9f),
+                        radius = 3.dp.toPx(),
+                        center = Offset(cx, cervixY + cervixWidth * 0.5f),
+                    )
+                }
 
-                // --- 4. Dessin de l'Endomètre (cavité utérine interne triangulaire) ---
+                // --- 4. Dessin de l'Endomètre (cavité utérine interne avec épaisseur dynamique) ---
                 val cavityPath = Path().apply {
                     val cornuY = topY + h * 0.08f
                     val cornuXLeft = cx - fundusWidth * 0.55f
@@ -1143,15 +1308,47 @@ private fun InteractiveUterusDiagram() {
                     close()
                 }
                 val isEndoSelected = selectedPart == UterusPart.ENDOMETRIUM
+
+                // Teinte de l'endomètre selon la vascularisation et la phase
+                val endoFillColor = when (currentDay) {
+                    in 1..5 -> Color(0xFF881337).copy(alpha = 0.55f) // Desquamation
+                    in 6..13 -> Color(0xFFE11D48).copy(alpha = 0.25f + endoFactor * 0.45f) // Prolifération
+                    14 -> Color(0xFFBE123C).copy(alpha = 0.80f) // Pic ovulatoire réceptif
+                    else -> Color(0xFF9F1239).copy(alpha = 0.85f) // Phase sécrétoire veloutée
+                }
                 drawPath(
                     path = cavityPath,
-                    color = if (isEndoSelected) Color(0xFFD32F2F) else Color(0xFFC2185B).copy(alpha = 0.6f),
+                    color = if (isEndoSelected) endoFillColor.copy(alpha = 0.95f) else endoFillColor,
                 )
+
+                // Bordure de muqueuse endométriale proportionnelle à l'épaisseur cyclique
+                val endoStrokeWidth = (2.dp + 5.5.dp * endoFactor).toPx()
                 drawPath(
                     path = cavityPath,
                     color = if (isEndoSelected) Color(0xFFFFCDD2) else Color(0xFF880E4F),
-                    style = Stroke(width = if (isEndoSelected) 3.dp.toPx() else 1.5.dp.toPx()),
+                    style = Stroke(width = if (isEndoSelected) endoStrokeWidth + 2.dp.toPx() else endoStrokeWidth),
                 )
+
+                // Artérioles spiralées ondulantes (visibles en phase lutéale sécrétoire J15 à J28)
+                if (currentDay in 15..28) {
+                    val spiralColor = Color(0xFFFFCDD2).copy(alpha = 0.7f)
+                    val sY = topY + h * 0.08f
+                    val p1 = Path().apply {
+                        moveTo(cx - fundusWidth * 0.22f, sY)
+                        cubicTo(cx - fundusWidth * 0.14f, sY + h * 0.04f, cx - fundusWidth * 0.26f, sY + h * 0.08f, cx - fundusWidth * 0.16f, sY + h * 0.12f)
+                    }
+                    val p2 = Path().apply {
+                        moveTo(cx, sY - h * 0.01f)
+                        cubicTo(cx + fundusWidth * 0.08f, sY + h * 0.04f, cx - fundusWidth * 0.08f, sY + h * 0.08f, cx, sY + h * 0.13f)
+                    }
+                    val p3 = Path().apply {
+                        moveTo(cx + fundusWidth * 0.22f, sY)
+                        cubicTo(cx + fundusWidth * 0.26f, sY + h * 0.04f, cx + fundusWidth * 0.14f, sY + h * 0.08f, cx + fundusWidth * 0.16f, sY + h * 0.12f)
+                    }
+                    drawPath(p1, spiralColor, style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round))
+                    drawPath(p2, spiralColor, style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round))
+                    drawPath(p3, spiralColor, style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round))
+                }
 
                 // --- 5. Dessin des Trompes de Fallope ---
                 val isTubesSelected = selectedPart == UterusPart.TUBES
@@ -1169,7 +1366,11 @@ private fun InteractiveUterusDiagram() {
                 }
                 drawPath(leftTubePath, color = tubeColor, style = Stroke(width = tubeStroke, cap = StrokeCap.Round))
                 val leftFimbriaCenter = Offset(cx - w * 0.40f, topY + h * 0.12f)
-                drawCircle(color = tubeColor, radius = 5.dp.toPx(), center = leftFimbriaCenter)
+                drawCircle(
+                    color = if (currentDay == 14) Color(0xFF00ACC1) else tubeColor,
+                    radius = if (currentDay == 14) 6.5.dp.toPx() else 5.dp.toPx(),
+                    center = leftFimbriaCenter,
+                )
 
                 // Trompe droite
                 val rightTubePath = Path().apply {
@@ -1184,7 +1385,7 @@ private fun InteractiveUterusDiagram() {
                 val rightFimbriaCenter = Offset(cx + w * 0.40f, topY + h * 0.12f)
                 drawCircle(color = tubeColor, radius = 5.dp.toPx(), center = rightFimbriaCenter)
 
-                // --- 6. Dessin des Ovaires (forme d'amande) ---
+                // --- 6. Dessin des Ovaires (maturation folliculaire, ovulation & corps jaune) ---
                 val isOvariesSelected = selectedPart == UterusPart.OVARIES
                 val ovaryColor = if (isOvariesSelected) Color(0xFFFFA000) else Color(0xFFFFE082).copy(alpha = 0.7f)
                 val leftOvaryPos = Offset(cx - w * 0.35f, topY + h * 0.22f)
@@ -1204,7 +1405,7 @@ private fun InteractiveUterusDiagram() {
                     strokeWidth = 1.5.dp.toPx(),
                 )
 
-                // Ovaires
+                // Ovaires (forme d'amande)
                 drawOval(
                     color = ovaryColor,
                     topLeft = Offset(leftOvaryPos.x - w * 0.06f, leftOvaryPos.y - h * 0.05f),
@@ -1229,6 +1430,52 @@ private fun InteractiveUterusDiagram() {
                         style = Stroke(width = 2.5.dp.toPx()),
                     )
                 }
+
+                // Dynamique du cycle ovarien sur l'ovaire dominant (gauche) :
+                when (currentDay) {
+                    in 1..5 -> {
+                        // Follicules primordiaux au repos
+                        drawCircle(Color(0xFFFFF9C4), radius = 2.5.dp.toPx(), center = leftOvaryPos)
+                    }
+                    in 6..13 -> {
+                        // Croissance du follicule de De Graaf dominant
+                        val fRadius = (3f + (currentDay - 5) * 0.65f).dp.toPx()
+                        drawCircle(Color(0xFFFFCA28), radius = fRadius, center = leftOvaryPos)
+                        drawCircle(Color(0xFFFFF9C4), radius = 2.5.dp.toPx(), center = leftOvaryPos)
+                    }
+                    14 -> {
+                        // Ovulation : rupture folliculaire & libération de l'ovocyte capté par la trompe
+                        drawCircle(Color(0xFFFF8F00), radius = 5.dp.toPx(), center = Offset(leftOvaryPos.x - w * 0.02f, leftOvaryPos.y - h * 0.02f))
+                        val ovocytePos = Offset(cx - w * 0.38f, topY + h * 0.14f)
+                        drawCircle(Color(0xFFFBC02D).copy(alpha = 0.35f), radius = 9.dp.toPx(), center = ovocytePos)
+                        drawCircle(Color(0xFFFFF59D), radius = 4.5.dp.toPx(), center = ovocytePos)
+                        drawCircle(Color(0xFFE65100), radius = 4.5.dp.toPx(), center = ovocytePos, style = Stroke(width = 1.5.dp.toPx()))
+                    }
+                    in 15..18 -> {
+                        // Corps jaune jeune & migration de l'ovocyte dans le tiers externe de la trompe
+                        drawCircle(Color(0xFFFFB300), radius = 6.5.dp.toPx(), center = leftOvaryPos)
+                        drawCircle(Color(0xFFFF8F00), radius = 3.5.dp.toPx(), center = leftOvaryPos)
+                        val progress = (currentDay - 15) / 3f
+                        val transitX = cx - w * (0.36f - progress * 0.08f)
+                        val transitY = topY + h * (0.04f - progress * 0.03f)
+                        drawCircle(Color(0xFFFFF59D), radius = 3.5.dp.toPx(), center = Offset(transitX, transitY))
+                        drawCircle(Color(0xFFE65100), radius = 3.5.dp.toPx(), center = Offset(transitX, transitY), style = Stroke(width = 1.2.dp.toPx()))
+                    }
+                    in 19..24 -> {
+                        // Corps jaune pleinement développé sécrétant la progestérone
+                        drawCircle(Color(0xFFFB8C00), radius = 7.5.dp.toPx(), center = leftOvaryPos)
+                        drawCircle(Color(0xFFFFD54F), radius = 4.5.dp.toPx(), center = leftOvaryPos)
+                    }
+                    else -> {
+                        // J25-J28 : Régression du corps jaune en corpus albicans si absence de fécondation
+                        val regrRadius = (6f - (currentDay - 24) * 0.8f).coerceAtLeast(3f).dp.toPx()
+                        drawCircle(Color(0xFFFFE082).copy(alpha = 0.6f), radius = regrRadius, center = leftOvaryPos)
+                    }
+                }
+
+                // Follicules de l'ovaire controlatéral (droit) au repos
+                drawCircle(Color(0xFFFFF9C4).copy(alpha = 0.6f), radius = 2.5.dp.toPx(), center = Offset(rightOvaryPos.x - 3.dp.toPx(), rightOvaryPos.y))
+                drawCircle(Color(0xFFFFF9C4).copy(alpha = 0.6f), radius = 2.dp.toPx(), center = Offset(rightOvaryPos.x + 3.dp.toPx(), rightOvaryPos.y - 2.dp.toPx()))
             }
         }
 
