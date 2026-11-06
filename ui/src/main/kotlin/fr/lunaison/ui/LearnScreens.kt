@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -23,11 +25,13 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,8 +45,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import fr.lunaison.core.content.Article
@@ -613,6 +619,8 @@ private fun CycleVisualGuide() {
 
         HormoneCurvesDiagram()
 
+        InteractiveUterusDiagram()
+
         SectionTitle(tr("L'anatomie interne sans tabou", "Internal anatomy explained"))
         LunaCard {
             Text(
@@ -901,6 +909,391 @@ private fun HormoneLegendItem(color: Color, name: String, role: String) {
         Column {
             Text(name, style = MaterialTheme.typography.titleSmall)
             Text(role, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+private enum class UterusPart {
+    ENDOMETRIUM,
+    MYOMETRIUM,
+    CERVIX,
+    TUBES,
+    OVARIES,
+    VAGINA,
+}
+
+private fun uterusPartTitle(part: UterusPart): String = when (part) {
+    UterusPart.ENDOMETRIUM -> tr("L'endomètre (muqueuse interne)", "The endometrium (inner lining)")
+    UterusPart.MYOMETRIUM -> tr("Le myomètre (paroi musculaire)", "The myometrium (muscular wall)")
+    UterusPart.CERVIX -> tr("Le col de l'utérus (cervix)", "The cervix")
+    UterusPart.TUBES -> tr("Les trompes de Fallope", "The fallopian tubes")
+    UterusPart.OVARIES -> tr("Les ovaires", "The ovaries")
+    UterusPart.VAGINA -> tr("Le vagin & la vulve", "The vagina & vulva")
+}
+
+private fun uterusPartChipLabel(part: UterusPart): String = when (part) {
+    UterusPart.ENDOMETRIUM -> tr("Endomètre", "Endometrium")
+    UterusPart.MYOMETRIUM -> tr("Myomètre", "Myometrium")
+    UterusPart.CERVIX -> tr("Col (Cervix)", "Cervix")
+    UterusPart.TUBES -> tr("Trompes", "Tubes")
+    UterusPart.OVARIES -> tr("Ovaires", "Ovaries")
+    UterusPart.VAGINA -> tr("Vagin", "Vagina")
+}
+
+private fun uterusPartSummary(part: UterusPart): String = when (part) {
+    UterusPart.ENDOMETRIUM -> tr(
+        "Tissu vivant qui tapisse l'intérieur de la cavité utérine. Sous l'effet des œstrogènes puis de la progestérone, il s'épaissit et développe de nombreux micro-vaisseaux pour accueillir une éventuelle nidation. En l'absence de grossesse, la chute hormonale entraîne sa desquamation : c'est l'écoulement des règles.",
+        "Living tissue lining the uterine cavity. Driven by estrogen and progesterone, it thickens and vascularizes to support potential embryo implantation. Without pregnancy, the drop in hormones causes it to shed: this is menstrual bleeding."
+    )
+    UterusPart.MYOMETRIUM -> tr(
+        "Épaisse couche musculaire entourant la cavité utérine. C'est l'un des muscles lisses les plus puissants du corps. Lors des règles, la libération locale de prostaglandines déclenche ses contractions pour expulser l'endomètre. Ces contractions peuvent temporairement comprimer les vaisseaux sanguins, causant les crampes menstruelles.",
+        "Thick muscular layer surrounding the uterine cavity. One of the body's strongest smooth muscles. During periods, local prostaglandins trigger its contractions to shed the endometrium. These contractions can compress local blood vessels, causing menstrual cramps."
+    )
+    UterusPart.CERVIX -> tr(
+        "Partie étroite inférieure de l'utérus faisant la jonction avec le vagin. Il contient des glandes sécrétant la glaire cervicale (qui filtre ou favorise le passage des spermatozoïdes selon les phases du cycle) et s'entrouvre légèrement pour laisser s'évacuer le flux menstruel.",
+        "Narrow lower part of the uterus connecting into the vagina. It houses glands that secrete cervical mucus (filtering or assisting sperm according to cycle phase) and opens slightly to allow menstrual flow to pass through."
+    )
+    UterusPart.TUBES -> tr(
+        "Deux conduits fins d'environ 10 à 12 cm reliant chaque ovaire aux angles supérieurs de l'utérus. Leurs franges mobiles captent l'ovocyte émis lors de l'ovulation. C'est dans le tiers externe de la trompe qu'a lieu la fécondation si un spermatozoïde rencontre l'ovocyte.",
+        "Two slender 10 to 12 cm ducts connecting each ovary to the upper corners of the uterus. Their mobile fimbriae sweep up the egg released during ovulation. Fertilization occurs in the outer third of the tube if a sperm meets the egg."
+    )
+    UterusPart.OVARIES -> tr(
+        "Deux glandes situées de chaque côté de l'utérus. Elles abritent l'ensemble des follicules ovocytaires dès la naissance et orchestrent le cycle en produisant cycliquement les deux hormones clés : les œstrogènes (maturation du follicule) et la progestérone (sécrétée par le corps jaune après l'ovulation).",
+        "Two glands located on each side of the uterus. They house all egg follicles from birth and orchestrate the cycle by cyclically producing two key hormones: estrogen (follicular growth) and progesterone (secreted by the corpus luteum after ovulation)."
+    )
+    UterusPart.VAGINA -> tr(
+        "Conduit musculaire souple et extensible de 8 à 10 cm reliant le col de l'utérus à la vulve extérieure. Il assure l'écoulement vers l'extérieur des flux menstruels et des sécrétions physiologiques, participe aux rapports sexuels et permet le passage du bébé lors de l'accouchement.",
+        "Flexible, elastic 8 to 10 cm muscular canal connecting the cervix to the external vulva. It channels menstrual fluid and physiological secretions outward, plays a role in sexual intercourse, and serves as the birth canal."
+    )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun InteractiveUterusDiagram() {
+    var selectedPart by remember { mutableStateOf(UterusPart.ENDOMETRIUM) }
+    val colors = MaterialTheme.colorScheme
+
+    SectionTitle(tr("Schéma interactif de l'appareil reproducteur", "Interactive reproductive anatomy diagram"))
+    LunaCard {
+        Text(
+            tr(
+                "Touchez un organe sur le schéma ou les boutons ci-dessous pour découvrir son rôle physiologique :",
+                "Touch an organ on the diagram or use the buttons below to explore its physiological function:"
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = colors.onSurfaceVariant,
+        )
+
+        // 1. Canvas vectoriel interactif
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(260.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(colors.surfaceVariant.copy(alpha = 0.35f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+                    .pointerInput(Unit) {
+                        detectTapGestures { offset ->
+                            val w = size.width.toFloat()
+                            val h = size.height.toFloat()
+                            val cx = w / 2f
+                            val topY = h * 0.22f
+                            val cervixY = h * 0.62f
+                            val dx = offset.x - cx
+                            val dy = offset.y
+
+                            // Hit testing par zone anatomique
+                            val leftOvaryX = cx - w * 0.35f
+                            val rightOvaryX = cx + w * 0.35f
+                            val ovaryY = topY + h * 0.22f
+                            val distLeftOvary = kotlin.math.hypot(offset.x - leftOvaryX, dy - ovaryY)
+                            val distRightOvary = kotlin.math.hypot(offset.x - rightOvaryX, dy - ovaryY)
+
+                            if (distLeftOvary < w * 0.12f || distRightOvary < w * 0.12f) {
+                                selectedPart = UterusPart.OVARIES
+                            } else if (dy < topY + h * 0.16f && kotlin.math.abs(dx) > w * 0.18f) {
+                                selectedPart = UterusPart.TUBES
+                            } else if (dy > cervixY + h * 0.06f && kotlin.math.abs(dx) < w * 0.16f) {
+                                selectedPart = UterusPart.VAGINA
+                            } else if (kotlin.math.abs(dy - cervixY) <= h * 0.08f && kotlin.math.abs(dx) < w * 0.14f) {
+                                selectedPart = UterusPart.CERVIX
+                            } else if (dy >= topY && dy <= cervixY && kotlin.math.abs(dx) <= w * 0.10f && dy < cervixY - h * 0.04f) {
+                                selectedPart = UterusPart.ENDOMETRIUM
+                            } else if (dy >= topY && dy <= cervixY && kotlin.math.abs(dx) <= w * 0.22f) {
+                                selectedPart = UterusPart.MYOMETRIUM
+                            }
+                        }
+                    }
+            ) {
+                val w = size.width
+                val h = size.height
+                val cx = w / 2f
+
+                val topY = h * 0.22f
+                val fundusWidth = w * 0.18f
+                val cervixY = h * 0.64f
+                val cervixWidth = w * 0.07f
+                val vaginaBottomY = h * 0.90f
+                val vaginaWidth = w * 0.09f
+
+                // --- 1. Dessin du Vagin (canal inférieur) ---
+                val vaginaPath = Path().apply {
+                    moveTo(cx - cervixWidth, cervixY + h * 0.04f)
+                    lineTo(cx + cervixWidth, cervixY + h * 0.04f)
+                    lineTo(cx + vaginaWidth, vaginaBottomY)
+                    lineTo(cx - vaginaWidth, vaginaBottomY)
+                    close()
+                }
+                val isVaginaSelected = selectedPart == UterusPart.VAGINA
+                drawPath(
+                    path = vaginaPath,
+                    color = if (isVaginaSelected) Color(0xFF78909C) else Color(0xFFB0BEC5).copy(alpha = 0.4f),
+                )
+                if (isVaginaSelected) {
+                    drawPath(
+                        path = vaginaPath,
+                        color = Color(0xFF37474F),
+                        style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
+                    )
+                }
+
+                // Plis vaginaux (rugae)
+                for (i in 1..3) {
+                    val y = cervixY + h * 0.08f + i * (h * 0.05f)
+                    drawLine(
+                        color = (if (isVaginaSelected) Color.White else colors.onSurfaceVariant).copy(alpha = 0.5f),
+                        start = Offset(cx - vaginaWidth * 0.6f, y),
+                        end = Offset(cx + vaginaWidth * 0.6f, y),
+                        strokeWidth = 1.5.dp.toPx(),
+                        cap = StrokeCap.Round,
+                    )
+                }
+
+                // --- 2. Dessin du Myomètre (corps musculaire de l'utérus) ---
+                val myoPath = Path().apply {
+                    moveTo(cx - cervixWidth, cervixY)
+                    cubicTo(
+                        cx - w * 0.20f, cervixY - h * 0.12f,
+                        cx - fundusWidth, topY + h * 0.06f,
+                        cx - fundusWidth, topY,
+                    )
+                    cubicTo(
+                        cx - fundusWidth * 0.5f, topY - h * 0.04f,
+                        cx + fundusWidth * 0.5f, topY - h * 0.04f,
+                        cx + fundusWidth, topY,
+                    )
+                    cubicTo(
+                        cx + fundusWidth, topY + h * 0.06f,
+                        cx + w * 0.20f, cervixY - h * 0.12f,
+                        cx + cervixWidth, cervixY,
+                    )
+                    close()
+                }
+                val isMyoSelected = selectedPart == UterusPart.MYOMETRIUM
+                drawPath(
+                    path = myoPath,
+                    color = if (isMyoSelected) Color(0xFFE57373) else Color(0xFFEF9A9A).copy(alpha = 0.5f),
+                )
+                if (isMyoSelected) {
+                    drawPath(
+                        path = myoPath,
+                        color = Color(0xFFC62828),
+                        style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
+                    )
+                }
+
+                // --- 3. Dessin du Col de l'utérus (Cervix) ---
+                val isCervixSelected = selectedPart == UterusPart.CERVIX
+                val cervixCenter = Offset(cx, cervixY)
+                drawCircle(
+                    color = if (isCervixSelected) Color(0xFF81C784) else Color(0xFFA5D6A7).copy(alpha = 0.6f),
+                    radius = cervixWidth * 0.9f,
+                    center = cervixCenter,
+                )
+                drawCircle(
+                    color = if (isCervixSelected) Color(0xFF2E7D32) else Color(0xFF4CAF50),
+                    radius = cervixWidth * 0.35f,
+                    center = cervixCenter,
+                )
+                if (isCervixSelected) {
+                    drawCircle(
+                        color = Color(0xFF1B5E20),
+                        radius = cervixWidth * 1.1f,
+                        center = cervixCenter,
+                        style = Stroke(width = 2.5.dp.toPx()),
+                    )
+                }
+
+                // --- 4. Dessin de l'Endomètre (cavité utérine interne triangulaire) ---
+                val cavityPath = Path().apply {
+                    val cornuY = topY + h * 0.08f
+                    val cornuXLeft = cx - fundusWidth * 0.55f
+                    val cornuXRight = cx + fundusWidth * 0.55f
+                    val apexY = cervixY - h * 0.03f
+
+                    moveTo(cornuXLeft, cornuY)
+                    quadraticTo(cx, cornuY - h * 0.02f, cornuXRight, cornuY)
+                    quadraticTo(cx + fundusWidth * 0.20f, cervixY - h * 0.12f, cx, apexY)
+                    quadraticTo(cx - fundusWidth * 0.20f, cervixY - h * 0.12f, cornuXLeft, cornuY)
+                    close()
+                }
+                val isEndoSelected = selectedPart == UterusPart.ENDOMETRIUM
+                drawPath(
+                    path = cavityPath,
+                    color = if (isEndoSelected) Color(0xFFD32F2F) else Color(0xFFC2185B).copy(alpha = 0.6f),
+                )
+                drawPath(
+                    path = cavityPath,
+                    color = if (isEndoSelected) Color(0xFFFFCDD2) else Color(0xFF880E4F),
+                    style = Stroke(width = if (isEndoSelected) 3.dp.toPx() else 1.5.dp.toPx()),
+                )
+
+                // --- 5. Dessin des Trompes de Fallope ---
+                val isTubesSelected = selectedPart == UterusPart.TUBES
+                val tubeColor = if (isTubesSelected) Color(0xFF1E88E5) else Color(0xFF90CAF9).copy(alpha = 0.7f)
+                val tubeStroke = if (isTubesSelected) 4.5.dp.toPx() else 3.dp.toPx()
+
+                // Trompe gauche
+                val leftTubePath = Path().apply {
+                    moveTo(cx - fundusWidth, topY + h * 0.02f)
+                    cubicTo(
+                        cx - w * 0.26f, topY - h * 0.08f,
+                        cx - w * 0.38f, topY - h * 0.04f,
+                        cx - w * 0.40f, topY + h * 0.12f,
+                    )
+                }
+                drawPath(leftTubePath, color = tubeColor, style = Stroke(width = tubeStroke, cap = StrokeCap.Round))
+                val leftFimbriaCenter = Offset(cx - w * 0.40f, topY + h * 0.12f)
+                drawCircle(color = tubeColor, radius = 5.dp.toPx(), center = leftFimbriaCenter)
+
+                // Trompe droite
+                val rightTubePath = Path().apply {
+                    moveTo(cx + fundusWidth, topY + h * 0.02f)
+                    cubicTo(
+                        cx + w * 0.26f, topY - h * 0.08f,
+                        cx + w * 0.38f, topY - h * 0.04f,
+                        cx + w * 0.40f, topY + h * 0.12f,
+                    )
+                }
+                drawPath(rightTubePath, color = tubeColor, style = Stroke(width = tubeStroke, cap = StrokeCap.Round))
+                val rightFimbriaCenter = Offset(cx + w * 0.40f, topY + h * 0.12f)
+                drawCircle(color = tubeColor, radius = 5.dp.toPx(), center = rightFimbriaCenter)
+
+                // --- 6. Dessin des Ovaires (forme d'amande) ---
+                val isOvariesSelected = selectedPart == UterusPart.OVARIES
+                val ovaryColor = if (isOvariesSelected) Color(0xFFFFA000) else Color(0xFFFFE082).copy(alpha = 0.7f)
+                val leftOvaryPos = Offset(cx - w * 0.35f, topY + h * 0.22f)
+                val rightOvaryPos = Offset(cx + w * 0.35f, topY + h * 0.22f)
+
+                // Ligaments utéro-ovariens
+                drawLine(
+                    color = Color.Gray.copy(alpha = 0.4f),
+                    start = Offset(cx - fundusWidth * 0.8f, topY + h * 0.14f),
+                    end = leftOvaryPos,
+                    strokeWidth = 1.5.dp.toPx(),
+                )
+                drawLine(
+                    color = Color.Gray.copy(alpha = 0.4f),
+                    start = Offset(cx + fundusWidth * 0.8f, topY + h * 0.14f),
+                    end = rightOvaryPos,
+                    strokeWidth = 1.5.dp.toPx(),
+                )
+
+                // Ovaires
+                drawOval(
+                    color = ovaryColor,
+                    topLeft = Offset(leftOvaryPos.x - w * 0.06f, leftOvaryPos.y - h * 0.05f),
+                    size = Size(w * 0.12f, h * 0.10f),
+                )
+                drawOval(
+                    color = ovaryColor,
+                    topLeft = Offset(rightOvaryPos.x - w * 0.06f, rightOvaryPos.y - h * 0.05f),
+                    size = Size(w * 0.12f, h * 0.10f),
+                )
+                if (isOvariesSelected) {
+                    drawOval(
+                        color = Color(0xFFFF6F00),
+                        topLeft = Offset(leftOvaryPos.x - w * 0.06f, leftOvaryPos.y - h * 0.05f),
+                        size = Size(w * 0.12f, h * 0.10f),
+                        style = Stroke(width = 2.5.dp.toPx()),
+                    )
+                    drawOval(
+                        color = Color(0xFFFF6F00),
+                        topLeft = Offset(rightOvaryPos.x - w * 0.06f, rightOvaryPos.y - h * 0.05f),
+                        size = Size(w * 0.12f, h * 0.10f),
+                        style = Stroke(width = 2.5.dp.toPx()),
+                    )
+                }
+            }
+        }
+
+        // 2. Boutons sélecteurs (Chips)
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            UterusPart.entries.forEach { part ->
+                FilterChip(
+                    selected = part == selectedPart,
+                    onClick = { selectedPart = part },
+                    label = { Text(uterusPartChipLabel(part), style = MaterialTheme.typography.labelMedium) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = colors.primaryContainer,
+                        selectedLabelColor = colors.onPrimaryContainer,
+                    ),
+                )
+            }
+        }
+
+        // 3. Fiche détaillée de l'organe sélectionné
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            color = colors.secondaryContainer.copy(alpha = 0.45f),
+            border = androidx.compose.foundation.BorderStroke(1.dp, colors.outlineVariant.copy(alpha = 0.6f)),
+        ) {
+            Column(
+                modifier = Modifier.padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(10.dp)
+                            .clip(CircleShape)
+                            .background(
+                                when (selectedPart) {
+                                    UterusPart.ENDOMETRIUM -> Color(0xFFD32F2F)
+                                    UterusPart.MYOMETRIUM -> Color(0xFFC62828)
+                                    UterusPart.CERVIX -> Color(0xFF2E7D32)
+                                    UterusPart.TUBES -> Color(0xFF1E88E5)
+                                    UterusPart.OVARIES -> Color(0xFFFF8F00)
+                                    UterusPart.VAGINA -> Color(0xFF455A64)
+                                }
+                            )
+                    )
+                    Text(
+                        uterusPartTitle(selectedPart),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.onSurface,
+                    )
+                }
+                Text(
+                    uterusPartSummary(selectedPart),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colors.onSurfaceVariant,
+                )
+            }
         }
     }
 }
