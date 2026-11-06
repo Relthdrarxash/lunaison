@@ -12,6 +12,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -45,11 +47,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import fr.lunaison.core.cycle.LogReminderMode
 import fr.lunaison.core.data.AppSettings
@@ -361,10 +366,85 @@ fun SettingsScreen(
             LunaButton(tr("Tout effacer", "Erase everything"), onClick = { confirmErase = true }, style = LunaButtonStyle.Quiet, icon = Icons.Filled.Delete)
         }
 
+        SectionTitle(
+            tr(
+                "Dans la même démarche",
+                "In the same spirit",
+                pl = "W tym samym duchu",
+                uk = "У тому ж дусі",
+                es = "En la misma línea",
+                de = "Im gleichen Sinne",
+            ),
+        )
+        LunaCard {
+            Text(
+                tr(
+                    "Applications libres, 100 % hors-ligne et respectueuses de votre santé.",
+                    "Free, 100% offline apps that respect your health and attention.",
+                    pl = "Wolne, w 100% działające offline aplikacje szanujące Twoje zdrowie i uwagę.",
+                    uk = "Вільні, на 100% офлайн-програми, що поважають ваше здоров'я та увагу.",
+                    es = "Aplicaciones libres, 100 % sin conexión que respetan tu salud y atención.",
+                    de = "Freie, 100 % Offline-Apps, die Ihre Gesundheit und Aufmerksamkeit respektieren.",
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            CompanionAppRow(
+                badge = "🌿",
+                name = "Respire",
+                description = tr(
+                    "Pause de respiration & anti-doomscrolling, libre et sans compte",
+                    "Breathing pause & anti-doomscrolling, free and offline",
+                    pl = "Pauza oddechowa i ochrona przed doomscrollingiem, bez konta i offline",
+                    uk = "Дихальна пауза та захист від думскролінгу, вільна та офлайн",
+                    es = "Pausa de respiración y anti-doomscrolling, libre y sin conexión",
+                    de = "Atempause & Anti-Doomscrolling, frei und offline",
+                ),
+                onClick = { openLink(context, "https://relthdrarxash.github.io/respire/") },
+            )
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            CompanionAppRow(
+                badge = "🛏️",
+                name = "Sommelle",
+                description = tr(
+                    "Accompagnement de l'insomnie chronique par TCC-I, libre et sans compte",
+                    "CBT-I accompaniment for chronic insomnia, free and offline",
+                    pl = "Wsparcie w przewlekłej bezsenności metodą CBT-I, bez konta i offline",
+                    uk = "Супровід при хронічному безсонні за методом КПТ-Б, вільна та офлайн",
+                    es = "Acompañamiento del insomnio crónico con TCC-I, libre y sin conexión",
+                    de = "KVT-I-Begleitung bei chronischer Schlaflosigkeit, frei und offline",
+                ),
+                onClick = { openLink(context, "https://relthdrarxash.github.io/sommelle/") },
+            )
+        }
+
         SectionTitle(tr("À propos", "About"))
         LunaCard {
             Text("Lunaison $versionName", style = MaterialTheme.typography.titleSmall)
-            Text(tr("Libre (GPL-3.0), gratuit, sans publicité ni traceur. Ce n'est ni un dispositif médical ni une méthode de contraception.", "Free and open source (GPL-3.0), no ads, no trackers. It is neither a medical device nor a method of contraception."), style = MaterialTheme.typography.bodySmall)
+            Text(
+                tr(
+                    "100 % hors-ligne • Zéro pisteur, zéro compte • Code source libre et auditable",
+                    "100% offline • Zero trackers, zero account • Open and auditable source code",
+                    pl = "100% offline • Bez trackerów, bez konta • Otwarty i audytowalny kod źródłowy",
+                    uk = "100% офлайн • Без трекерів, без облікового запису • Відкритий вихідний код",
+                    es = "100 % sin conexión • Cero rastreadores, cero cuentas • Código abierto y auditable",
+                    de = "100 % offline • Keine Tracker, kein Konto • Freier und auditierbarer Quellcode",
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                tr(
+                    "Libre (GPL-3.0), gratuit, sans publicité. Ce n'est ni un dispositif médical ni une méthode de contraception.",
+                    "Free and open source (GPL-3.0), no ads. It is neither a medical device nor a method of contraception.",
+                    pl = "Wolne i otwarte (GPL-3.0), darmowe, bez reklam. Nie jest to wyrób medyczny ani metoda antykoncepcji.",
+                    uk = "Вільне та відкрите (GPL-3.0), без реклами. Це не медичний виріб і не метод контрацепції.",
+                    es = "Libre y abierto (GPL-3.0), gratuito, sin anuncios. No es un producto sanitario ni un método anticonceptivo.",
+                    de = "Frei und quelloffen (GPL-3.0), kostenlos, werbefrei. Weder Medizinprodukt noch Verhütungsmethode.",
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 TextButton(onClick = { onArticle("previsions") }, modifier = Modifier.weight(1f)) {
                     Text(tr("Prévisions", "Predictions"), style = MaterialTheme.typography.labelMedium)
@@ -589,5 +669,37 @@ private fun SwitchRow(label: String, checked: Boolean, onChange: (Boolean) -> Un
     ) {
         Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         Switch(checked = checked, onCheckedChange = onChange, modifier = Modifier.semantics { contentDescription = label })
+    }
+}
+
+@Composable
+private fun CompanionAppRow(
+    badge: String,
+    name: String,
+    description: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(38.dp)
+                .clip(MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(badge, fontSize = 18.sp)
+        }
+        Column(Modifier.weight(1f)) {
+            Text(name, style = MaterialTheme.typography.titleSmall)
+            Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }
