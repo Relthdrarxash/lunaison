@@ -32,7 +32,7 @@ internal object ArticlesEn {
                 listOf(
                     "A study of more than 600,000 cycles found an average length of 29.3 days, and only 13% of cycles lasting exactly 28 days. Ovulation does not happen on day 14 for everyone: it is mostly the phase before ovulation that varies from one person to another.",
                     "In adults, a cycle of 24 to 38 days and periods of 8 days or less are within the usual range. From one cycle to the next, a difference of a few days is normal.",
-                    "In the teenage years, cycles are often irregular at first: most last between 21 and 45 days.",
+                    "During adolescence, in the first years after the first period, the hormonal system is still maturing. Cycles without ovulation are frequent, and cycle lengths between 21 and 45 days are part of normal physiological development.",
                 ),
             ),
             Section(
@@ -54,7 +54,7 @@ internal object ArticlesEn {
             Section(
                 "Where the pain comes from",
                 listOf(
-                    "During your period, the uterus produces prostaglandins. These substances make it contract to shed its lining, and these contractions hurt. That is why medicines that block prostaglandins work well.",
+                    "During your period, the uterus produces prostaglandins that trigger contractions to shed the endometrium. These contractions briefly compress its blood vessels: the uterine muscle experiences a temporary lack of oxygen, much like an intense muscle cramp. This mechanism causes the pain, and it explains why anti-inflammatories (which reduce prostaglandins) and warmth (which relaxes muscle and dilates blood vessels) are so effective.",
                 ),
             ),
             Section(
