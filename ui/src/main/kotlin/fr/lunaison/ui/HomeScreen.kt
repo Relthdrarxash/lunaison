@@ -2,6 +2,8 @@ package fr.lunaison.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +36,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -41,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -739,88 +744,137 @@ private fun SetupOwnCycleDialog(
     }
 }
 
-/** Ruban des 7 derniers jours sur l'accueil permettant de visualiser et noter les jours récents en 1 tap. */
+/** Ruban des jours récents sur l'accueil permettant de visualiser et noter les jours en 1 tap avec swipe par semaine. */
 @Composable
 private fun RecentDaysStrip(
     today: LocalDate,
     state: AppState,
     onDayClick: (LocalDate) -> Unit,
 ) {
-    val days = remember(today) { (6 downTo 0).map { today.minusDays(it.toLong()) } }
+    var weekOffset by rememberSaveable { mutableIntStateOf(0) }
+    var totalDrag by remember { mutableFloatStateOf(0f) }
+    val startOffset = 6 + weekOffset * 7
+    val endOffset = weekOffset * 7
+    val days = remember(today, weekOffset) { (startOffset downTo endOffset).map { today.minusDays(it.toLong()) } }
     val colors = MaterialTheme.colorScheme
 
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
+            .pointerInput(weekOffset) {
+                detectHorizontalDragGestures(
+                    onDragStart = { totalDrag = 0f },
+                    onDragEnd = {
+                        if (totalDrag < -50f && weekOffset > 0) {
+                            weekOffset--
+                        } else if (totalDrag > 50f && weekOffset < 8) {
+                            weekOffset++
+                        }
+                    },
+                    onHorizontalDrag = { change, dragAmount ->
+                        change.consume()
+                        totalDrag += dragAmount
+                    }
+                )
+            }
             .padding(vertical = 2.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        days.forEach { date ->
-            val isToday = date == today
-            val log = state.logFor(date)
-            val hasBleeding = log.flow?.isBleeding == true
-            val hasOtherLog = !log.isEmpty && !hasBleeding
-
-            val shortWeekday = when (date.dayOfWeek) {
-                DayOfWeek.MONDAY -> tr("L", "M", "P", "П", "L", "M")
-                DayOfWeek.TUESDAY -> tr("M", "T", "W", "В", "M", "D")
-                DayOfWeek.WEDNESDAY -> tr("M", "W", "Ś", "С", "X", "M")
-                DayOfWeek.THURSDAY -> tr("J", "T", "C", "Ч", "J", "D")
-                DayOfWeek.FRIDAY -> tr("V", "F", "P", "П", "V", "F")
-                DayOfWeek.SATURDAY -> tr("S", "S", "S", "С", "S", "S")
-                DayOfWeek.SUNDAY -> tr("D", "S", "N", "Н", "D", "S")
-            }
-
-            val containerColor = when {
-                isToday -> colors.primaryContainer
-                hasBleeding -> colors.secondaryContainer.copy(alpha = 0.7f)
-                hasOtherLog -> colors.surfaceVariant.copy(alpha = 0.7f)
-                else -> colors.surfaceVariant.copy(alpha = 0.35f)
-            }
-            val contentColor = when {
-                isToday -> colors.onPrimaryContainer
-                hasBleeding -> colors.onSecondaryContainer
-                else -> colors.onSurfaceVariant
-            }
-
-            Surface(
-                onClick = { onDayClick(date) },
-                shape = RoundedCornerShape(12.dp),
-                color = containerColor,
-                border = if (isToday) BorderStroke(1.5.dp, colors.primary) else null,
+        if (weekOffset > 0) {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .heightIn(min = 52.dp)
-                    .semantics { contentDescription = Format.weekday(date) },
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column(
-                    modifier = Modifier.padding(vertical = 5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(1.dp),
+                Text(
+                    tr(
+                        "Il y a $weekOffset sem. (${Format.dayMonth(days.first())} – ${Format.dayMonth(days.last())})",
+                        "$weekOffset w. ago (${Format.dayMonth(days.first())} – ${Format.dayMonth(days.last())})"
+                    ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = colors.primary,
+                )
+                Text(
+                    tr("Aujourd'hui", "Today"),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = colors.secondary,
+                    modifier = Modifier.clickable { weekOffset = 0 },
+                )
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            days.forEach { date ->
+                val isToday = date == today
+                val log = state.logFor(date)
+                val hasBleeding = log.flow?.isBleeding == true
+                val hasOtherLog = !log.isEmpty && !hasBleeding
+
+                val shortWeekday = when (date.dayOfWeek) {
+                    DayOfWeek.MONDAY -> tr("L", "M", "P", "П", "L", "M")
+                    DayOfWeek.TUESDAY -> tr("M", "T", "W", "В", "M", "D")
+                    DayOfWeek.WEDNESDAY -> tr("M", "W", "Ś", "С", "X", "M")
+                    DayOfWeek.THURSDAY -> tr("J", "T", "C", "Ч", "J", "D")
+                    DayOfWeek.FRIDAY -> tr("V", "F", "P", "П", "V", "F")
+                    DayOfWeek.SATURDAY -> tr("S", "S", "S", "С", "S", "S")
+                    DayOfWeek.SUNDAY -> tr("D", "S", "N", "Н", "D", "S")
+                }
+
+                val containerColor = when {
+                    isToday -> colors.primaryContainer
+                    hasBleeding -> colors.secondaryContainer.copy(alpha = 0.7f)
+                    hasOtherLog -> colors.surfaceVariant.copy(alpha = 0.7f)
+                    else -> colors.surfaceVariant.copy(alpha = 0.35f)
+                }
+                val contentColor = when {
+                    isToday -> colors.onPrimaryContainer
+                    hasBleeding -> colors.onSecondaryContainer
+                    else -> colors.onSurfaceVariant
+                }
+
+                Surface(
+                    onClick = { onDayClick(date) },
+                    shape = RoundedCornerShape(12.dp),
+                    color = containerColor,
+                    border = if (isToday) BorderStroke(1.5.dp, colors.primary) else null,
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(min = 52.dp)
+                        .semantics { contentDescription = Format.weekday(date) },
                 ) {
-                    Text(
-                        shortWeekday,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = contentColor.copy(alpha = 0.75f),
-                    )
-                    Text(
-                        date.dayOfMonth.toString(),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = contentColor,
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(5.dp)
-                            .background(
-                                color = when {
-                                    hasBleeding -> colors.secondary
-                                    hasOtherLog -> colors.primary
-                                    else -> Color.Transparent
-                                },
-                                shape = CircleShape,
-                            ),
-                    )
+                    Column(
+                        modifier = Modifier.padding(vertical = 5.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(1.dp),
+                    ) {
+                        Text(
+                            shortWeekday,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = contentColor.copy(alpha = 0.75f),
+                        )
+                        Text(
+                            date.dayOfMonth.toString(),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = contentColor,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(5.dp)
+                                .background(
+                                    color = when {
+                                        hasBleeding -> colors.secondary
+                                        hasOtherLog -> colors.primary
+                                        else -> Color.Transparent
+                                    },
+                                    shape = CircleShape,
+                                ),
+                        )
+                    }
                 }
             }
         }

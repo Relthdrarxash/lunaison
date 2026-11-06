@@ -8,7 +8,7 @@ Suivi du cycle menstruel, libre et sans compte. Pour noter ses règles, ses symp
 
 Lunaison est une appli Android gratuite, libre (GPL-3.0), sans publicité, sans traceur et **sans accès à Internet**. Tout reste sur le téléphone.
 
-**[Site de Lunaison](https://relthdrarxash.github.io/lunaison/)** · **[Télécharger l'APK](https://github.com/Relthdrarxash/lunaison/releases/latest)** · [Pour les professionnels de santé](https://relthdrarxash.github.io/lunaison/professionnels.html) · [Sources médicales](https://relthdrarxash.github.io/lunaison/sources.html) · [Confidentialité](https://relthdrarxash.github.io/lunaison/confidentialite.html)
+**[Site de Lunaison](https://relthdrarxash.github.io/lunaison/)** · **[Google Play](https://play.google.com/store/apps/details?id=fr.lunaison)** · **[Télécharger l'APK](https://github.com/Relthdrarxash/lunaison/releases/latest)** · [Pour les professionnels de santé](https://relthdrarxash.github.io/lunaison/professionnels.html) · [Sources médicales](https://relthdrarxash.github.io/lunaison/sources.html) · [Confidentialité](https://relthdrarxash.github.io/lunaison/confidentialite.html)
 
 ## Ce que fait l'appli
 

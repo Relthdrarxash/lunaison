@@ -8,7 +8,7 @@ A free and open source menstrual cycle tracker, with no account. To log your per
 
 Lunaison is a free Android app, open source (GPL-3.0), with no ads, no trackers and **no Internet access**. Everything stays on the phone.
 
-**[Lunaison website](https://relthdrarxash.github.io/lunaison/en/)** · **[Download APK](https://github.com/Relthdrarxash/lunaison/releases/latest)** · [For health professionals](https://relthdrarxash.github.io/lunaison/en/professionals.html) · [Medical evidence](https://relthdrarxash.github.io/lunaison/en/evidence.html) · [Privacy](https://relthdrarxash.github.io/lunaison/en/privacy.html)
+**[Lunaison website](https://relthdrarxash.github.io/lunaison/en/)** · **[Google Play](https://play.google.com/store/apps/details?id=fr.lunaison)** · **[Download APK](https://github.com/Relthdrarxash/lunaison/releases/latest)** · [For health professionals](https://relthdrarxash.github.io/lunaison/en/professionals.html) · [Medical evidence](https://relthdrarxash.github.io/lunaison/en/evidence.html) · [Privacy](https://relthdrarxash.github.io/lunaison/en/privacy.html)
 
 ## What the app does
 
