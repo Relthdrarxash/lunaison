@@ -3,7 +3,15 @@ package fr.lunaison.core.cycle
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.Symptom
+import fr.lunaison.core.model.tr
 import java.time.LocalDate
+
+/** Clé d'identification typée pour une corrélation. */
+internal data class CorrelationKey(
+    val precursor: Symptom,
+    val target: Symptom,
+    val lagDays: Int,
+)
 
 /**
  * Une correspondance observée avec bienveillance entre deux symptômes ou ressentis.
@@ -16,7 +24,7 @@ data class SymptomCorrelation(
     val target: Symptom,
     /** Décalage en jours (0 = le même jour, 1 = la veille, 2 = deux jours avant). */
     val lagDays: Int,
-    /** Nombre de cycles ou épisodes distincts où cette séquence s'est produite. */
+    /** Nombre d'épisodes distincts (séparés par au moins un cycle) où cette séquence s'est produite. */
     val occurrences: Int,
     /** Message d'accompagnement doux axé sur le confort personnel et l'écoute de son corps. */
     val caringNote: String,
@@ -44,11 +52,14 @@ object SymptomCorrelationEngine {
         Symptom.BRAIN_FOG,
     )
 
-    /** Seuil minimal de répétition pour ne pas extrapoler sur une coïncidence isolée. */
-    const val MIN_OCCURRENCES = 2
+    /** Seuil minimal de cycles ou d'épisodes distincts requis. */
+    const val MIN_OCCURRENCES = CycleConfig.MIN_CYCLES_FOR_STATS
+
+    /** Écart minimal en jours entre deux cibles pour être considérées comme deux épisodes distincts (repère cycle). */
+    const val MIN_EPISODE_GAP_DAYS = CycleConfig.MIN_PLAUSIBLE_CYCLE.toLong()
 
     /**
-     * Analyse les journées renseignées pour détecter les correspondances répétées.
+     * Analyse les journées renseignées pour détecter les correspondances répétées sur des épisodes distincts.
      * @param logs Historique des journées notées
      * @param maxLagDays Fenêtre maximale d'anticipation (par défaut 2 jours)
      * @return Liste ordonnée des correspondances les plus stables
@@ -58,35 +69,38 @@ object SymptomCorrelationEngine {
         if (sortedLogs.size < 4) return emptyList()
 
         val byDate = sortedLogs.associateBy { it.date }
-        val dates = sortedLogs.map { it.date }
+        val matchTracker = mutableMapOf<CorrelationKey, MutableList<LocalDate>>()
 
-        // Clé: (Precursor, Target, LagDays) -> Ensemble de dates où la cible s'est produite
-        val matchTracker = mutableMapOf<Triple<Symptom, Symptom, Int>, MutableSet<LocalDate>>()
-
-        for (targetDate in dates) {
-            val targetLog = byDate[targetDate] ?: continue
+        for (targetLog in sortedLogs) {
             val activeTargets = targetLog.symptoms.filter { it in PELVIC_TARGETS }.toMutableSet()
 
-            // Si forte douleur notée sans tag spécifique, on l'associe à la douleur pelvienne
-            if (targetLog.pain == Pain.MODERATE || targetLog.pain == Pain.SEVERE) {
+            // N'associer à une douleur pelvienne générale que si aucun symptôme spécifique n'a été coché
+            // et que la douleur déclarée est formellement forte (SEVERE).
+            if (activeTargets.isEmpty() && targetLog.symptoms.isEmpty() && targetLog.pain == Pain.SEVERE) {
                 activeTargets.add(Symptom.PELVIC_PAIN)
             }
 
             if (activeTargets.isEmpty()) continue
 
             for (lag in 0..maxLagDays) {
-                val precursorDate = targetDate.minusDays(lag.toLong())
+                val precursorDate = targetLog.date.minusDays(lag.toLong())
                 val precursorLog = byDate[precursorDate] ?: continue
 
-                val activePrecursors = precursorLog.symptoms.filter { it in PRODROMAL_CANDIDATES }
+                for (precursor in precursorLog.symptoms) {
+                    if (precursor !in PRODROMAL_CANDIDATES) continue
+                    if (lag == 0 && precursor in activeTargets) continue
 
-                for (precursor in activePrecursors) {
                     for (target in activeTargets) {
-                        // Éviter de corréler un symptôme avec lui-même au même jour
-                        if (lag == 0 && precursor == target) continue
+                        val key = CorrelationKey(precursor, target, lag)
+                        val occurrencesList = matchTracker.getOrPut(key) { mutableListOf() }
 
-                        val key = Triple(precursor, target, lag)
-                        matchTracker.getOrPut(key) { mutableSetOf() }.add(targetDate)
+                        // Règle éthique : l'occurrence doit appartenir à un épisode/cycle distinct
+                        val isDistinctEpisode = occurrencesList.none { existingDate ->
+                            kotlin.math.abs(targetLog.date.toEpochDay() - existingDate.toEpochDay()) < MIN_EPISODE_GAP_DAYS
+                        }
+                        if (isDistinctEpisode) {
+                            occurrencesList.add(targetLog.date)
+                        }
                     }
                 }
             }
@@ -95,25 +109,35 @@ object SymptomCorrelationEngine {
         return matchTracker
             .filter { (_, targetDates) -> targetDates.size >= MIN_OCCURRENCES }
             .map { (key, targetDates) ->
-                val (precursor, target, lag) = key
                 SymptomCorrelation(
-                    precursor = precursor,
-                    target = target,
-                    lagDays = lag,
+                    precursor = key.precursor,
+                    target = key.target,
+                    lagDays = key.lagDays,
                     occurrences = targetDates.size,
-                    caringNote = generateCaringNote(precursor, target, lag)
+                    caringNote = generateCaringNote(key.precursor, key.target, key.lagDays)
                 )
             }
             .sortedByDescending { it.occurrences }
     }
 
     private fun generateCaringNote(precursor: Symptom, target: Symptom, lagDays: Int): String {
-        val timing = when (lagDays) {
+        val frTiming = when (lagDays) {
             0 -> "le même jour que"
             1 -> "la veille de"
             else -> "$lagDays jours avant"
         }
-        return "Lors de plusieurs cycles précédents, ${precursor.label.lowercase()} a été noté $timing vos épisodes de ${target.label.lowercase()}. " +
+        val enTiming = when (lagDays) {
+            0 -> "on the same day as"
+            1 -> "the day before"
+            else -> "$lagDays days before"
+        }
+
+        val frNote = "Lors de plusieurs cycles précédents, ${precursor.label.lowercase()} a été noté $frTiming vos épisodes de ${target.label.lowercase()}. " +
             "Prendre un temps calme, une source de chaleur ou adapter vos activités quand ce signe apparaît peut vous aider à vivre cette période plus sereinement."
+
+        val enNote = "Across several previous cycles, ${precursor.label.lowercase()} was noted $enTiming your episodes of ${target.label.lowercase()}. " +
+            "Taking a quiet moment, applying gentle warmth or pacing your day when this sign appears may help you feel more comfortable."
+
+        return tr(frNote, enNote)
     }
 }
