@@ -1,4 +1,5 @@
-• Importation directe depuis « Calendrier des règles » (archive zip chiffrée ou JSON).
-• Suivi de l'endométriose : 4 nouveaux symptômes (dyspareunie, transit, dysurie, douleurs irradiantes) et section dédiée dans le bilan soignant.
-• Nouvelle fiche santé dans « Comprendre » : repères sur l'endométriose (les 5 « D »), diagnostic et pistes de soulagement.
-• Ergonomie épurée : boutons harmonisés sur l'accueil et les réglages, sélecteurs stables sans décalage.
+• Ruban d'accès rapide des jours récents sur l'accueil pour faciliter la saisie.
+• 3 nouvelles fiches santé dans « Comprendre » : SOPK, adénomyose et périménopause.
+• Accès direct au bilan soignant depuis l'écran Calendrier.
+• Contacts d'urgence et associations d'aide localisés pour 6 pays.
+• Harmonisation de la barre de navigation et découverte des applications compagnes (Respire, Sommelle).
