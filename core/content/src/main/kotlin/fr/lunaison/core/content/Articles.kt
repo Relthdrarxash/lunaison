@@ -57,7 +57,7 @@ internal object ArticlesFr {
                 listOf(
                     "Une étude de plus de 600 000 cycles a trouvé une durée moyenne de 29,3 jours, et seulement 13 % de cycles de 28 jours exactement. L'ovulation n'a pas lieu au 14e jour pour tout le monde : c'est surtout la phase avant l'ovulation qui varie d'une personne à l'autre.",
                     "Chez l'adulte, un cycle de 24 à 38 jours et des règles de 8 jours au plus sont dans les repères habituels. D'un cycle à l'autre, un écart de quelques jours est normal.",
-                    "À l'adolescence, les premières années, les cycles sont souvent irréguliers : la plupart durent entre 21 et 45 jours.",
+                    "À l'adolescence, durant les premières années suivant les premières règles, l'axe hormonal est en pleine maturation. Les cycles sans ovulation sont fréquents, et des durées comprises entre 21 et 45 jours font partie des repères physiologiques normaux.",
                 ),
             ),
             Section(
@@ -79,7 +79,7 @@ internal object ArticlesFr {
             Section(
                 "D'où vient la douleur",
                 listOf(
-                    "Pendant les règles, l'utérus produit des prostaglandines. Ces substances le font se contracter pour évacuer sa paroi, et ces contractions font mal. C'est pour ça que les médicaments qui bloquent les prostaglandines sont efficaces.",
+                    "Pendant les règles, l'utérus produit des prostaglandines qui déclenchent ses contractions pour évacuer l'endomètre. Ces contractions compriment temporairement ses vaisseaux sanguins : le muscle utérin manque brièvement d'oxygène, comme un muscle lors d'une crampe intense. C'est ce mécanisme qui crée la douleur, et c'est pourquoi les anti-inflammatoires (qui freinent les prostaglandines) et la chaleur (qui détend le muscle et dilate les vaisseaux) sont si efficaces.",
                 ),
             ),
             Section(

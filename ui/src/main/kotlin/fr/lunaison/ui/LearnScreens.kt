@@ -628,20 +628,24 @@ private fun CycleVisualGuide() {
                 description = tr("Le conduit musculaire souple reliant la vulve au col de l'utérus. C'est par lui que s'écoulent les règles.", "The flexible muscular canal connecting the vulva to the cervix. It is where menstrual blood flows."),
             )
             AnatomyItemRow(
-                title = tr("Le col de l'utérus (l'entrée)", "The cervix (the doorway)"),
-                description = tr("La partie basse de l'utérus. Il produit la glaire cervicale qui change d'aspect au fil du mois.", "The lower part of the uterus. It secretes cervical mucus that changes texture throughout the month."),
+                title = tr("Le col de l'utérus (cervix)", "The cervix"),
+                description = tr("La partie basse de l'utérus. Il produit la glaire cervicale qui change au fil du mois et s'entrouvre légèrement pendant les règles.", "The lower part of the uterus. It secretes cervical mucus that changes texture throughout the month and opens slightly during periods."),
             )
             AnatomyItemRow(
-                title = tr("L'utérus et l'endomètre (le nid)", "The uterus & endometrium (the nest)"),
-                description = tr("Un muscle creux de la taille d'une petite poire. Sa muqueuse intérieure (l'endomètre) s'épaissit chaque mois puis se détache lors des règles.", "A hollow pear-sized muscle. Its inner lining (endometrium) thickens monthly then sheds during menstruation."),
+                title = tr("L'utérus et le myomètre (muscle)", "The uterus & myometrium (muscle)"),
+                description = tr("Un muscle creux puissant de la taille d'une petite poire. Sa paroi musculaire (le myomètre) se contracte lors des règles sous l'effet des prostaglandines.", "A powerful hollow pear-sized muscle. Its muscular wall (myometrium) contracts during periods under the effect of prostaglandins."),
             )
             AnatomyItemRow(
-                title = tr("Les trompes de Fallope (les bras)", "The fallopian tubes (the arms)"),
-                description = tr("Deux conduits fins reliant les ovaires à l'utérus, où a lieu la fécondation.", "Two slender ducts connecting ovaries to uterus, where fertilization takes place."),
+                title = tr("L'endomètre (muqueuse interne)", "The endometrium (inner lining)"),
+                description = tr("La muqueuse vivante qui tapisse l'intérieur de l'utérus. Elle s'épaissit chaque mois, s'enrichit en vaisseaux, puis desquame si aucune grossesse ne débute : ce sont les règles.", "The living tissue lining the inside of the uterus. It thickens each month, vascularizes, then sheds if no pregnancy occurs: this is menstruation."),
             )
             AnatomyItemRow(
-                title = tr("Les ovaires (les réservoirs)", "The ovaries (the reservoirs)"),
-                description = tr("Deux glandes qui abritent les ovocytes dès la naissance et fabriquent les œstrogènes et la progestérone.", "Two glands containing egg cells from birth and producing estrogen and progesterone."),
+                title = tr("Les trompes de Fallope", "The fallopian tubes"),
+                description = tr("Deux conduits fins reliant les ovaires à l'utérus, où a lieu la fécondation éventuelle d'un ovocyte.", "Two slender ducts connecting ovaries to uterus, where potential egg fertilization takes place."),
+            )
+            AnatomyItemRow(
+                title = tr("Les ovaires (maturation & hormones)", "The ovaries (maturation & hormones)"),
+                description = tr("Deux glandes qui abritent les ovocytes dès la naissance et fabriquent les œstrogènes et la progestérone au fil du cycle.", "Two glands containing egg cells from birth and producing estrogen and progesterone throughout the cycle."),
             )
         }
 
