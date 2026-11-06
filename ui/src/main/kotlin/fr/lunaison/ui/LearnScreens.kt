@@ -305,9 +305,28 @@ fun ContraceptionGuideScreen(onBack: () -> Unit) {
         SectionTitle(tr("Toutes les méthodes en résumé", "All methods overview"))
         ContraceptionComparisonCard()
 
-        TextButton(onClick = { openLink(context, "https://www.questionsexualite.fr/choisir-sa-contraception") }) {
+        TextButton(onClick = {
+            openLink(
+                context,
+                tr(
+                    fr = "https://www.questionsexualite.fr/choisir-sa-contraception",
+                    en = "https://www.nhs.uk/contraception/",
+                    pl = "https://ponton.org.pl/antykoncepcja/",
+                    uk = "https://www.nhs.uk/contraception/",
+                    es = "https://sedra-fpfe.org/",
+                    de = "https://www.familienplanung.de/verhuetung/",
+                ),
+            )
+        }) {
             Text(
-                tr("Guides officiels de Santé publique France (QuestionSexualité.fr)", "Official public health guidance (in French)"),
+                tr(
+                    fr = "Guides officiels de Santé publique France (QuestionSexualité.fr)",
+                    en = "Official NHS Contraception guide (nhs.uk)",
+                    pl = "Grupa Ponton : Edukacja seksualna i antykoncepcja (ponton.org.pl)",
+                    uk = "Керівництво з контрацепції NHS (nhs.uk)",
+                    es = "Guía de anticoncepción SEDRA - Planificación Familiar (sedra-fpfe.org)",
+                    de = "Offizielle Verhütungsinformationen der BZgA (familienplanung.de)",
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 textDecoration = TextDecoration.Underline,
             )
@@ -953,25 +972,76 @@ fun EndometriosisGuideScreen(onBack: () -> Unit) {
             Bullet(tr("Traitements médicaux : pilule en continu ou DIU hormonal pour mettre les règles au repos, antalgiques adaptés ou chirurgie conservatrice si nécessaire, selon un projet de soins personnalisé.", "Medical management: continuous hormonal contraception to suppress periods, tailored medications or surgery when indicated."))
         }
 
-        SectionTitle(tr("Ressources et associations de patientes", "Patient resources & associations"))
+        SectionTitle(
+            tr(
+                fr = "Ressources et associations de patientes",
+                en = "Patient resources & associations",
+                pl = "Wsparcie i stowarzyszenia pacjentek",
+                uk = "Підтримка та асоціації пацієнток",
+                es = "Recursos y asociaciones de pacientes",
+                de = "Hilfe & Patientenorganisationen",
+            )
+        )
         LunaCard {
             Text(
                 tr(
-                    "Des associations reconnues informent, accompagnent et orientent les personnes touchées vers des soignants formés :",
-                    "Recognized associations provide support, guidance and specialized clinician directories:",
+                    fr = "Des associations reconnues informent, accompagnent et orientent les personnes touchées vers des soignants formés :",
+                    en = "Recognized associations provide support, guidance and specialized clinician directories:",
+                    pl = "Uznane organizacje wspierają, informują i pomagają znaleźć doświadczonych specjalistów:",
+                    uk = "Організації підтримки надають інформацію та допомагають знайти профільних фахівців:",
+                    es = "Las asociaciones de pacientes ofrecen apoyo, información y orientación hacia especialistas formados:",
+                    de = "Anerkannte Organisationen bieten Beratung, Informationen und Hilfe bei der Suche nach Fachkräften:",
                 ),
                 style = MaterialTheme.typography.bodyMedium,
             )
-            TextButton(onClick = { openLink(context, "https://www.endofrance.org") }) {
+            TextButton(onClick = {
+                openLink(
+                    context,
+                    tr(
+                        fr = "https://www.endofrance.org",
+                        en = "https://www.endometriosis-uk.org",
+                        pl = "https://pokonacendometrioze.pl",
+                        uk = "https://www.endometriosis-uk.org",
+                        es = "https://adaec.org",
+                        de = "https://www.endometriose-vereinigung.de",
+                    ),
+                )
+            }) {
                 Text(
-                    tr("EndoFrance : association française de lutte contre l'endométriose (endofrance.org)", "EndoFrance: patient association website (endofrance.org)"),
+                    tr(
+                        fr = "EndoFrance : association de lutte contre l'endométriose (endofrance.org)",
+                        en = "Endometriosis UK: patient support and information (endometriosis-uk.org)",
+                        pl = "Fundacja Pokonać Endometriozę : wsparcie pacjentek (pokonacendometrioze.pl)",
+                        uk = "Endometriosis UK: підтримка пацієнток (endometriosis-uk.org)",
+                        es = "ADAEC : Asociación de Afectadas de Endometriosis Crónica (adaec.org)",
+                        de = "Endometriose-Vereinigung Deutschland e.V. (endometriose-vereinigung.de)",
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     textDecoration = TextDecoration.Underline,
                 )
             }
-            TextButton(onClick = { openLink(context, "https://www.has-sante.fr/jcms/c_2819733/fr/prise-en-charge-de-l-endometriose") }) {
+            TextButton(onClick = {
+                openLink(
+                    context,
+                    tr(
+                        fr = "https://www.has-sante.fr/jcms/c_2819733/fr/prise-en-charge-de-l-endometriose",
+                        en = "https://www.nhs.uk/conditions/endometriosis/",
+                        pl = "https://www.mp.pl/pacjent/ginekologia/choroby/260759,endometrioza",
+                        uk = "https://www.nhs.uk/conditions/endometriosis/",
+                        es = "https://medlineplus.gov/spanish/endometriosis.html",
+                        de = "https://www.frauenaerzte-im-netz.de/erkrankungen/endometriose/",
+                    ),
+                )
+            }) {
                 Text(
-                    tr("Recommandations officielles de la Haute Autorité de Santé (HAS)", "Official clinical recommendations (HAS)"),
+                    tr(
+                        fr = "Recommandations officielles de la Haute Autorité de Santé (HAS)",
+                        en = "Official clinical guidelines & care (nhs.uk)",
+                        pl = "Medycyna Praktyczna : diagnostyka i leczenie endometriozy (mp.pl)",
+                        uk = "Клінічні рекомендації та діагностика (nhs.uk)",
+                        es = "Guía clínica sobre endometriosis (MedlinePlus)",
+                        de = "Frauenärzte im Netz : Diagnose und Therapie der Endometriose",
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     textDecoration = TextDecoration.Underline,
                 )
@@ -1042,18 +1112,65 @@ fun PcosGuideScreen(onBack: () -> Unit) {
             Bullet(tr("Dans Lunaison : activez l'option « Cycles naturellement irréguliers » dans les Réglages pour bénéficier de prévisions adaptées sans alertes anxiogènes.", "In Lunaison: enable 'Naturally irregular cycles' in Settings for adapted prediction intervals."))
         }
 
-        SectionTitle(tr("Ressources et associations", "Resources & associations"))
+        SectionTitle(
+            tr(
+                fr = "Ressources et associations",
+                en = "Resources & associations",
+                pl = "Wsparcie i organizacje",
+                uk = "Підтримка та ресурси",
+                es = "Recursos y asociaciones",
+                de = "Hilfe & Organisationen",
+            )
+        )
         LunaCard {
-            TextButton(onClick = { openLink(context, "https://www.espopk.org") }) {
+            TextButton(onClick = {
+                openLink(
+                    context,
+                    tr(
+                        fr = "https://www.espopk.org",
+                        en = "https://www.verity-pcos.org.uk",
+                        pl = "https://pacjent.gov.pl/zapobiegaj/zespol-policystycznych-jajnikow-pcos",
+                        uk = "https://www.verity-pcos.org.uk",
+                        es = "https://aesopspain.org",
+                        de = "https://www.pcos-selbsthilfe.org",
+                    ),
+                )
+            }) {
                 Text(
-                    tr("Association Esp'OPK : association francophone dédiée au SOPK (espopk.org)", "Esp'OPK association website (espopk.org)"),
+                    tr(
+                        fr = "Association Esp'OPK : association francophone dédiée au SOPK (espopk.org)",
+                        en = "Verity PCOS UK: patient support charity (verity-pcos.org.uk)",
+                        pl = "Pacjent.gov.pl : Zespół policystycznych jajników (PCOS)",
+                        uk = "Verity PCOS: підтримка пацієнток (verity-pcos.org.uk)",
+                        es = "AESOP : Asociación Española de Síndrome de Ovario Poliquístico (aesopspain.org)",
+                        de = "Selbsthilfegruppe PCO-Syndrom e.V. (pcos-selbsthilfe.org)",
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     textDecoration = TextDecoration.Underline,
                 )
             }
-            TextButton(onClick = { openLink(context, "https://www.inserm.fr/dossier/syndrome-ovaires-polykystiques-sopk/") }) {
+            TextButton(onClick = {
+                openLink(
+                    context,
+                    tr(
+                        fr = "https://www.inserm.fr/dossier/syndrome-ovaires-polykystiques-sopk/",
+                        en = "https://www.nhs.uk/conditions/polycystic-ovary-syndrome-pcos/",
+                        pl = "https://www.mp.pl/pacjent/ginekologia/choroby/260757,zespol-policystycznych-jajnikow-pcos",
+                        uk = "https://www.nhs.uk/conditions/polycystic-ovary-syndrome-pcos/",
+                        es = "https://medlineplus.gov/spanish/polycysticoverydisease.html",
+                        de = "https://www.frauenaerzte-im-netz.de/erkrankungen/pcos-polyzystisches-ovarialsyndrom/",
+                    ),
+                )
+            }) {
                 Text(
-                    tr("Dossier scientifique de l'Inserm sur le SOPK", "Inserm scientific guide on PCOS"),
+                    tr(
+                        fr = "Dossier scientifique de l'Inserm sur le SOPK",
+                        en = "NHS clinical guide to PCOS (nhs.uk)",
+                        pl = "Medycyna Praktyczna : objawy i postępowanie w PCOS (mp.pl)",
+                        uk = "Клінічне керівництво щодо СПКЯ (nhs.uk)",
+                        es = "Información médica sobre el SOP (MedlinePlus)",
+                        de = "Frauenärzte im Netz : PCO-Syndrom Ursachen und Therapie",
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     textDecoration = TextDecoration.Underline,
                 )
@@ -1125,6 +1242,71 @@ fun AdenomyosisGuideScreen(onBack: () -> Unit) {
             Bullet(tr("Gestes interventionnels : embolisation des artères utérines ou chirurgie discutées au cas par cas en cas d'échec des traitements médicaux.", "Interventional options: uterine artery embolization or surgery evaluated in severe cases."))
         }
 
+        SectionTitle(
+            tr(
+                fr = "Ressources et accompagnement",
+                en = "Resources & support",
+                pl = "Wsparcie i źródła informacji",
+                uk = "Підтримка та ресурси",
+                es = "Recursos y apoyo",
+                de = "Hilfe & Ressourcen",
+            )
+        )
+        LunaCard {
+            TextButton(onClick = {
+                openLink(
+                    context,
+                    tr(
+                        fr = "https://www.endofrance.org/la-maladie-endometriose/adenomyose/",
+                        en = "https://www.nhs.uk/conditions/adenomyosis/",
+                        pl = "https://pokonacendometrioze.pl",
+                        uk = "https://www.nhs.uk/conditions/adenomyosis/",
+                        es = "https://adaec.org",
+                        de = "https://www.endometriose-vereinigung.de",
+                    ),
+                )
+            }) {
+                Text(
+                    tr(
+                        fr = "EndoFrance : dossier complet sur l'adénomyose (endofrance.org)",
+                        en = "NHS guide to adenomyosis symptoms & care (nhs.uk)",
+                        pl = "Fundacja Pokonać Endometriozę : informacje o adenomiozie (pokonacendometrioze.pl)",
+                        uk = "Керівництво NHS щодо аденоміозу (nhs.uk)",
+                        es = "ADAEC : información y apoyo sobre adenomiosis (adaec.org)",
+                        de = "Endometriose-Vereinigung : Informationen zu Adenomyose",
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    textDecoration = TextDecoration.Underline,
+                )
+            }
+            TextButton(onClick = {
+                openLink(
+                    context,
+                    tr(
+                        fr = "https://www.has-sante.fr/jcms/c_2819733/fr/prise-en-charge-de-l-endometriose",
+                        en = "https://www.adenomyosisadviceassociation.org",
+                        pl = "https://www.mp.pl/pacjent/ginekologia/choroby/260761,adenomioza",
+                        uk = "https://www.adenomyosisadviceassociation.org",
+                        es = "https://medlineplus.gov/spanish/ency/article/001513.htm",
+                        de = "https://www.frauenaerzte-im-netz.de/erkrankungen/endometriose/formen-symptome/",
+                    ),
+                )
+            }) {
+                Text(
+                    tr(
+                        fr = "Recommandations de prise en charge (HAS)",
+                        en = "Adenomyosis Advice Association (adenomyosisadviceassociation.org)",
+                        pl = "Medycyna Praktyczna : adenomioza macicy (mp.pl)",
+                        uk = "Adenomyosis Advice Association (adenomyosisadviceassociation.org)",
+                        es = "MedlinePlus : Adenomiosis uterina y diagnóstico",
+                        de = "Frauenärzte im Netz : Adenomyose verstehen und behandeln",
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    textDecoration = TextDecoration.Underline,
+                )
+            }
+        }
+
         Muted(tr("Cette fiche est informative et ne remplace pas une consultation médicale avec un professionnel de santé.", "This guide is for informational purposes and does not replace consultation with a healthcare professional."))
     }
 }
@@ -1180,6 +1362,71 @@ fun PerimenopauseGuideScreen(onBack: () -> Unit) {
             Bullet(tr("Modérer les déclencheurs de bouffées : l'alcool, le café, les repas très épicés et le stress aigu accentuent la fréquence des bouffées de chaleur.", "Moderate triggers: alcohol, caffeine, spicy foods and acute stress commonly trigger hot flashes."))
             Bullet(tr("Traitement hormonal de la ménopause (THM) : peut être discuté avec un soignant si les symptômes altèrent la qualité de vie, avec un bilan bénéfice/risque personnalisé.", "Menopausal hormone therapy (MHT): can be evaluated with a doctor if symptoms substantially affect daily quality of life."))
             Bullet(tr("Dans Lunaison : notez vos bouffées et troubles du sommeil dans votre carnet, et activez le mode « Cycles irréguliers » dans les Réglages.", "In Lunaison: track hot flashes and sleep in your log, and enable 'Irregular cycles' mode in Settings."))
+        }
+
+        SectionTitle(
+            tr(
+                fr = "Ressources et accompagnement",
+                en = "Resources & support",
+                pl = "Wsparcie i źródła informacji",
+                uk = "Підтримка та ресурси",
+                es = "Recursos y apoyo",
+                de = "Hilfe & Ressourcen",
+            )
+        )
+        LunaCard {
+            TextButton(onClick = {
+                openLink(
+                    context,
+                    tr(
+                        fr = "https://www.gemvi.org",
+                        en = "https://www.themenopausecharity.org",
+                        pl = "https://pacjent.gov.pl/aktualnosc/klimakterium-okres-przekwitania",
+                        uk = "https://www.themenopausecharity.org",
+                        es = "https://aeem.es",
+                        de = "https://www.menopause-gesellschaft.de",
+                    ),
+                )
+            }) {
+                Text(
+                    tr(
+                        fr = "GEMVI : Société savante sur la ménopause (gemvi.org)",
+                        en = "The Menopause Charity: evidence-based information (themenopausecharity.org)",
+                        pl = "Pacjent.gov.pl : Klimakterium i menopauza",
+                        uk = "The Menopause Charity: науково підтверджена інформація (themenopausecharity.org)",
+                        es = "AEEM : Asociación Española para el Estudio de la Menopausia (aeem.es)",
+                        de = "Deutsche Menopause Gesellschaft e.V. (menopause-gesellschaft.de)",
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    textDecoration = TextDecoration.Underline,
+                )
+            }
+            TextButton(onClick = {
+                openLink(
+                    context,
+                    tr(
+                        fr = "https://www.inserm.fr/dossier/menopause/",
+                        en = "https://www.nhs.uk/conditions/menopause/",
+                        pl = "https://www.mp.pl/pacjent/ginekologia/choroby/260751,klimakterium-i-menopauza",
+                        uk = "https://www.nhs.uk/conditions/menopause/",
+                        es = "https://medlineplus.gov/spanish/menopause.html",
+                        de = "https://www.frauenaerzte-im-netz.de/koerper-sexualitaet/wechseljahre-klimakterium/",
+                    ),
+                )
+            }) {
+                Text(
+                    tr(
+                        fr = "Dossier scientifique de l'Inserm sur la ménopause",
+                        en = "NHS guide to perimenopause and menopause (nhs.uk)",
+                        pl = "Medycyna Praktyczna : objawy i terapia (mp.pl)",
+                        uk = "Керівництво NHS щодо менопаузи (nhs.uk)",
+                        es = "MedlinePlus : Información médica sobre perimenopausia",
+                        de = "Frauenärzte im Netz : Wechseljahre und Perimenopause",
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    textDecoration = TextDecoration.Underline,
+                )
+            }
         }
 
         Muted(tr("Cette fiche est informative et ne remplace pas une consultation médicale avec un professionnel de santé.", "This guide is for informational purposes and does not replace consultation with a healthcare professional."))
