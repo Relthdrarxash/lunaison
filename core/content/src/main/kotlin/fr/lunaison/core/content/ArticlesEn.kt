@@ -193,7 +193,7 @@ internal object ArticlesEn {
                     "Sudden, very severe pain in the lower belly, especially if a pregnancy is possible.",
                     "Very heavy bleeding with fainting, dizziness or paleness.",
                     "Fever with pain in the lower belly.",
-                    "Sudden fever, vomiting, a skin rash or feeling faint while wearing a tampon or a cup: remove it and call emergency services (15 or 112 in France), it may be toxic shock syndrome.",
+                    "Sudden fever, vomiting, a skin rash or feeling faint while wearing a tampon or a cup: remove it and call emergency services (such as 999 in the UK, 911 in North America, or 112 in Europe), it may be toxic shock syndrome.",
                 ),
             ),
         ),
