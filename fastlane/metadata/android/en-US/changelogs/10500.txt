@@ -1,0 +1,5 @@
+• Recent days quick-access strip on Home to log symptoms without delay.
+• 3 new in-depth health guides in "Learn": PCOS, adenomyosis, and perimenopause.
+• Direct access to the clinician summary report right from the Calendar tab.
+• Localized emergency and women's health support contacts across 6 countries.
+• Polished navigation bar semantics and companion suite links (Respire, Sommelle).
