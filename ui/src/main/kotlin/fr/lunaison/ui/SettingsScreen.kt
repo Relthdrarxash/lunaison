@@ -390,7 +390,7 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             CompanionAppRow(
-                badge = "R",
+                badge = "🌿",
                 name = "Respire",
                 description = tr(
                     "Pause de respiration & anti-doomscrolling, libre et sans compte",
@@ -404,7 +404,7 @@ fun SettingsScreen(
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             CompanionAppRow(
-                badge = "S",
+                badge = "🛏️",
                 name = "Sommelle",
                 description = tr(
                     "Accompagnement de l'insomnie chronique par TCC-I, libre et sans compte",
