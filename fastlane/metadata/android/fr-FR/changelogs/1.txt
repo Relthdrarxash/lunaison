@@ -1,0 +1,7 @@
+Première version de Lunaison :
+• Calendrier menstruel avec navigation fluide et repères de cycle
+• Suivi quotidien des symptômes, douleurs, flux et humeur
+• Schéma interactif de l'utérus avec curseur du cycle (J1 à J28)
+• Moteur d'analyse et de corrélation symptomatique
+• Guides pédagogiques sourcés et signaux d'alerte endométriose
+• 100 % hors-ligne, aucune permission réseau, libre GPL-3.0
