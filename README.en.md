@@ -101,6 +101,8 @@ Features that have been studied but not yet built, such as importing your histor
 
 Contact: [pilmil.studio@proton.me](mailto:pilmil.studio@proton.me). Distributed under the [GNU GPL v3.0](LICENSE) license.
 
+An [additional permission](LICENSE-EXCEPTION.md) (GPL section 7) allows distribution through app stores, including the Apple App Store, as long as the source code remains available under the same license.
+
 ## A note on development
 
 Lunaison's code was developed with the help of an AI assistant (Claude, by Anthropic): the app itself embeds no artificial intelligence, all health guides are written and verified from public clinical sources (HAS, NHS, CNGOF, INSERM), the cycle engine is purely deterministic and covered by automated tests, and I personally maintain the project and answer issues and messages myself.
