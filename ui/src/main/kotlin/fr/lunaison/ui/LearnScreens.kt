@@ -43,6 +43,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -622,6 +623,8 @@ private fun CycleVisualGuide() {
 
         HormoneCurvesDiagram()
 
+        VulvaDiagram()
+
         InteractiveUterusDiagram()
 
         SectionTitle(tr("L'anatomie interne sans tabou", "Internal anatomy explained"))
@@ -735,7 +738,7 @@ private fun MucusStageRow(stage: String, texture: String) {
 }
 
 @Composable
-private fun HormoneCurvesDiagram() {
+fun HormoneCurvesDiagram() {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         SectionTitle(tr("La courbe des hormones (cycle de 28 jours)", "Hormone level curves (28-day cycle)"))
         LunaCard {
@@ -916,7 +919,7 @@ private fun HormoneLegendItem(color: Color, name: String, role: String) {
     }
 }
 
-private enum class UterusPart {
+enum class UterusPart {
     ENDOMETRIUM,
     MYOMETRIUM,
     CERVIX,
@@ -998,11 +1001,15 @@ private fun cyclePhaseDescription(day: Int): String = when (day) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun InteractiveUterusDiagram() {
-    var selectedPart by remember { mutableStateOf(UterusPart.ENDOMETRIUM) }
-    var cycleDay by remember { mutableFloatStateOf(14f) }
+fun InteractiveUterusDiagram(
+    initialPart: UterusPart = UterusPart.ENDOMETRIUM,
+    initialDay: Int = 14,
+) {
+    var selectedPart by remember { mutableStateOf(initialPart) }
+    var cycleDay by remember { mutableFloatStateOf(initialDay.toFloat()) }
     val currentDay = cycleDay.roundToInt().coerceIn(1, 28)
     val colors = MaterialTheme.colorScheme
+    val isDarkScheme = colors.background.luminance() < 0.5f
 
     SectionTitle(tr("Schéma interactif de l'appareil reproducteur", "Interactive reproductive anatomy diagram"))
     LunaCard {
@@ -1026,10 +1033,10 @@ private fun InteractiveUterusDiagram() {
                 modifier = Modifier.padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Row(
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Text(
                         tr("Jour du cycle : J$currentDay", "Cycle day: D$currentDay"),
@@ -1051,11 +1058,20 @@ private fun InteractiveUterusDiagram() {
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
-                            color = when (currentDay) {
-                                in 1..5 -> Color(0xFFC62828)
-                                in 6..13 -> Color(0xFF1565C0)
-                                14 -> Color(0xFFE65100)
-                                else -> Color(0xFF6A1B9A)
+                            color = if (isDarkScheme) {
+                                when (currentDay) {
+                                    in 1..5 -> Color(0xFFFF8A80)
+                                    in 6..13 -> Color(0xFF90CAF9)
+                                    14 -> Color(0xFFFFCC80)
+                                    else -> Color(0xFFE1BEE7)
+                                }
+                            } else {
+                                when (currentDay) {
+                                    in 1..5 -> Color(0xFFC62828)
+                                    in 6..13 -> Color(0xFF1565C0)
+                                    14 -> Color(0xFFE65100)
+                                    else -> Color(0xFF6A1B9A)
+                                }
                             },
                         )
                     }
@@ -1137,9 +1153,9 @@ private fun InteractiveUterusDiagram() {
                             val dy = offset.y
 
                             // Hit testing par zone anatomique
-                            val leftOvaryX = cx - w * 0.35f
-                            val rightOvaryX = cx + w * 0.35f
-                            val ovaryY = topY + h * 0.22f
+                            val leftOvaryX = cx - w * 0.37f
+                            val rightOvaryX = cx + w * 0.37f
+                            val ovaryY = topY + h * 0.20f
                             val distLeftOvary = kotlin.math.hypot(offset.x - leftOvaryX, dy - ovaryY)
                             val distRightOvary = kotlin.math.hypot(offset.x - rightOvaryX, dy - ovaryY)
 
@@ -1388,8 +1404,8 @@ private fun InteractiveUterusDiagram() {
                 // --- 6. Dessin des Ovaires (maturation folliculaire, ovulation & corps jaune) ---
                 val isOvariesSelected = selectedPart == UterusPart.OVARIES
                 val ovaryColor = if (isOvariesSelected) Color(0xFFFFA000) else Color(0xFFFFE082).copy(alpha = 0.7f)
-                val leftOvaryPos = Offset(cx - w * 0.35f, topY + h * 0.22f)
-                val rightOvaryPos = Offset(cx + w * 0.35f, topY + h * 0.22f)
+                val leftOvaryPos = Offset(cx - w * 0.37f, topY + h * 0.20f)
+                val rightOvaryPos = Offset(cx + w * 0.37f, topY + h * 0.20f)
 
                 // Ligaments utéro-ovariens
                 drawLine(
