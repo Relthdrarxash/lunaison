@@ -796,7 +796,7 @@ fun HormoneCurvesDiagram() {
                     strokeWidth = 1.dp.toPx(),
                 )
 
-                // 1. Œstrogènes (Vert sauge / émeraude)
+                // 1. Œstrogènes (Vert sauge / émeraude - Trait continu)
                 val estrogenPoints = listOf(
                     Offset(x(1f), y(0.12f)),
                     Offset(x(5f), y(0.16f)),
@@ -811,7 +811,7 @@ fun HormoneCurvesDiagram() {
                 )
                 drawSmoothCurve(estrogenPoints, Color(0xFF2E7D5E), 3.dp.toPx())
 
-                // 2. Progestérone (Terracotta chaud)
+                // 2. Progestérone (Terracotta chaud - Trait tireté pour accessibilité daltonisme WCAG 1.4.1)
                 val progesteronePoints = listOf(
                     Offset(x(1f), y(0.06f)),
                     Offset(x(12f), y(0.06f)),
@@ -823,9 +823,10 @@ fun HormoneCurvesDiagram() {
                     Offset(x(26.5f), y(0.24f)),
                     Offset(x(28f), y(0.06f)),
                 )
-                drawSmoothCurve(progesteronePoints, Color(0xFFC04E3A), 3.dp.toPx())
+                val progDash = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(14f, 8f), 0f)
+                drawSmoothCurve(progesteronePoints, Color(0xFFC04E3A), 3.dp.toPx(), pathEffect = progDash)
 
-                // 3. Pic de LH (Ambre doré)
+                // 3. Pic de LH (Ambre doré - Trait pointillé)
                 val lhPoints = listOf(
                     Offset(x(1f), y(0.08f)),
                     Offset(x(11f), y(0.08f)),
@@ -835,7 +836,8 @@ fun HormoneCurvesDiagram() {
                     Offset(x(16f), y(0.08f)),
                     Offset(x(28f), y(0.08f)),
                 )
-                drawSmoothCurve(lhPoints, Color(0xFFD49B24), 2.5.dp.toPx())
+                val lhDots = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(5f, 6f), 0f)
+                drawSmoothCurve(lhPoints, Color(0xFFD49B24), 2.5.dp.toPx(), pathEffect = lhDots)
             }
 
             // Repères temporels horizontaux
@@ -852,20 +854,20 @@ fun HormoneCurvesDiagram() {
                 Text(tr("J28", "D28"), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
-            // Légende descriptive
+            // Légende descriptive avec repère visuel tactile
             HormoneLegendItem(
                 color = Color(0xFF2E7D5E),
-                name = tr("Œstrogènes (Estradiol)", "Estrogen (Estradiol)"),
-                role = tr("Pic juste avant l'ovulation. Stimule la régénération de la muqueuse utérine (endomètre), éclaircit la glaire et soutient l'énergie.", "Peaks right before ovulation. Stimulates uterine lining growth, clarifies mucus and supports energy."),
+                name = tr("Œstrogènes (Ligne continue)", "Estrogen (Solid line)"),
+                role = tr("Pic juste avant l'ovulation. Stimule la régénération du nid utérin (endomètre), éclaircit la glaire et soutient l'énergie.", "Peaks right before ovulation. Stimulates uterine lining growth, clarifies mucus and supports energy."),
             )
             HormoneLegendItem(
                 color = Color(0xFFC04E3A),
-                name = tr("Progestérone", "Progesterone"),
-                role = tr("Pic au milieu de la phase lutéale (sécrétée par le corps jaune). Maintient l'endomètre prêt pour un embryon. Sa chute déclenche les règles.", "Peaks in mid-luteal phase (secreted by corpus luteum). Maintains lining for potential pregnancy. Its sharp drop triggers menstruation."),
+                name = tr("Progestérone (Ligne tiretée)", "Progesterone (Dashed line)"),
+                role = tr("Pic au milieu de la phase lutéale (sécrétée par le corps jaune). Maintient le nid douillet prêt pour un embryon. Sa chute déclenche les règles.", "Peaks in mid-luteal phase (secreted by corpus luteum). Maintains lining for potential pregnancy. Its sharp drop triggers menstruation."),
             )
             HormoneLegendItem(
                 color = Color(0xFFD49B24),
-                name = tr("Pic de LH (Hormone lutéinisante)", "LH surge (Luteinizing hormone)"),
+                name = tr("Pic de LH (Ligne pointillée)", "LH surge (Dotted line)"),
                 role = tr("Décharge brève et intense à J13-J14 qui déclenche l'expulsion de l'ovule par le follicule en 24 à 36 heures.", "Brief, intense surge at Days 13-14 that triggers egg release within 24 to 36 hours."),
             )
         }
@@ -876,6 +878,7 @@ private fun DrawScope.drawSmoothCurve(
     points: List<Offset>,
     color: Color,
     strokeWidth: Float,
+    pathEffect: androidx.compose.ui.graphics.PathEffect? = null,
 ) {
     if (points.size < 2) return
     val path = Path()
@@ -893,6 +896,7 @@ private fun DrawScope.drawSmoothCurve(
             width = strokeWidth,
             cap = StrokeCap.Round,
             join = StrokeJoin.Round,
+            pathEffect = pathEffect,
         ),
     )
 }
@@ -929,73 +933,73 @@ enum class UterusPart {
 }
 
 private fun uterusPartTitle(part: UterusPart): String = when (part) {
-    UterusPart.ENDOMETRIUM -> tr("L'endomètre (muqueuse interne)", "The endometrium (inner lining)")
-    UterusPart.MYOMETRIUM -> tr("Le myomètre (paroi musculaire)", "The myometrium (muscular wall)")
-    UterusPart.CERVIX -> tr("Le col de l'utérus (cervix)", "The cervix")
-    UterusPart.TUBES -> tr("Les trompes de Fallope", "The fallopian tubes")
-    UterusPart.OVARIES -> tr("Les ovaires", "The ovaries")
-    UterusPart.VAGINA -> tr("Le vagin & la vulve", "The vagina & vulva")
+    UterusPart.ENDOMETRIUM -> tr("L'endomètre (le nid douillet intérieur)", "The endometrium (the inner velvet nest)")
+    UterusPart.MYOMETRIUM -> tr("Le myomètre (le moteur musculaire)", "The myometrium (the muscular engine)")
+    UterusPart.CERVIX -> tr("Le col de l'utérus (le gardien protecteur)", "The cervix (the smart gatekeeper)")
+    UterusPart.TUBES -> tr("Les trompes de Fallope (le lieu de rencontre)", "The fallopian tubes (the meeting place)")
+    UterusPart.OVARIES -> tr("Les ovaires (les chefs d'orchestre)", "The ovaries (the hormone conductors)")
+    UterusPart.VAGINA -> tr("Le vagin (le couloir en accordéon)", "The vagina (the accordion hallway)")
 }
 
 private fun uterusPartChipLabel(part: UterusPart): String = when (part) {
-    UterusPart.ENDOMETRIUM -> tr("Endomètre", "Endometrium")
-    UterusPart.MYOMETRIUM -> tr("Myomètre", "Myometrium")
-    UterusPart.CERVIX -> tr("Col (Cervix)", "Cervix")
-    UterusPart.TUBES -> tr("Trompes", "Tubes")
-    UterusPart.OVARIES -> tr("Ovaires", "Ovaries")
-    UterusPart.VAGINA -> tr("Vagin", "Vagina")
+    UterusPart.ENDOMETRIUM -> tr("Endomètre (nid)", "Endometrium (nest)")
+    UterusPart.MYOMETRIUM -> tr("Myomètre (muscle)", "Myometrium (muscle)")
+    UterusPart.CERVIX -> tr("Col de l'utérus", "Cervix")
+    UterusPart.TUBES -> tr("Trompes de Fallope", "Fallopian tubes")
+    UterusPart.OVARIES -> tr("Ovaires (hormones)", "Ovaries (hormones)")
+    UterusPart.VAGINA -> tr("Vagin (interne)", "Vagina (internal)")
 }
 
 private fun uterusPartSummary(part: UterusPart): String = when (part) {
     UterusPart.ENDOMETRIUM -> tr(
-        "Tissu vivant qui tapisse l'intérieur de la cavité utérine. Sous l'effet des œstrogènes puis de la progestérone, il s'épaissit et développe de nombreux micro-vaisseaux pour accueillir une éventuelle nidation. En l'absence de grossesse, la chute hormonale entraîne sa desquamation : c'est l'écoulement des règles.",
-        "Living tissue lining the uterine cavity. Driven by estrogen and progesterone, it thickens and vascularizes to support potential embryo implantation. Without pregnancy, the drop in hormones causes it to shed: this is menstrual bleeding."
+        "Un tapis de velours vivant qui tapisse l'intérieur de l'utérus. Chaque mois, sous l'effet des œstrogènes, il s'épaissit et se gorge de micro-vaisseaux pour préparer un nid douillet à une éventuelle grossesse. Si aucun ovule n'est fécondé, le corps n'en a plus besoin : cette couche de velours se détache doucement et s'évacue vers l'extérieur. C'est exactement cela, le sang des règles ! Ce n'est pas une blessure, c'est un fabuleux renouvellement mensuel de vos tissus.",
+        "A velvety living lining that carpets the inside of the uterus. Each month, spurred by estrogen, it thickens and fills with tiny blood vessels to prepare a cozy nest for a potential pregnancy. If fertilization does not happen, the body gently lets it go: this top layer detaches and flows outward. That is what your period is! It is not a wound—it is your body's healthy, regular tissue renewal."
     )
     UterusPart.MYOMETRIUM -> tr(
-        "Épaisse couche musculaire entourant la cavité utérine. C'est l'un des muscles lisses les plus puissants du corps. Lors des règles, la libération locale de prostaglandines déclenche ses contractions pour expulser l'endomètre. Ces contractions peuvent temporairement comprimer les vaisseaux sanguins, causant les crampes menstruelles.",
-        "Thick muscular layer surrounding the uterine cavity. One of the body's strongest smooth muscles. During periods, local prostaglandins trigger its contractions to shed the endometrium. These contractions can compress local blood vessels, causing menstrual cramps."
+        "Le muscle ultra-puissant qui constitue les parois de l'utérus. Pendant les règles, il se serre par vagues grâce à de petites molécules (les prostaglandines) pour aider le nid usé à se détacher et glisser dehors. Quand il se contracte fort, il écrase temporairement ses propres petits vaisseaux sanguins : privés brièvement d'oxygène, les tissus envoient un signal douloureux au cerveau. C'est exactement comme la crampe d'un coureur en plein sprint ! Une bouillotte chaude dilate les vaisseaux et soulage efficacement. En revanche, des douleurs qui clouent au lit ne sont pas normales et doivent faire penser à l'endométriose ou l'adénomyose.",
+        "The remarkably strong muscle that forms the thick walls of the uterus. During your period, it contracts in gentle waves using chemical signals (prostaglandins) to help clear out the old lining. When it squeezes tightly, it temporarily pinches its own tiny blood vessels: starved briefly of oxygen, the tissue sends a cramp signal to the brain, just like a runner's muscle cramp! A hot water bottle relaxes the muscle by restoring blood flow. But beware: pain that paralyzes your day is not normal and warrants a check for endometriosis or adenomyosis."
     )
     UterusPart.CERVIX -> tr(
-        "Partie étroite inférieure de l'utérus faisant la jonction avec le vagin. Il contient des glandes sécrétant la glaire cervicale (qui filtre ou favorise le passage des spermatozoïdes selon les phases du cycle) et s'entrouvre légèrement pour laisser s'évacuer le flux menstruel.",
-        "Narrow lower part of the uterus connecting into the vagina. It houses glands that secrete cervical mucus (filtering or assisting sperm according to cycle phase) and opens slightly to allow menstrual flow to pass through."
+        "Le passage circulaire qui relie le fond du vagin à l'utérus. Il fait office de gardien intelligent : la majeure partie du mois, son entrée est scellée par un bouchon épais et acide qui bloque les microbes extérieurs. Au moment de l'ovulation, il s'entrouvre et fabrique une glaire fluide et glissante qui sert de toboggan pour aider les spermatozoïdes à passer. Pendant les règles, il s'assouplit juste assez pour laisser couler le sang vers la sortie.",
+        "The circular passage connecting the deep end of the vagina to the uterus. It acts like an intelligent security guard: most of the month, its canal is tightly closed by a thick, acidic mucus plug that blocks harmful bacteria. Around ovulation, it softens, opens, and secretes slippery, nourishing mucus to guide sperm upward. During periods, it loosens just enough to let menstrual blood flow safely out."
     )
     UterusPart.TUBES -> tr(
-        "Deux conduits fins d'environ 10 à 12 cm reliant chaque ovaire aux angles supérieurs de l'utérus. Leurs franges mobiles captent l'ovocyte émis lors de l'ovulation. C'est dans le tiers externe de la trompe qu'a lieu la fécondation si un spermatozoïde rencontre l'ovocyte.",
-        "Two slender 10 to 12 cm ducts connecting each ovary to the upper corners of the uterus. Their mobile fimbriae sweep up the egg released during ovulation. Fertilization occurs in the outer third of the tube if a sperm meets the egg."
+        "Deux fins tuyaux souples de 10 à 12 cm qui relient l'utérus aux ovaires. Leurs extrémités s'évasent en petites franges mobiles qui caressent l'ovaire pour attraper l'ovule au vol dès qu'il sort. C'est dans le creux de la trompe qu'a lieu la grande rencontre amoureuse : si un spermatozoïde féconde l'ovule, c'est ici que tout commence ! De minuscules cils vibratiles font ensuite glisser l'ovule vers l'utérus comme sur un tapis roulant.",
+        "Two delicate, flexible channels (10 to 12 cm long) linking each ovary to the uterus. Their outer ends bloom into soft, waving fingers that gently brush over the ovary to scoop up the egg at ovulation. The tube is the true meeting place: if a sperm meets the egg, fertilization begins right here! Microscopic cilia then nudge the egg down toward the uterus like a gentle conveyor belt."
     )
     UterusPart.OVARIES -> tr(
-        "Deux glandes situées de chaque côté de l'utérus. Elles abritent l'ensemble des follicules ovocytaires dès la naissance et orchestrent le cycle en produisant cycliquement les deux hormones clés : les œstrogènes (maturation du follicule) et la progestérone (sécrétée par le corps jaune après l'ovulation).",
-        "Two glands located on each side of the uterus. They house all egg follicles from birth and orchestrate the cycle by cyclically producing two key hormones: estrogen (follicular growth) and progesterone (secreted by the corpus luteum after ovulation)."
+        "Deux petites glandes en forme d'amande situées de chaque côté. Vous y portez dès votre naissance la réserve de toute votre vie : des milliers de graines d'ovules au repos. Chaque mois, une petite équipe se réveille et le plus vaillant libère son ovule (l'ovulation). Les ovaires sont aussi vos chefs d'orchestre hormonaux : ils diffusent les œstrogènes (énergie, créativité, reconstruction de la muqueuse) puis la progestérone (apaisement et maintien du nid douillet).",
+        "Two almond-sized glands nestled on each side of the uterus. You are born holding your entire lifetime reserve inside them: thousands of dormant eggs tucked in tiny sacs. Each month, a cohort awakens and the strongest releases its egg (ovulation). The ovaries are also your master hormonal conductors: they release estrogen (energy, vitality, lining growth) followed by progesterone (calm, lining support)."
     )
     UterusPart.VAGINA -> tr(
-        "Conduit musculaire souple et extensible de 8 à 10 cm reliant le col de l'utérus à la vulve extérieure. Il assure l'écoulement vers l'extérieur des flux menstruels et des sécrétions physiologiques, participe aux rapports sexuels et permet le passage du bébé lors de l'accouchement.",
-        "Flexible, elastic 8 to 10 cm muscular canal connecting the cervix to the external vulva. It channels menstrual fluid and physiological secretions outward, plays a role in sexual intercourse, and serves as the birth canal."
+        "Le conduit musculaire souple qui relie la vulve extérieure au col de l'utérus. Au repos, ce n'est pas un tuyau ouvert ou béant : ses parois douces se touchent et se replient comme un accordéon. Cela lui permet de s'étirer sans douleur pour accueillir un tampon, une coupe menstruelle ou lors d'un rapport, puis de reprendre sa taille initiale. Il est autonettoyant grâce à de bonnes bactéries amies (les lactobacilles) : il n'a jamais besoin d'être lavé à l'intérieur !",
+        "The flexible, elastic muscular canal connecting the outside vulva to the cervix. At rest, it is not an open hollow tunnel: its soft walls rest gently together like an accordion. This allows it to stretch effortlessly for a tampon, menstrual cup, or sexual intimacy, and naturally snap back to shape. It is entirely self-cleaning thanks to friendly protective bacteria (lactobacilli)—it never needs douching or internal washing!"
     )
 }
 
 private fun cyclePhaseName(day: Int): String = when (day) {
-    in 1..5 -> tr("Menstruation (Règles)", "Menstruation (Period)")
-    in 6..13 -> tr("Phase folliculaire", "Follicular phase")
-    14 -> tr("Ovulation", "Ovulation")
-    else -> tr("Phase lutéale", "Luteal phase")
+    in 1..5 -> tr("1. Le grand nettoyage (Les règles)", "1. The fresh reset (Period)")
+    in 6..13 -> tr("2. Le renouveau (Folliculaire)", "2. The rebuilding (Follicular)")
+    14 -> tr("3. Le grand saut (L'ovulation)", "3. The fertile leap (Ovulation)")
+    else -> tr("4. Le cocon douillet (Lutéale)", "4. The cozy cocoon (Luteal)")
 }
 
 private fun cyclePhaseDescription(day: Int): String = when (day) {
     in 1..5 -> tr(
-        "J1 à J5 (Règles) : La chute hormonale provoque la desquamation de l'endomètre superficiel, évacué sous forme de flux menstruel par le col et le vagin.",
-        "D1 to D5 (Period): Hormonal drop triggers the shedding of superficial endometrium, expelled as menstrual flow through the cervix and vagina."
+        "J1 à J5 — Le premier jour de saignement rouge marque le Jour 1 du cycle ! En l'absence de grossesse, les hormones redescendent : le corps élimine le nid de velours utérin qui n'a pas servi. Le muscle de l'utérus se contracte par petites vagues pour aider à tout évacuer. C'est une vraie remise à zéro bienfaisante pour repartir sur des bases neuves.",
+        "D1 to D5 — The first day of red flow is Day 1 of your whole cycle! When no pregnancy occurs, hormone levels drop: your body gently sheds the unused velvet lining. The uterine muscle contracts in waves to clear it out through the cervix. It is a completely natural, healthy monthly reset."
     )
     in 6..13 -> tr(
-        "J6 à J13 (Folliculaire) : Sous l'effet des œstrogènes produits par le follicule ovarien en maturation, l'endomètre prolifère et s'épaissit activement.",
-        "D6 to D13 (Follicular): Driven by estrogens from the growing ovarian follicle, the endometrium actively proliferates and thickens."
+        "J6 à J13 — Un follicule grandit dans l'ovaire pour faire mûrir un ovule. Ce follicule fabrique des œstrogènes, les grandes hormones de l'énergie et de la vitalité : elles rebâtissent une muqueuse utérine toute neuve et épaisse, tout en vous apportant souvent un regain de dynamisme, un moral au beau fixe et une peau plus éclatante !",
+        "D6 to D13 — In one ovary, a follicle matures an egg while pouring out estrogen, the hormone of vitality. Estrogen reconstructs a brand-new, plush uterine lining while often providing an energy boost, mental clarity, and glowing skin!"
     )
     14 -> tr(
-        "J14 (Ovulation) : Le pic de LH libère l'ovocyte mature hors du follicule. Il est immédiatement capté par les franges mobiles de la trompe.",
-        "D14 (Ovulation): The LH surge triggers egg release from the mature follicle, captured immediately by the fimbriae of the fallopian tube."
+        "J14 — Au sommet d'un pic hormonal rapide, le follicule libère son ovule mûr, happé par la trompe. L'ovule ne vit que 12 à 24 heures ! Pour lui ouvrir la voie, le col fabrique une glaire abondante, transparente et élastique comme du blanc d'œuf cru : elle protège et propulse les spermatozoïdes comme sur une patinoire.",
+        "D14 — Sparked by a swift hormone surge, the ovary releases its mature egg, caught by the sweeping tube. The egg lives for just 12 to 24 hours! To pave the way, the cervix secretes clear, slippery mucus stretchy like raw egg white, guiding and nourishing sperm like an ice rink."
     )
     else -> tr(
-        "J15 à J28 (Lutéale) : Le follicule rompu devient un corps jaune sécrétant la progestérone. L'endomètre atteint son épaisseur maximale, très vascularisé en artérioles spiralées.",
-        "D15 to D28 (Luteal): The ruptured follicle becomes a corpus luteum secreting progesterone. The endometrium achieves peak thickness, packed with spiral arterioles."
+        "J15 à J28 — Le follicule vide s'est transformé en « corps jaune », une fabrique éphémère de progestérone. Cette hormone apaise et gorge la muqueuse de nutriments comme un oreiller bien dodu. Si l'ovule n'est pas fécondé, cette usine s'arrête, les hormones chutent, le moral peut temporairement osciller (SPM), et un nouveau cycle va pouvoir démarrer !",
+        "D15 to D28 — The empty follicle transforms into a temporary wonder-gland called the corpus luteum, producing progesterone. This hormone fluffs the uterine lining like a soft pillow. If no pregnancy begins, hormone levels tumble, mood may briefly wobble (PMS), and a fresh cycle is ready to start!"
     )
 }
 
@@ -1011,12 +1015,12 @@ fun InteractiveUterusDiagram(
     val colors = MaterialTheme.colorScheme
     val isDarkScheme = colors.background.luminance() < 0.5f
 
-    SectionTitle(tr("Schéma interactif de l'appareil reproducteur", "Interactive reproductive anatomy diagram"))
+    SectionTitle(tr("Voyage interactif au cœur de votre cycle", "Interactive journey inside your cycle"))
     LunaCard {
         Text(
             tr(
-                "Déplacez le curseur pour observer l'évolution de l'endomètre et des ovaires tout au long du cycle (J1 à J28), ou touchez un organe pour étudier son rôle :",
-                "Move the slider to observe endometrium and ovary evolution across the cycle (D1 to D28), or touch an organ to learn its function:"
+                "Faites glisser le curseur pour regarder en direct votre muqueuse et vos ovaires se métamorphoser de jour en jour (J1 à J28). Touchez n'importe quel organe pour percer ses secrets :",
+                "Drag the slider to watch your uterine lining and ovaries transform live, day by day (D1 to D28). Tap any organ to discover its role:"
             ),
             style = MaterialTheme.typography.bodyMedium,
             color = colors.onSurfaceVariant,
@@ -1091,10 +1095,10 @@ fun InteractiveUterusDiagram(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     listOf(
-                        Triple(1f, tr("Règles (J1)", "Period (D1)"), 1..5),
-                        Triple(8f, tr("Folliculaire (J8)", "Follicular (D8)"), 6..13),
-                        Triple(14f, tr("Ovulation (J14)", "Ovulation (D14)"), 14..14),
-                        Triple(21f, tr("Lutéale (J21)", "Luteal (D21)"), 15..28),
+                        Triple(1f, tr("1. Règles", "1. Period"), 1..5),
+                        Triple(8f, tr("2. Folliculaire", "2. Follicular"), 6..13),
+                        Triple(14f, tr("3. Ovulation", "3. Ovulation"), 14..14),
+                        Triple(21f, tr("4. Lutéale", "4. Luteal"), 15..28),
                     ).forEach { (targetDay, label, range) ->
                         val isCurrent = currentDay in range
                         Surface(
@@ -1133,7 +1137,7 @@ fun InteractiveUterusDiagram(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(270.dp)
+                .height(310.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(colors.surfaceVariant.copy(alpha = 0.35f)),
             contentAlignment = Alignment.Center,
@@ -1147,27 +1151,27 @@ fun InteractiveUterusDiagram(
                             val w = size.width.toFloat()
                             val h = size.height.toFloat()
                             val cx = w / 2f
-                            val topY = h * 0.22f
-                            val cervixY = h * 0.62f
+                            val topY = h * 0.18f
+                            val cervixY = h * 0.63f
                             val dx = offset.x - cx
                             val dy = offset.y
 
-                            // Hit testing par zone anatomique
-                            val leftOvaryX = cx - w * 0.37f
-                            val rightOvaryX = cx + w * 0.37f
-                            val ovaryY = topY + h * 0.20f
+                            // Hit testing par zone anatomique précise
+                            val leftOvaryX = cx - w * 0.36f
+                            val rightOvaryX = cx + w * 0.36f
+                            val ovaryY = topY + h * 0.22f
                             val distLeftOvary = kotlin.math.hypot(offset.x - leftOvaryX, dy - ovaryY)
                             val distRightOvary = kotlin.math.hypot(offset.x - rightOvaryX, dy - ovaryY)
 
-                            if (distLeftOvary < w * 0.12f || distRightOvary < w * 0.12f) {
+                            if (distLeftOvary < w * 0.13f || distRightOvary < w * 0.13f) {
                                 selectedPart = UterusPart.OVARIES
-                            } else if (dy < topY + h * 0.16f && kotlin.math.abs(dx) > w * 0.18f) {
+                            } else if (dy < topY + h * 0.18f && kotlin.math.abs(dx) > w * 0.18f) {
                                 selectedPart = UterusPart.TUBES
-                            } else if (dy > cervixY + h * 0.06f && kotlin.math.abs(dx) < w * 0.16f) {
+                            } else if (dy > cervixY + h * 0.05f && kotlin.math.abs(dx) < w * 0.16f) {
                                 selectedPart = UterusPart.VAGINA
-                            } else if (kotlin.math.abs(dy - cervixY) <= h * 0.08f && kotlin.math.abs(dx) < w * 0.14f) {
+                            } else if (kotlin.math.abs(dy - cervixY) <= h * 0.07f && kotlin.math.abs(dx) < w * 0.12f) {
                                 selectedPart = UterusPart.CERVIX
-                            } else if (dy >= topY && dy <= cervixY && kotlin.math.abs(dx) <= w * 0.10f && dy < cervixY - h * 0.04f) {
+                            } else if (dy >= topY && dy <= cervixY && kotlin.math.abs(dx) <= w * 0.09f && dy < cervixY - h * 0.03f) {
                                 selectedPart = UterusPart.ENDOMETRIUM
                             } else if (dy >= topY && dy <= cervixY && kotlin.math.abs(dx) <= w * 0.22f) {
                                 selectedPart = UterusPart.MYOMETRIUM
@@ -1179,319 +1183,513 @@ fun InteractiveUterusDiagram(
                 val h = size.height
                 val cx = w / 2f
 
-                val topY = h * 0.22f
-                val fundusWidth = w * 0.18f
-                val cervixY = h * 0.64f
-                val cervixWidth = w * 0.07f
-                val vaginaBottomY = h * 0.90f
-                val vaginaWidth = w * 0.09f
+                val topY = h * 0.18f
+                val fundusW = w * 0.17f
+                val isthmusY = h * 0.54f
+                val isthmusW = w * 0.055f
+                val cervixY = h * 0.63f
+                val cervixW = w * 0.075f
+                val vaginaBottomY = h * 0.94f
+                val vaginaW = w * 0.095f
 
-                // Facteur d'épaisseur et de réceptivité de l'endomètre selon le jour du cycle
+                // Facteur physiologique d'épaisseur et de réceptivité de l'endomètre selon le jour du cycle
                 val endoFactor: Float = when (currentDay) {
                     1 -> 0.70f
                     2 -> 0.45f
-                    3 -> 0.30f
-                    4, 5 -> 0.18f
-                    in 6..13 -> 0.20f + ((currentDay - 5) / 8f) * 0.65f
+                    3 -> 0.28f
+                    4, 5 -> 0.15f
+                    in 6..13 -> 0.18f + ((currentDay - 5) / 8f) * 0.65f
                     14 -> 0.90f
                     in 15..24 -> 1.0f
-                    else -> 1.0f - ((currentDay - 24) / 4f) * 0.20f
+                    else -> 1.0f - ((currentDay - 24) / 4f) * 0.22f
                 }
 
-                // --- 1. Dessin du Vagin (canal inférieur) ---
-                val vaginaPath = Path().apply {
-                    moveTo(cx - cervixWidth, cervixY + h * 0.04f)
-                    lineTo(cx + cervixWidth, cervixY + h * 0.04f)
-                    lineTo(cx + vaginaWidth, vaginaBottomY)
-                    lineTo(cx - vaginaWidth, vaginaBottomY)
+                // =========================================================================
+                // 1. Ligaments larges péritonéaux (arrière-plan anatomique translucide)
+                // =========================================================================
+                val broadLigamentColor = colors.surfaceVariant.copy(alpha = 0.22f)
+                val leftBroadLigament = Path().apply {
+                    moveTo(cx - isthmusW, isthmusY)
+                    cubicTo(cx - w * 0.24f, isthmusY + h * 0.02f, cx - w * 0.42f, topY + h * 0.24f, cx - w * 0.44f, topY + h * 0.18f)
+                    cubicTo(cx - w * 0.42f, topY + h * 0.10f, cx - w * 0.28f, topY + h * 0.04f, cx - fundusW, topY + h * 0.02f)
                     close()
                 }
+                val rightBroadLigament = Path().apply {
+                    moveTo(cx + isthmusW, isthmusY)
+                    cubicTo(cx + w * 0.24f, isthmusY + h * 0.02f, cx + w * 0.42f, topY + h * 0.24f, cx + w * 0.44f, topY + h * 0.18f)
+                    cubicTo(cx + w * 0.42f, topY + h * 0.10f, cx + w * 0.28f, topY + h * 0.04f, cx + fundusW, topY + h * 0.02f)
+                    close()
+                }
+                drawPath(leftBroadLigament, broadLigamentColor)
+                drawPath(rightBroadLigament, broadLigamentColor)
+
+                // =========================================================================
+                // 2. Vagin & Culs-de-sac de la voûte vaginale (Fornices)
+                // =========================================================================
                 val isVaginaSelected = selectedPart == UterusPart.VAGINA
+                val fornixLeft = cx - cervixW * 1.15f
+                val fornixRight = cx + cervixW * 1.15f
+                val fornixY = cervixY + h * 0.015f
+
+                val vaginaPath = Path().apply {
+                    moveTo(fornixLeft, fornixY)
+                    // Voûte vaginale embrassant le museau de tanche
+                    cubicTo(fornixLeft - w * 0.02f, fornixY + h * 0.04f, cx - vaginaW, cervixY + h * 0.08f, cx - vaginaW, vaginaBottomY)
+                    lineTo(cx + vaginaW, vaginaBottomY)
+                    cubicTo(cx + vaginaW, cervixY + h * 0.08f, fornixRight + w * 0.02f, fornixY + h * 0.04f, fornixRight, fornixY)
+                    // Réflexion sur le col
+                    cubicTo(cx + cervixW * 0.8f, cervixY + h * 0.04f, cx - cervixW * 0.8f, cervixY + h * 0.04f, fornixLeft, fornixY)
+                    close()
+                }
                 drawPath(
                     path = vaginaPath,
-                    color = if (isVaginaSelected) Color(0xFF78909C) else Color(0xFFB0BEC5).copy(alpha = 0.4f),
+                    color = if (isVaginaSelected) Color(0xFF78909C) else Color(0xFFB0BEC5).copy(alpha = 0.38f),
                 )
-                if (isVaginaSelected) {
-                    drawPath(
-                        path = vaginaPath,
-                        color = Color(0xFF37474F),
-                        style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
-                    )
-                }
+                drawPath(
+                    path = vaginaPath,
+                    color = if (isVaginaSelected) Color(0xFF37474F) else colors.onSurfaceVariant.copy(alpha = 0.6f),
+                    style = Stroke(width = if (isVaginaSelected) 2.6.dp.toPx() else 1.4.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
+                )
 
-                // Plis vaginaux (rugae)
-                for (i in 1..3) {
-                    val y = cervixY + h * 0.08f + i * (h * 0.05f)
-                    drawLine(
-                        color = (if (isVaginaSelected) Color.White else colors.onSurfaceVariant).copy(alpha = 0.5f),
-                        start = Offset(cx - vaginaWidth * 0.6f, y),
-                        end = Offset(cx + vaginaWidth * 0.6f, y),
-                        strokeWidth = 1.5.dp.toPx(),
-                        cap = StrokeCap.Round,
-                    )
+                // Crêtes et rides vaginales transversales (rugae vaginales)
+                val rugaeColor = (if (isVaginaSelected) Color.White else colors.onSurfaceVariant).copy(alpha = 0.45f)
+                val rugaeYOffsets = listOf(0.06f, 0.11f, 0.16f, 0.21f, 0.26f)
+                rugaeYOffsets.forEach { rY ->
+                    val y = cervixY + h * rY
+                    val rPath = Path().apply {
+                        val rw = vaginaW * (0.65f + (rY - 0.06f) * 0.4f)
+                        moveTo(cx - rw, y)
+                        cubicTo(cx - rw * 0.4f, y - 2.dp.toPx(), cx + rw * 0.4f, y + 2.dp.toPx(), cx + rw, y)
+                    }
+                    drawPath(rPath, rugaeColor, style = Stroke(width = 1.3.dp.toPx(), cap = StrokeCap.Round))
                 }
 
                 // Menstruation : écoulement sanguin dans le vagin (J1 à J5)
                 if (currentDay in 1..5) {
-                    val dropletColor = Color(0xFF991B1B)
-                    drawCircle(dropletColor, radius = 2.8.dp.toPx(), center = Offset(cx, cervixY + h * 0.04f))
-                    drawCircle(dropletColor, radius = 2.4.dp.toPx(), center = Offset(cx - 3.dp.toPx(), cervixY + h * 0.11f))
-                    drawCircle(dropletColor, radius = 2.8.dp.toPx(), center = Offset(cx + 2.5.dp.toPx(), cervixY + h * 0.18f))
-                    drawCircle(dropletColor, radius = 2.2.dp.toPx(), center = Offset(cx, cervixY + h * 0.25f))
+                    val mBlood = Color(0xFF991B1B)
+                    val drops = listOf(
+                        Triple(cx, cervixY + h * 0.05f, 2.6.dp.toPx()),
+                        Triple(cx - 3.dp.toPx(), cervixY + h * 0.10f, 2.8.dp.toPx()),
+                        Triple(cx + 3.5.dp.toPx(), cervixY + h * 0.15f, 2.5.dp.toPx()),
+                        Triple(cx - 1.dp.toPx(), cervixY + h * 0.20f, 3.0.dp.toPx()),
+                        Triple(cx + 2.dp.toPx(), cervixY + h * 0.25f, 2.4.dp.toPx()),
+                    )
+                    drops.forEach { (dx, dy, r) ->
+                        drawCircle(mBlood, radius = r, center = Offset(dx, dy))
+                    }
                 }
 
-                // --- 2. Dessin du Myomètre (corps musculaire de l'utérus) ---
-                val myoPath = Path().apply {
-                    moveTo(cx - cervixWidth, cervixY)
-                    cubicTo(
-                        cx - w * 0.20f, cervixY - h * 0.12f,
-                        cx - fundusWidth, topY + h * 0.06f,
-                        cx - fundusWidth, topY,
-                    )
-                    cubicTo(
-                        cx - fundusWidth * 0.5f, topY - h * 0.04f,
-                        cx + fundusWidth * 0.5f, topY - h * 0.04f,
-                        cx + fundusWidth, topY,
-                    )
-                    cubicTo(
-                        cx + fundusWidth, topY + h * 0.06f,
-                        cx + w * 0.20f, cervixY - h * 0.12f,
-                        cx + cervixWidth, cervixY,
-                    )
+                // =========================================================================
+                // 3. Corps de l'utérus : Myomètre & Pérymètre anatomique
+                // =========================================================================
+                val isMyoSelected = selectedPart == UterusPart.MYOMETRIUM
+
+                // Contour externe piriforme de l'utérus (Fundus, cornes et parois latérales)
+                val uterusOuterPath = Path().apply {
+                    // Col supravaginal gauche
+                    moveTo(cx - isthmusW, isthmusY)
+                    // Bord latéral gauche de l'utérus
+                    cubicTo(cx - isthmusW * 1.3f, isthmusY - h * 0.06f, cx - fundusW * 0.85f, topY + h * 0.12f, cx - fundusW, topY + h * 0.015f)
+                    // Corne utérine gauche et dôme du fundus
+                    cubicTo(cx - fundusW * 0.95f, topY - h * 0.035f, cx - fundusW * 0.45f, topY - h * 0.045f, cx, topY - h * 0.045f)
+                    // Dôme du fundus et corne utérine droite
+                    cubicTo(cx + fundusW * 0.45f, topY - h * 0.045f, cx + fundusW * 0.95f, topY - h * 0.035f, cx + fundusW, topY + h * 0.015f)
+                    // Bord latéral droit de l'utérus
+                    cubicTo(cx + fundusW * 0.85f, topY + h * 0.12f, cx + isthmusW * 1.3f, isthmusY - h * 0.06f, cx + isthmusW, isthmusY)
+                    // Jonction avec l'isthme et le col
+                    cubicTo(cx + cervixW * 0.8f, cervixY - h * 0.02f, cx - cervixW * 0.8f, cervixY - h * 0.02f, cx - isthmusW, isthmusY)
                     close()
                 }
-                val isMyoSelected = selectedPart == UterusPart.MYOMETRIUM
-                drawPath(
-                    path = myoPath,
-                    color = if (isMyoSelected) Color(0xFFE57373) else Color(0xFFEF9A9A).copy(alpha = 0.5f),
+
+                val myoFill = if (isMyoSelected) Color(0xFFE57373) else Color(0xFFEF9A9A).copy(alpha = 0.55f)
+                val myoStroke = if (isMyoSelected) Color(0xFFC62828) else colors.onSurfaceVariant.copy(alpha = 0.75f)
+                drawPath(uterusOuterPath, myoFill)
+
+                // Faisceaux musculaires lisses du myomètre (fibres plexiformes spiralées)
+                val muscleFiberColor = Color(0xFFC62828).copy(alpha = if (isMyoSelected) 0.40f else 0.22f)
+                val fiberPaths = listOf(
+                    Path().apply {
+                        moveTo(cx - fundusW * 0.82f, topY + h * 0.03f)
+                        cubicTo(cx - fundusW * 0.4f, topY - h * 0.015f, cx + fundusW * 0.4f, topY - h * 0.015f, cx + fundusW * 0.82f, topY + h * 0.03f)
+                    },
+                    Path().apply {
+                        moveTo(cx - fundusW * 0.70f, topY + h * 0.08f)
+                        cubicTo(cx - fundusW * 0.35f, topY + h * 0.05f, cx + fundusW * 0.35f, topY + h * 0.05f, cx + fundusW * 0.70f, topY + h * 0.08f)
+                    },
+                    Path().apply {
+                        moveTo(cx - fundusW * 0.60f, topY + h * 0.14f)
+                        cubicTo(cx - fundusW * 0.25f, topY + h * 0.11f, cx + fundusW * 0.25f, topY + h * 0.11f, cx + fundusW * 0.60f, topY + h * 0.14f)
+                    },
                 )
-                if (isMyoSelected) {
-                    drawPath(
-                        path = myoPath,
-                        color = Color(0xFFC62828),
-                        style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
-                    )
+                fiberPaths.forEach { fPath ->
+                    drawPath(fPath, muscleFiberColor, style = Stroke(width = 1.2.dp.toPx(), cap = StrokeCap.Round))
                 }
 
-                // --- 3. Dessin du Col de l'utérus (Cervix) ---
+                // Ligne du pérymètre (séreuse utérine externe)
+                drawPath(
+                    uterusOuterPath,
+                    myoStroke,
+                    style = Stroke(width = if (isMyoSelected) 2.8.dp.toPx() else 1.5.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
+                )
+
+                // =========================================================================
+                // 4. Col de l'utérus (Cervix) & Canal endocervical avec plis palmés
+                // =========================================================================
                 val isCervixSelected = selectedPart == UterusPart.CERVIX
                 val cervixCenter = Offset(cx, cervixY)
-                val cervixOsRadius = when (currentDay) {
-                    in 1..5 -> cervixWidth * 0.44f // Entrouvert pour laisser passer le flux
-                    14 -> cervixWidth * 0.40f // Perméable lors de l'ovulation
-                    in 15..28 -> cervixWidth * 0.26f // Hermétiquement fermé sous progestérone
-                    else -> cervixWidth * 0.35f
-                }
+                val cervixFill = if (isCervixSelected) Color(0xFF81C784) else Color(0xFFA5D6A7).copy(alpha = 0.65f)
+                val cervixStroke = if (isCervixSelected) Color(0xFF1B5E20) else Color(0xFF2E7D32)
 
-                drawCircle(
-                    color = if (isCervixSelected) Color(0xFF81C784) else Color(0xFFA5D6A7).copy(alpha = 0.6f),
-                    radius = cervixWidth * 0.9f,
-                    center = cervixCenter,
-                )
-                drawCircle(
-                    color = if (isCervixSelected) Color(0xFF2E7D32) else Color(0xFF4CAF50),
-                    radius = cervixOsRadius,
-                    center = cervixCenter,
-                )
-                if (isCervixSelected) {
-                    drawCircle(
-                        color = Color(0xFF1B5E20),
-                        radius = cervixWidth * 1.1f,
-                        center = cervixCenter,
-                        style = Stroke(width = 2.5.dp.toPx()),
-                    )
-                }
-                // Glaire cervicale fertile filante au pic ovulatoire (J14)
-                if (currentDay == 14) {
-                    drawCircle(
-                        color = Color(0xFFE0F2F1).copy(alpha = 0.9f),
-                        radius = 3.dp.toPx(),
-                        center = Offset(cx, cervixY + cervixWidth * 0.5f),
-                    )
-                }
-
-                // --- 4. Dessin de l'Endomètre (cavité utérine interne avec épaisseur dynamique) ---
-                val cavityPath = Path().apply {
-                    val cornuY = topY + h * 0.08f
-                    val cornuXLeft = cx - fundusWidth * 0.55f
-                    val cornuXRight = cx + fundusWidth * 0.55f
-                    val apexY = cervixY - h * 0.03f
-
-                    moveTo(cornuXLeft, cornuY)
-                    quadraticTo(cx, cornuY - h * 0.02f, cornuXRight, cornuY)
-                    quadraticTo(cx + fundusWidth * 0.20f, cervixY - h * 0.12f, cx, apexY)
-                    quadraticTo(cx - fundusWidth * 0.20f, cervixY - h * 0.12f, cornuXLeft, cornuY)
+                // Anatomie du col : museau de tanche (portio vaginalis) faisant saillie dans le vagin
+                val cervixEctoPath = Path().apply {
+                    // Lèvre antérieure et postérieure du col
+                    moveTo(cx - cervixW, cervixY - h * 0.02f)
+                    cubicTo(cx - cervixW * 1.1f, cervixY + h * 0.02f, cx - cervixW * 0.7f, cervixY + h * 0.045f, cx, cervixY + h * 0.045f)
+                    cubicTo(cx + cervixW * 0.7f, cervixY + h * 0.045f, cx + cervixW * 1.1f, cervixY + h * 0.02f, cx + cervixW, cervixY - h * 0.02f)
+                    cubicTo(cx + isthmusW, isthmusY, cx - isthmusW, isthmusY, cx - cervixW, cervixY - h * 0.02f)
                     close()
                 }
+                drawPath(cervixEctoPath, cervixFill)
+                drawPath(
+                    cervixEctoPath,
+                    cervixStroke,
+                    style = Stroke(width = if (isCervixSelected) 2.6.dp.toPx() else 1.5.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
+                )
+
+                // Canal endocervical fusiforme (avec plicae palmatae / arbor vitae uteri)
+                val canalWidth = when (currentDay) {
+                    in 1..5 -> cervixW * 0.32f // Entrouvert pour l'écoulement des règles
+                    14 -> cervixW * 0.28f // Dilaté et perméable pour l'ovulation
+                    else -> cervixW * 0.16f // Rétracté sous progestérone
+                }
+                val endocervixPath = Path().apply {
+                    moveTo(cx - canalWidth * 0.6f, isthmusY)
+                    cubicTo(cx - canalWidth, cervixY, cx - canalWidth * 0.8f, cervixY + h * 0.035f, cx - canalWidth * 0.5f, cervixY + h * 0.042f)
+                    lineTo(cx + canalWidth * 0.5f, cervixY + h * 0.042f)
+                    cubicTo(cx + canalWidth * 0.8f, cervixY + h * 0.035f, cx + canalWidth, cervixY, cx + canalWidth * 0.6f, isthmusY)
+                    close()
+                }
+                drawPath(endocervixPath, Color(0xFF1B5E20).copy(alpha = 0.75f))
+
+                // Plis palmés endocervicaux (arbor vitae uteri)
+                val palmY1 = isthmusY + h * 0.025f
+                val palmY2 = isthmusY + h * 0.055f
+                drawLine(Color.White.copy(alpha = 0.45f), Offset(cx - canalWidth * 0.5f, palmY1 - 2.dp.toPx()), Offset(cx, palmY1), strokeWidth = 1.dp.toPx())
+                drawLine(Color.White.copy(alpha = 0.45f), Offset(cx + canalWidth * 0.5f, palmY1 - 2.dp.toPx()), Offset(cx, palmY1), strokeWidth = 1.dp.toPx())
+                drawLine(Color.White.copy(alpha = 0.45f), Offset(cx - canalWidth * 0.5f, palmY2 - 2.dp.toPx()), Offset(cx, palmY2), strokeWidth = 1.dp.toPx())
+                drawLine(Color.White.copy(alpha = 0.45f), Offset(cx + canalWidth * 0.5f, palmY2 - 2.dp.toPx()), Offset(cx, palmY2), strokeWidth = 1.dp.toPx())
+
+                // Orifice externe du col (Os externum)
+                val osRadius = when (currentDay) {
+                    in 1..5 -> canalWidth * 0.45f
+                    14 -> canalWidth * 0.40f
+                    else -> canalWidth * 0.25f
+                }
+                drawCircle(Color(0xFF0A3D12), radius = osRadius, center = Offset(cx, cervixY + h * 0.042f))
+
+                // Sécrétion de glaire cervicale fertile filante au pic ovulatoire (J14)
+                if (currentDay == 14) {
+                    val mucusPath = Path().apply {
+                        moveTo(cx - 2.dp.toPx(), cervixY + h * 0.042f)
+                        cubicTo(cx - 3.dp.toPx(), cervixY + h * 0.07f, cx - 1.dp.toPx(), cervixY + h * 0.10f, cx, cervixY + h * 0.13f)
+                        cubicTo(cx + 1.dp.toPx(), cervixY + h * 0.10f, cx + 3.dp.toPx(), cervixY + h * 0.07f, cx + 2.dp.toPx(), cervixY + h * 0.042f)
+                        close()
+                    }
+                    drawPath(mucusPath, Color(0xFFE0F7FA).copy(alpha = 0.90f))
+                    drawCircle(Color(0xFFB2EBF2), radius = 2.5.dp.toPx(), center = Offset(cx, cervixY + h * 0.13f))
+                } else if (currentDay in 15..28) {
+                    // Bouchon muqueux protecteur et dense en phase lutéale
+                    drawCircle(Color(0xFF80CBC4).copy(alpha = 0.85f), radius = canalWidth * 0.5f, center = Offset(cx, cervixY + h * 0.038f))
+                }
+
+                // =========================================================================
+                // 5. Cavité utérine & Endomètre (Couche basale + couche fonctionnelle cyclique)
+                // =========================================================================
                 val isEndoSelected = selectedPart == UterusPart.ENDOMETRIUM
+                val cornuY = topY + h * 0.055f
+                val cornuXLeft = cx - fundusW * 0.52f
+                val cornuXRight = cx + fundusW * 0.52f
+                val internalOsY = isthmusY
 
-                // Teinte de l'endomètre selon la vascularisation et la phase
+                // Forme anatomique de la cavité utérine (légèrement triangulaire à concavité latérale)
+                val cavityLumenPath = Path().apply {
+                    moveTo(cornuXLeft, cornuY)
+                    // Plafond du fundus entre les deux ostiums tubaires
+                    cubicTo(cx - fundusW * 0.20f, cornuY - h * 0.02f, cx + fundusW * 0.20f, cornuY - h * 0.02f, cornuXRight, cornuY)
+                    // Paroi latérale droite de la cavité utérine
+                    cubicTo(cx + fundusW * 0.26f, topY + h * 0.18f, cx + isthmusW * 0.8f, internalOsY - h * 0.06f, cx + isthmusW * 0.5f, internalOsY)
+                    // Orifice interne
+                    lineTo(cx - isthmusW * 0.5f, internalOsY)
+                    // Paroi latérale gauche
+                    cubicTo(cx - isthmusW * 0.8f, internalOsY - h * 0.06f, cx - fundusW * 0.26f, topY + h * 0.18f, cornuXLeft, cornuY)
+                    close()
+                }
+
+                // Couche basale permanente (Stratum basale) de l'endomètre
+                drawPath(cavityLumenPath, Color(0xFF991B1B).copy(alpha = 0.35f))
+
+                // Teinte de la couche fonctionnelle selon le jour du cycle
                 val endoFillColor = when (currentDay) {
-                    in 1..5 -> Color(0xFF881337).copy(alpha = 0.55f) // Desquamation
-                    in 6..13 -> Color(0xFFE11D48).copy(alpha = 0.25f + endoFactor * 0.45f) // Prolifération
-                    14 -> Color(0xFFBE123C).copy(alpha = 0.80f) // Pic ovulatoire réceptif
-                    else -> Color(0xFF9F1239).copy(alpha = 0.85f) // Phase sécrétoire veloutée
+                    in 1..5 -> Color(0xFF7F1D1D).copy(alpha = 0.60f) // Desquamation hémorragique
+                    in 6..13 -> Color(0xFFE11D48).copy(alpha = 0.30f + endoFactor * 0.45f) // Prolifération régulière
+                    14 -> Color(0xFFBE123C).copy(alpha = 0.82f) // Receptivité ovulatoire
+                    else -> Color(0xFF9F1239).copy(alpha = 0.88f) // Sécrétoire riche en glycogène
                 }
+                drawPath(cavityLumenPath, endoFillColor)
+
+                // Bordure de muqueuse endométriale proportionnelle à l'épaisseur cyclique (1-2mm -> 8-10mm)
+                val baseEndoWidth = (1.8.dp + 5.2.dp * endoFactor).toPx()
+                val endoBorderColor = if (isEndoSelected) Color(0xFFFFCDD2) else Color(0xFF880E4F)
                 drawPath(
-                    path = cavityPath,
-                    color = if (isEndoSelected) endoFillColor.copy(alpha = 0.95f) else endoFillColor,
+                    path = cavityLumenPath,
+                    color = endoBorderColor,
+                    style = Stroke(width = if (isEndoSelected) baseEndoWidth + 2.dp.toPx() else baseEndoWidth, join = StrokeJoin.Round),
                 )
 
-                // Bordure de muqueuse endométriale proportionnelle à l'épaisseur cyclique
-                val endoStrokeWidth = (2.dp + 5.5.dp * endoFactor).toPx()
-                drawPath(
-                    path = cavityPath,
-                    color = if (isEndoSelected) Color(0xFFFFCDD2) else Color(0xFF880E4F),
-                    style = Stroke(width = if (isEndoSelected) endoStrokeWidth + 2.dp.toPx() else endoStrokeWidth),
-                )
-
-                // Artérioles spiralées ondulantes (visibles en phase lutéale sécrétoire J15 à J28)
-                if (currentDay in 15..28) {
-                    val spiralColor = Color(0xFFFFCDD2).copy(alpha = 0.7f)
-                    val sY = topY + h * 0.08f
-                    val p1 = Path().apply {
-                        moveTo(cx - fundusWidth * 0.22f, sY)
-                        cubicTo(cx - fundusWidth * 0.14f, sY + h * 0.04f, cx - fundusWidth * 0.26f, sY + h * 0.08f, cx - fundusWidth * 0.16f, sY + h * 0.12f)
+                // Détails histologiques dynamiques selon la phase du cycle :
+                if (currentDay in 1..5) {
+                    // Desquamation de l'endomètre : lambeaux muqueux irréguliers se détachant
+                    val sloughColor = Color(0xFFFF8A80).copy(alpha = 0.75f)
+                    val sloughs = listOf(
+                        Triple(cx - fundusW * 0.15f, cornuY + h * 0.06f, 3.dp.toPx()),
+                        Triple(cx + fundusW * 0.10f, cornuY + h * 0.10f, 3.5.dp.toPx()),
+                        Triple(cx - fundusW * 0.05f, cornuY + h * 0.16f, 2.8.dp.toPx()),
+                        Triple(cx + fundusW * 0.08f, cornuY + h * 0.20f, 3.2.dp.toPx()),
+                    )
+                    sloughs.forEach { (sx, sy, sr) ->
+                        drawCircle(sloughColor, radius = sr, center = Offset(sx, sy))
                     }
-                    val p2 = Path().apply {
+                } else if (currentDay in 6..13) {
+                    // Phase proliférative : glandes tubuleuses rectilignes en croissance vers la surface
+                    val glandColor = Color(0xFFFFCDD2).copy(alpha = 0.50f)
+                    for (gx in listOf(-0.25f, -0.10f, 0.05f, 0.20f)) {
+                        val startX = cx + fundusW * gx
+                        val startY = cornuY + h * 0.04f
+                        val glandH = h * (0.06f + (currentDay - 5) * 0.012f)
+                        drawLine(
+                            color = glandColor,
+                            start = Offset(startX, startY),
+                            end = Offset(startX, startY + glandH),
+                            strokeWidth = 1.4.dp.toPx(),
+                            cap = StrokeCap.Round,
+                        )
+                    }
+                } else if (currentDay in 14..28) {
+                    // Phase sécrétoire : artérioles spiralées festonnées ondulantes et glandes tortueuses
+                    val spiralColor = Color(0xFFFFCDD2).copy(alpha = 0.75f)
+                    val sY = cornuY + h * 0.03f
+                    val spiral1 = Path().apply {
+                        moveTo(cx - fundusW * 0.22f, sY)
+                        cubicTo(cx - fundusW * 0.16f, sY + h * 0.03f, cx - fundusW * 0.26f, sY + h * 0.07f, cx - fundusW * 0.18f, sY + h * 0.11f)
+                        cubicTo(cx - fundusW * 0.12f, sY + h * 0.14f, cx - fundusW * 0.20f, sY + h * 0.17f, cx - fundusW * 0.14f, sY + h * 0.20f)
+                    }
+                    val spiral2 = Path().apply {
                         moveTo(cx, sY - h * 0.01f)
-                        cubicTo(cx + fundusWidth * 0.08f, sY + h * 0.04f, cx - fundusWidth * 0.08f, sY + h * 0.08f, cx, sY + h * 0.13f)
+                        cubicTo(cx + fundusW * 0.08f, sY + h * 0.03f, cx - fundusW * 0.08f, sY + h * 0.07f, cx + fundusW * 0.06f, sY + h * 0.11f)
+                        cubicTo(cx - fundusW * 0.04f, sY + h * 0.15f, cx + fundusW * 0.04f, sY + h * 0.18f, cx, sY + h * 0.21f)
                     }
-                    val p3 = Path().apply {
-                        moveTo(cx + fundusWidth * 0.22f, sY)
-                        cubicTo(cx + fundusWidth * 0.26f, sY + h * 0.04f, cx + fundusWidth * 0.14f, sY + h * 0.08f, cx + fundusWidth * 0.16f, sY + h * 0.12f)
+                    val spiral3 = Path().apply {
+                        moveTo(cx + fundusW * 0.22f, sY)
+                        cubicTo(cx + fundusW * 0.26f, sY + h * 0.03f, cx + fundusW * 0.16f, sY + h * 0.07f, cx + fundusW * 0.24f, sY + h * 0.11f)
+                        cubicTo(cx + fundusW * 0.16f, sY + h * 0.14f, cx + fundusW * 0.22f, sY + h * 0.17f, cx + fundusW * 0.16f, sY + h * 0.20f)
                     }
-                    drawPath(p1, spiralColor, style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round))
-                    drawPath(p2, spiralColor, style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round))
-                    drawPath(p3, spiralColor, style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round))
+                    drawPath(spiral1, spiralColor, style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round))
+                    drawPath(spiral2, spiralColor, style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round))
+                    drawPath(spiral3, spiralColor, style = Stroke(width = 1.6.dp.toPx(), cap = StrokeCap.Round))
                 }
 
-                // --- 5. Dessin des Trompes de Fallope ---
+                // =========================================================================
+                // 6. Trompes de Fallope (Salpinx) : Isthme, Ampoule, Pavillon & Franges
+                // =========================================================================
                 val isTubesSelected = selectedPart == UterusPart.TUBES
-                val tubeColor = if (isTubesSelected) Color(0xFF1E88E5) else Color(0xFF90CAF9).copy(alpha = 0.7f)
-                val tubeStroke = if (isTubesSelected) 4.5.dp.toPx() else 3.dp.toPx()
+                val tubeColor = if (isTubesSelected) Color(0xFF1E88E5) else Color(0xFF90CAF9).copy(alpha = 0.85f)
+                val tubeLumenColor = if (isTubesSelected) Color(0xFF0D47A1) else Color(0xFF1565C0)
 
-                // Trompe gauche
-                val leftTubePath = Path().apply {
-                    moveTo(cx - fundusWidth, topY + h * 0.02f)
-                    cubicTo(
-                        cx - w * 0.26f, topY - h * 0.08f,
-                        cx - w * 0.38f, topY - h * 0.04f,
-                        cx - w * 0.40f, topY + h * 0.12f,
-                    )
+                for (side in listOf(-1f, 1f)) {
+                    // Coordonnées anatomiques du trajet de la trompe
+                    val isthmusStartX = cx + side * fundusW * 0.95f
+                    val isthmusStartY = topY + h * 0.015f
+                    val ampullaApexX = cx + side * w * 0.30f
+                    val ampullaApexY = topY - h * 0.065f
+                    val infundibulumX = cx + side * w * 0.41f
+                    val infundibulumY = topY + h * 0.09f
+
+                    // Trajet externe de la trompe avec galbe volumétrique
+                    val tubeOuter = Path().apply {
+                        moveTo(isthmusStartX, isthmusStartY - 2.5.dp.toPx())
+                        // Arche de l'ampoule
+                        cubicTo(
+                            cx + side * w * 0.24f, ampullaApexY,
+                            cx + side * w * 0.36f, ampullaApexY + h * 0.02f,
+                            infundibulumX + side * 4.dp.toPx(), infundibulumY,
+                        )
+                        // Évasement en pavillon infundibulaire
+                        lineTo(infundibulumX - side * 4.dp.toPx(), infundibulumY + h * 0.035f)
+                        cubicTo(
+                            cx + side * w * 0.36f, ampullaApexY + h * 0.05f,
+                            cx + side * w * 0.24f, ampullaApexY + h * 0.03f,
+                            isthmusStartX, isthmusStartY + 2.5.dp.toPx(),
+                        )
+                        close()
+                    }
+                    drawPath(tubeOuter, tubeColor)
+                    drawPath(tubeOuter, tubeLumenColor, style = Stroke(width = if (isTubesSelected) 2.2.dp.toPx() else 1.3.dp.toPx()))
+
+                    // Franges du pavillon (Fimbriae) : corolle de digitations muqueuses embrassant l'ovaire
+                    val fimbriaeCount = 8
+                    for (f in 0 until fimbriaeCount) {
+                        val fAngle = (f.toFloat() / (fimbriaeCount - 1)) * 1.5f - 0.75f
+                        val fLen = if (f == 4) 14.dp.toPx() else (7f + kotlin.math.sin(f * 1.3f) * 4f).dp.toPx()
+                        val fxStart = infundibulumX
+                        val fyStart = infundibulumY + h * 0.018f
+                        val fxEnd = fxStart + side * kotlin.math.cos(fAngle) * fLen * 0.6f
+                        val fyEnd = fyStart + kotlin.math.sin(fAngle) * fLen + (if (f == 4) 4.dp.toPx() else 0f)
+
+                        val fPath = Path().apply {
+                            moveTo(fxStart, fyStart)
+                            cubicTo(
+                                fxStart + side * 3.dp.toPx(), (fyStart + fyEnd) / 2f,
+                                fxEnd - side * 2.dp.toPx(), (fyStart + fyEnd) / 2f,
+                                fxEnd, fyEnd,
+                            )
+                        }
+                        val fColor = if (side == -1f && currentDay == 14) Color(0xFF00ACC1) else tubeColor
+                        drawPath(fPath, fColor, style = Stroke(width = 2.0.dp.toPx(), cap = StrokeCap.Round))
+                    }
                 }
-                drawPath(leftTubePath, color = tubeColor, style = Stroke(width = tubeStroke, cap = StrokeCap.Round))
-                val leftFimbriaCenter = Offset(cx - w * 0.40f, topY + h * 0.12f)
-                drawCircle(
-                    color = if (currentDay == 14) Color(0xFF00ACC1) else tubeColor,
-                    radius = if (currentDay == 14) 6.5.dp.toPx() else 5.dp.toPx(),
-                    center = leftFimbriaCenter,
-                )
 
-                // Trompe droite
-                val rightTubePath = Path().apply {
-                    moveTo(cx + fundusWidth, topY + h * 0.02f)
-                    cubicTo(
-                        cx + w * 0.26f, topY - h * 0.08f,
-                        cx + w * 0.38f, topY - h * 0.04f,
-                        cx + w * 0.40f, topY + h * 0.12f,
-                    )
-                }
-                drawPath(rightTubePath, color = tubeColor, style = Stroke(width = tubeStroke, cap = StrokeCap.Round))
-                val rightFimbriaCenter = Offset(cx + w * 0.40f, topY + h * 0.12f)
-                drawCircle(color = tubeColor, radius = 5.dp.toPx(), center = rightFimbriaCenter)
-
-                // --- 6. Dessin des Ovaires (maturation folliculaire, ovulation & corps jaune) ---
+                // =========================================================================
+                // 7. Ovaires & Ligaments (Utéro-ovarien & Suspenseur de l'ovaire)
+                // =========================================================================
                 val isOvariesSelected = selectedPart == UterusPart.OVARIES
-                val ovaryColor = if (isOvariesSelected) Color(0xFFFFA000) else Color(0xFFFFE082).copy(alpha = 0.7f)
-                val leftOvaryPos = Offset(cx - w * 0.37f, topY + h * 0.20f)
-                val rightOvaryPos = Offset(cx + w * 0.37f, topY + h * 0.20f)
+                val ovaryColor = if (isOvariesSelected) Color(0xFFFFA000) else Color(0xFFFFE082).copy(alpha = 0.75f)
+                val leftOvaryPos = Offset(cx - w * 0.36f, topY + h * 0.22f)
+                val rightOvaryPos = Offset(cx + w * 0.36f, topY + h * 0.22f)
+                val ovaryW = w * 0.13f
+                val ovaryH = h * 0.11f
 
-                // Ligaments utéro-ovariens
-                drawLine(
-                    color = Color.Gray.copy(alpha = 0.4f),
-                    start = Offset(cx - fundusWidth * 0.8f, topY + h * 0.14f),
-                    end = leftOvaryPos,
-                    strokeWidth = 1.5.dp.toPx(),
-                )
-                drawLine(
-                    color = Color.Gray.copy(alpha = 0.4f),
-                    start = Offset(cx + fundusWidth * 0.8f, topY + h * 0.14f),
-                    end = rightOvaryPos,
-                    strokeWidth = 1.5.dp.toPx(),
-                )
+                for (side in listOf(-1f, 1f)) {
+                    val oPos = if (side == -1f) leftOvaryPos else rightOvaryPos
 
-                // Ovaires (forme d'amande)
-                drawOval(
-                    color = ovaryColor,
-                    topLeft = Offset(leftOvaryPos.x - w * 0.06f, leftOvaryPos.y - h * 0.05f),
-                    size = Size(w * 0.12f, h * 0.10f),
-                )
-                drawOval(
-                    color = ovaryColor,
-                    topLeft = Offset(rightOvaryPos.x - w * 0.06f, rightOvaryPos.y - h * 0.05f),
-                    size = Size(w * 0.12f, h * 0.10f),
-                )
-                if (isOvariesSelected) {
+                    // Ligament suspenseur de l'ovaire (lombo-ovarien avec vaisseaux sanguins spiralés)
+                    val suspPath = Path().apply {
+                        moveTo(oPos.x + side * ovaryW * 0.2f, oPos.y - ovaryH * 0.5f)
+                        cubicTo(cx + side * w * 0.42f, topY + h * 0.08f, cx + side * w * 0.45f, topY - h * 0.02f, cx + side * w * 0.46f, topY - h * 0.06f)
+                    }
+                    drawPath(suspPath, Color(0xFFE57373).copy(alpha = 0.50f), style = Stroke(width = 1.8.dp.toPx(), cap = StrokeCap.Round))
+                    drawPath(suspPath, Color(0xFF64B5F6).copy(alpha = 0.40f), style = Stroke(width = 1.0.dp.toPx(), cap = StrokeCap.Round))
+
+                    // Ligament propre de l'ovaire (utéro-ovarien) reliant le pôle inférieur à la corne utérine
+                    val uteroOvarianLigPath = Path().apply {
+                        moveTo(cx + side * fundusW * 0.85f, topY + h * 0.10f)
+                        cubicTo(
+                            cx + side * (fundusW * 0.9f + w * 0.06f), topY + h * 0.16f,
+                            oPos.x - side * ovaryW * 0.2f, oPos.y + ovaryH * 0.1f,
+                            oPos.x - side * ovaryW * 0.35f, oPos.y + ovaryH * 0.2f,
+                        )
+                    }
+                    drawPath(uteroOvarianLigPath, Color.Gray.copy(alpha = 0.55f), style = Stroke(width = 2.0.dp.toPx(), cap = StrokeCap.Round))
+
+                    // Forme amygdaloïde / amande anatomique de l'ovaire
+                    val ovaryPath = Path().apply {
+                        moveTo(oPos.x - ovaryW * 0.5f, oPos.y)
+                        cubicTo(oPos.x - ovaryW * 0.45f, oPos.y - ovaryH * 0.55f, oPos.x + ovaryW * 0.45f, oPos.y - ovaryH * 0.45f, oPos.x + ovaryW * 0.5f, oPos.y)
+                        cubicTo(oPos.x + ovaryW * 0.45f, oPos.y + ovaryH * 0.55f, oPos.x - ovaryW * 0.45f, oPos.y + ovaryH * 0.45f, oPos.x - ovaryW * 0.5f, oPos.y)
+                        close()
+                    }
+                    drawPath(ovaryPath, ovaryColor)
+                    // Zone médullaire centrale vascularisée
                     drawOval(
-                        color = Color(0xFFFF6F00),
-                        topLeft = Offset(leftOvaryPos.x - w * 0.06f, leftOvaryPos.y - h * 0.05f),
-                        size = Size(w * 0.12f, h * 0.10f),
-                        style = Stroke(width = 2.5.dp.toPx()),
+                        color = Color(0xFFFFCC80).copy(alpha = 0.45f),
+                        topLeft = Offset(oPos.x - ovaryW * 0.28f, oPos.y - ovaryH * 0.25f),
+                        size = androidx.compose.ui.geometry.Size(ovaryW * 0.56f, ovaryH * 0.50f),
                     )
-                    drawOval(
-                        color = Color(0xFFFF6F00),
-                        topLeft = Offset(rightOvaryPos.x - w * 0.06f, rightOvaryPos.y - h * 0.05f),
-                        size = Size(w * 0.12f, h * 0.10f),
-                        style = Stroke(width = 2.5.dp.toPx()),
+                    drawPath(
+                        ovaryPath,
+                        if (isOvariesSelected) Color(0xFFFF6F00) else colors.onSurfaceVariant.copy(alpha = 0.65f),
+                        style = Stroke(width = if (isOvariesSelected) 2.6.dp.toPx() else 1.4.dp.toPx()),
                     )
                 }
 
-                // Dynamique du cycle ovarien sur l'ovaire dominant (gauche) :
+                // =========================================================================
+                // 8. Dynamique du cycle ovarien sur l'ovaire gauche (dominant)
+                // =========================================================================
                 when (currentDay) {
                     in 1..5 -> {
-                        // Follicules primordiaux au repos
-                        drawCircle(Color(0xFFFFF9C4), radius = 2.5.dp.toPx(), center = leftOvaryPos)
+                        // Follicules primordiaux et primaires au repos en périphérie corticale
+                        drawCircle(Color(0xFFFFF9C4), radius = 2.8.dp.toPx(), center = Offset(leftOvaryPos.x - 6.dp.toPx(), leftOvaryPos.y - 4.dp.toPx()))
+                        drawCircle(Color(0xFFFFF9C4), radius = 2.4.dp.toPx(), center = Offset(leftOvaryPos.x + 5.dp.toPx(), leftOvaryPos.y - 5.dp.toPx()))
+                        drawCircle(Color(0xFFFFF9C4), radius = 2.2.dp.toPx(), center = Offset(leftOvaryPos.x, leftOvaryPos.y + 6.dp.toPx()))
                     }
                     in 6..13 -> {
-                        // Croissance du follicule de De Graaf dominant
-                        val fRadius = (3f + (currentDay - 5) * 0.65f).dp.toPx()
-                        drawCircle(Color(0xFFFFCA28), radius = fRadius, center = leftOvaryPos)
-                        drawCircle(Color(0xFFFFF9C4), radius = 2.5.dp.toPx(), center = leftOvaryPos)
+                        // Recrutement et maturation du follicule de De Graaf dominant avec antrum folliculaire
+                        val fRadius = (3.5f + (currentDay - 5) * 0.70f).dp.toPx()
+                        val graafCenter = Offset(leftOvaryPos.x - ovaryW * 0.12f, leftOvaryPos.y - ovaryH * 0.15f)
+
+                        // Thèque & granulosa externe
+                        drawCircle(Color(0xFFFFB300), radius = fRadius, center = graafCenter)
+                        // Antrum liquidien folliculaire
+                        drawCircle(Color(0xFFFFF59D), radius = fRadius * 0.70f, center = graafCenter)
+                        // Cumulus oophorus & ovocyte au centre
+                        drawCircle(Color(0xFFE65100), radius = 2.4.dp.toPx(), center = Offset(graafCenter.x + fRadius * 0.25f, graafCenter.y))
+                        // Autres follicules subordonnés en atrésie
+                        drawCircle(Color(0xFFFFF9C4).copy(alpha = 0.6f), radius = 2.2.dp.toPx(), center = Offset(leftOvaryPos.x + 7.dp.toPx(), leftOvaryPos.y + 4.dp.toPx()))
                     }
                     14 -> {
-                        // Ovulation : rupture folliculaire & libération de l'ovocyte capté par la trompe
-                        drawCircle(Color(0xFFFF8F00), radius = 5.dp.toPx(), center = Offset(leftOvaryPos.x - w * 0.02f, leftOvaryPos.y - h * 0.02f))
-                        val ovocytePos = Offset(cx - w * 0.38f, topY + h * 0.14f)
+                        // Ovulation : déhiscence folliculaire au niveau du stigma et libération de l'ovocyte capté par les franges
+                        val stigmaCenter = Offset(leftOvaryPos.x - ovaryW * 0.25f, leftOvaryPos.y - ovaryH * 0.28f)
+                        drawCircle(Color(0xFFFF8F00), radius = 5.dp.toPx(), center = stigmaCenter)
+                        // Ovocyte émis entouré de sa corona radiata
+                        val ovocytePos = Offset(cx - w * 0.38f, topY + h * 0.15f)
+                        // Halo de la corona radiata
                         drawCircle(Color(0xFFFBC02D).copy(alpha = 0.35f), radius = 9.dp.toPx(), center = ovocytePos)
-                        drawCircle(Color(0xFFFFF59D), radius = 4.5.dp.toPx(), center = ovocytePos)
-                        drawCircle(Color(0xFFE65100), radius = 4.5.dp.toPx(), center = ovocytePos, style = Stroke(width = 1.5.dp.toPx()))
+                        drawCircle(Color(0xFFFFF9C4), radius = 4.5.dp.toPx(), center = ovocytePos)
+                        drawCircle(Color(0xFFE65100), radius = 4.5.dp.toPx(), center = ovocytePos, style = Stroke(width = 1.6.dp.toPx()))
+                        // Globule polaire
+                        drawCircle(Color(0xFFBF360C), radius = 1.3.dp.toPx(), center = Offset(ovocytePos.x + 2.dp.toPx(), ovocytePos.y - 2.dp.toPx()))
                     }
                     in 15..18 -> {
-                        // Corps jaune jeune & migration de l'ovocyte dans le tiers externe de la trompe
-                        drawCircle(Color(0xFFFFB300), radius = 6.5.dp.toPx(), center = leftOvaryPos)
-                        drawCircle(Color(0xFFFF8F00), radius = 3.5.dp.toPx(), center = leftOvaryPos)
+                        // Corps jaune jeune & migration de l'ovocyte dans l'ampoule tubaire
+                        drawCircle(Color(0xFFFB8C00), radius = 7.0.dp.toPx(), center = leftOvaryPos)
+                        drawCircle(Color(0xFFFFD54F), radius = 4.0.dp.toPx(), center = leftOvaryPos)
+                        // Transit tubaire dans le tiers externe de la trompe
                         val progress = (currentDay - 15) / 3f
-                        val transitX = cx - w * (0.36f - progress * 0.08f)
-                        val transitY = topY + h * (0.04f - progress * 0.03f)
-                        drawCircle(Color(0xFFFFF59D), radius = 3.5.dp.toPx(), center = Offset(transitX, transitY))
-                        drawCircle(Color(0xFFE65100), radius = 3.5.dp.toPx(), center = Offset(transitX, transitY), style = Stroke(width = 1.2.dp.toPx()))
+                        val transitX = cx - w * (0.37f - progress * 0.09f)
+                        val transitY = topY - h * (0.04f - progress * 0.04f)
+                        drawCircle(Color(0xFFFFF9C4), radius = 3.6.dp.toPx(), center = Offset(transitX, transitY))
+                        drawCircle(Color(0xFFE65100), radius = 3.6.dp.toPx(), center = Offset(transitX, transitY), style = Stroke(width = 1.3.dp.toPx()))
                     }
                     in 19..24 -> {
-                        // Corps jaune pleinement développé sécrétant la progestérone
-                        drawCircle(Color(0xFFFB8C00), radius = 7.5.dp.toPx(), center = leftOvaryPos)
-                        drawCircle(Color(0xFFFFD54F), radius = 4.5.dp.toPx(), center = leftOvaryPos)
+                        // Corps jaune pleinement mature (glande endocrine plissée sécrétant la progestérone)
+                        val cjCenter = leftOvaryPos
+                        val cjPath = Path().apply {
+                            val cjR = 8.5.dp.toPx()
+                            val lobes = 8
+                            for (lb in 0 until lobes) {
+                                val a = (lb.toFloat() / lobes) * 2f * Math.PI.toFloat()
+                                val rad = cjR * (if (lb % 2 == 0) 1.0f else 0.82f)
+                                val lx = cjCenter.x + kotlin.math.cos(a) * rad
+                                val ly = cjCenter.y + kotlin.math.sin(a) * rad
+                                if (lb == 0) moveTo(lx, ly) else lineTo(lx, ly)
+                            }
+                            close()
+                        }
+                        drawPath(cjPath, Color(0xFFFB8C00))
+                        drawCircle(Color(0xFFFFEE58), radius = 4.5.dp.toPx(), center = cjCenter)
+                        drawCircle(Color(0xFFE65100), radius = 2.0.dp.toPx(), center = cjCenter)
                     }
                     else -> {
-                        // J25-J28 : Régression du corps jaune en corpus albicans si absence de fécondation
-                        val regrRadius = (6f - (currentDay - 24) * 0.8f).coerceAtLeast(3f).dp.toPx()
-                        drawCircle(Color(0xFFFFE082).copy(alpha = 0.6f), radius = regrRadius, center = leftOvaryPos)
+                        // J25-J28 : Involuton du corps jaune en corpus albicans (cicatrice fibreuse blanche festonnée)
+                        val regrRadius = (5.5f - (currentDay - 24) * 0.7f).coerceAtLeast(2.8f).dp.toPx()
+                        drawCircle(Color(0xFFECEFF1), radius = regrRadius, center = leftOvaryPos)
+                        drawCircle(Color(0xFFCFD8DC), radius = regrRadius, center = leftOvaryPos, style = Stroke(width = 1.2.dp.toPx()))
                     }
                 }
 
-                // Follicules de l'ovaire controlatéral (droit) au repos
-                drawCircle(Color(0xFFFFF9C4).copy(alpha = 0.6f), radius = 2.5.dp.toPx(), center = Offset(rightOvaryPos.x - 3.dp.toPx(), rightOvaryPos.y))
-                drawCircle(Color(0xFFFFF9C4).copy(alpha = 0.6f), radius = 2.dp.toPx(), center = Offset(rightOvaryPos.x + 3.dp.toPx(), rightOvaryPos.y - 2.dp.toPx()))
+                // Ovaire droit (controlatéral) : follicules primordiaux au repos et ancienne cicatrice d'albicans
+                drawCircle(Color(0xFFFFF9C4).copy(alpha = 0.65f), radius = 2.5.dp.toPx(), center = Offset(rightOvaryPos.x - 5.dp.toPx(), rightOvaryPos.y - 3.dp.toPx()))
+                drawCircle(Color(0xFFFFF9C4).copy(alpha = 0.65f), radius = 2.2.dp.toPx(), center = Offset(rightOvaryPos.x + 4.dp.toPx(), rightOvaryPos.y + 4.dp.toPx()))
+                drawCircle(Color(0xFFCFD8DC).copy(alpha = 0.50f), radius = 2.0.dp.toPx(), center = Offset(rightOvaryPos.x - 2.dp.toPx(), rightOvaryPos.y + 5.dp.toPx()))
             }
         }
 
