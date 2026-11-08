@@ -101,6 +101,8 @@ Les fonctions étudiées mais pas encore réalisées, comme l'import de l'histor
 
 Contact : [pilmil.studio@proton.me](mailto:pilmil.studio@proton.me). Distribuée sous licence [GNU GPL v3.0](LICENSE).
 
+Une [permission additionnelle](LICENSE-EXCEPTION.md) (article 7 de la GPL) autorise la distribution par les magasins d'applications, App Store compris, tant que le code source reste disponible sous la même licence.
+
 ## Note sur le développement
 
 Le code de Lunaison a été développé avec l'aide d'un assistant IA (Claude, d'Anthropic) : l'application elle-même n'embarque aucune intelligence artificielle, tous les contenus de santé sont rédigés et vérifiés à partir des sources publiques (HAS, NHS, CNGOF, INSERM), le moteur du cycle est purement déterministe et couvert par des tests automatiques, et je maintiens personnellement le projet en répondant moi-même aux tickets et aux messages.
