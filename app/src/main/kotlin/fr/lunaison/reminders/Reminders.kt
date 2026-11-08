@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -80,25 +81,25 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
             ReminderKind.PERIOD -> if (state is CycleState.Known && !state.inPeriod) {
                 val days = state.daysUntilNext
                 val text = when {
-                    days <= 0 -> tr("Vos règles peuvent arriver d'un jour à l'autre.", "Your period may arrive any day now.")
-                    days == 1 -> tr("Vos règles devraient arriver demain.", "Your period should arrive tomorrow.")
-                    else -> tr("Vos règles devraient arriver dans $days jours environ.", "Your period should arrive in about $days days.")
+                    days <= 0 -> tr("Vos règles peuvent arriver d'un jour à l'autre.", "Your period may arrive any day now.", pl = "Miesiączka może pojawić się lada dzień.", uk = "Місячні можуть початися будь-якого дня.", es = "Tu regla puede llegar en cualquier momento.", de = "Deine Periode kann jeden Tag kommen.")
+                    days == 1 -> tr("Vos règles devraient arriver demain.", "Your period should arrive tomorrow.", pl = "Miesiączka powinna pojawić się jutro.", uk = "Місячні мають початися завтра.", es = "Tu regla debería llegar mañana.", de = "Deine Periode sollte morgen kommen.")
+                    else -> tr("Vos règles devraient arriver dans $days jours environ.", "Your period should arrive in about $days days.", pl = "Miesiączka powinna pojawić się za około $days dni.", uk = "Місячні мають початися приблизно через $days днів.", es = "Tu regla debería llegar en unos $days días.", de = "Deine Periode sollte in etwa $days Tagen kommen.")
                 }
-                notify(kind, tr("Bientôt vos règles", "Period coming soon"), text)
+                notify(kind, settings.pinHash != null, tr("Bientôt vos règles", "Period coming soon", pl = "Wkrótce miesiączka", uk = "Скоро місячні", es = "Pronto tu regla", de = "Periode bald"), text)
             }
             ReminderKind.LOG -> {
                 val logged = logs.any { it.date == today }
                 if (ReminderPlanner.shouldRemindToLog(state, settings.reminders, today, logged)) {
-                    notify(kind, tr("Un petit point sur votre journée ?", "A quick check-in on your day?"), tr("Quelques secondes pour noter comment vous allez.", "A few seconds to note how you are doing."))
+                    notify(kind, settings.pinHash != null, tr("Un petit point sur votre journée ?", "A quick check-in on your day?", pl = "Krótko o Twoim dniu?", uk = "Коротко про ваш день?", es = "¿Un momento para tu día?", de = "Kurz zu deinem Tag?"), tr("Quelques secondes pour noter comment vous allez.", "A few seconds to note how you are doing.", pl = "Kilka sekund, by zanotować, jak się czujesz.", uk = "Кілька секунд, щоб записати, як ви почуваєтеся.", es = "Unos segundos para anotar cómo estás.", de = "Ein paar Sekunden, um festzuhalten, wie es dir geht."))
                 }
             }
             ReminderKind.MEDICATION -> {
                 val takenToday = logs.any { it.date == today && it.medicationTaken }
                 if (ReminderPlanner.shouldRemindMedication(settings.reminders, takenToday)) {
                     val label = settings.reminders.medicationLabel.trim()
-                    val title = if (label.isNotEmpty()) tr("Rappel : $label", "Reminder: $label") else tr("Rappel quotidien", "Daily reminder")
-                    val text = tr("Pensez à votre prise du jour et à la noter dans Lunaison.", "Remember your daily dose and log it in Lunaison.")
-                    notify(kind, title, text)
+                    val title = if (label.isNotEmpty()) tr("Rappel : $label", "Reminder: $label", pl = "Przypomnienie: $label", uk = "Нагадування: $label", es = "Recordatorio: $label", de = "Erinnerung: $label") else tr("Rappel quotidien", "Daily reminder", pl = "Codzienne przypomnienie", uk = "Щоденне нагадування", es = "Recordatorio diario", de = "Tägliche Erinnerung")
+                    val text = tr("Pensez à votre prise du jour et à la noter dans Lunaison.", "Remember your daily dose and log it in Lunaison.", pl = "Pamiętaj o dzisiejszej dawce i zanotuj ją w Lunaison.", uk = "Не забудьте про сьогоднішню дозу й запишіть її в Lunaison.", es = "Recuerda tu toma de hoy y anótala en Lunaison.", de = "Denk an deine heutige Einnahme und trag sie in Lunaison ein.")
+                    notify(kind, settings.pinHash != null, title, text)
                 }
             }
         }
@@ -108,7 +109,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
 
     // L'autorisation est vérifiée au début de la fonction.
     @SuppressLint("MissingPermission")
-    private fun notify(kind: ReminderKind, title: String, text: String) {
+    private fun notify(kind: ReminderKind, locked: Boolean, title: String, text: String) {
         val context = applicationContext
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
@@ -116,16 +117,19 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
             return
         }
         ensureChannel(context)
+        // Le rappel de saisie ouvre directement la journée ; le code PIN reste demandé à l'ouverture.
         val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            ?.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            ?.apply { if (kind == ReminderKind.LOG) putExtra(EXTRA_OPEN, OPEN_LOG) }
         val pending = launch?.let {
             PendingIntent.getActivity(context, kind.ordinal, it, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         }
         // Sur l'écran verrouillé, seule une version neutre s'affiche.
-        val public = NotificationCompat.Builder(context, CHANNEL_ID)
+        val public = NotificationCompat.Builder(context, channelFor(kind))
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(context.getString(R.string.app_name))
             .build()
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, channelFor(kind))
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(text)
@@ -135,20 +139,51 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setPublicVersion(public)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .build()
-        NotificationManagerCompat.from(context).notify(kind.ordinal + 1, notification)
+        // Action en un geste depuis la notification. Pas d'action si un code PIN protège l'appli :
+        // on n'écrit rien sans passer par le déverrouillage.
+        if (!locked) {
+            val action = when (kind) {
+                ReminderKind.PERIOD -> ReminderActionReceiver.ACTION_PERIOD_STARTED to
+                    tr("Mes règles ont commencé", "My period has started", pl = "Zaczęła się miesiączka", uk = "Місячні почалися", es = "Me ha venido la regla", de = "Meine Periode hat begonnen")
+                ReminderKind.MEDICATION -> ReminderActionReceiver.ACTION_MEDICATION_TAKEN to
+                    tr("C'est pris", "Taken", pl = "Przyjęte", uk = "Прийнято", es = "Tomado", de = "Genommen")
+                ReminderKind.LOG -> null
+            }
+            action?.let { (name, label) ->
+                val intent = Intent(context, ReminderActionReceiver::class.java).setAction(name)
+                val actionPending = PendingIntent.getBroadcast(context, kind.ordinal, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+                builder.addAction(0, label, actionPending)
+            }
+        }
+        NotificationManagerCompat.from(context).notify(notificationId(kind), builder.build())
     }
 
     companion object {
         const val KIND = "kind"
-        private const val CHANNEL_ID = "rappels"
+        const val EXTRA_OPEN = "fr.lunaison.OPEN"
+        const val OPEN_LOG = "log"
+
+        /** Ancien canal unique : remplacé par un canal par type, pour couper un rappel sans les autres. */
+        private const val LEGACY_CHANNEL_ID = "rappels"
+
+        fun notificationId(kind: ReminderKind) = kind.ordinal + 1
+
+        private fun channelFor(kind: ReminderKind) = "rappel-${kind.name.lowercase()}"
 
         fun ensureChannel(context: Context) {
             val manager = context.getSystemService(NotificationManager::class.java) ?: return
-            val channel = NotificationChannel(CHANNEL_ID, context.getString(R.string.reminders_channel), NotificationManager.IMPORTANCE_DEFAULT)
-            channel.description = context.getString(R.string.reminders_channel_description)
-            channel.lockscreenVisibility = android.app.Notification.VISIBILITY_PRIVATE
-            manager.createNotificationChannel(channel)
+            manager.deleteNotificationChannel(LEGACY_CHANNEL_ID)
+            val names = mapOf(
+                ReminderKind.PERIOD to tr("Annonce des règles", "Period coming", pl = "Zapowiedź miesiączki", uk = "Попередження про місячні", es = "Aviso de la regla", de = "Periodenankündigung"),
+                ReminderKind.LOG to tr("Noter ma journée", "Log my day", pl = "Zanotuj mój dzień", uk = "Записати мій день", es = "Anotar mi día", de = "Meinen Tag eintragen"),
+                ReminderKind.MEDICATION to tr("Prise quotidienne", "Daily dose", pl = "Codzienna dawka", uk = "Щоденна доза", es = "Toma diaria", de = "Tägliche Einnahme"),
+            )
+            names.forEach { (kind, name) ->
+                val channel = NotificationChannel(channelFor(kind), name, NotificationManager.IMPORTANCE_DEFAULT)
+                channel.description = context.getString(R.string.reminders_channel_description)
+                channel.lockscreenVisibility = android.app.Notification.VISIBILITY_PRIVATE
+                manager.createNotificationChannel(channel)
+            }
         }
     }
 }
