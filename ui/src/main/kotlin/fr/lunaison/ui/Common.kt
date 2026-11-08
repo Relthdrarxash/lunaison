@@ -58,7 +58,7 @@ fun PageTitle(title: String, onBack: (() -> Unit)? = null, subtitle: String? = n
     Row(verticalAlignment = Alignment.CenterVertically) {
         if (onBack != null) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("Retour", "Back"))
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("Retour", "Back", pl = "Wstecz", uk = "Назад", es = "Atrás", de = "Zurück"))
             }
             Spacer(Modifier.width(4.dp))
         }
