@@ -435,12 +435,12 @@ fun SettingsScreen(
             )
             Text(
                 tr(
-                    "Libre (GPL-3.0), gratuit, sans publicité. Ce n'est ni un dispositif médical ni une méthode de contraception.",
-                    "Free and open source (GPL-3.0), no ads. It is neither a medical device nor a method of contraception.",
-                    pl = "Wolne i otwarte (GPL-3.0), darmowe, bez reklam. Nie jest to wyrób medyczny ani metoda antykoncepcji.",
-                    uk = "Вільне та відкрите (GPL-3.0), без реклами. Це не медичний виріб і не метод контрацепції.",
-                    es = "Libre y abierto (GPL-3.0), gratuito, sin anuncios. No es un producto sanitario ni un método anticonceptivo.",
-                    de = "Frei und quelloffen (GPL-3.0), kostenlos, werbefrei. Weder Medizinprodukt noch Verhütungsmethode.",
+                    "Libre (MPL-2.0), gratuit, sans publicité. Ce n'est ni un dispositif médical ni une méthode de contraception.",
+                    "Free and open source (MPL-2.0), no ads. It is neither a medical device nor a method of contraception.",
+                    pl = "Wolne i otwarte (MPL-2.0), darmowe, bez reklam. Nie jest to wyrób medyczny ani metoda antykoncepcji.",
+                    uk = "Вільне та відкрите (MPL-2.0), без реклами. Це не медичний виріб і не метод контрацепції.",
+                    es = "Libre y abierto (MPL-2.0), gratuito, sin anuncios. No es un producto sanitario ni un método anticonceptivo.",
+                    de = "Frei und quelloffen (MPL-2.0), kostenlos, werbefrei. Weder Medizinprodukt noch Verhütungsmethode.",
                 ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

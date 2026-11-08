@@ -61,19 +61,19 @@ class LunaisonWidget : AppWidgetProvider() {
             val state = CycleAnalyzer.analyze(logs, settings.baseline, today)
 
             val (title, subtitle) = when {
-                settings.pinHash != null -> "Lunaison" to tr("Toucher pour ouvrir", "Tap to open")
-                settings.pausePredictions -> tr("Lunaison : en pause", "Lunaison: paused") to tr("Noter ma journée", "Log my day")
+                settings.pinHash != null -> "Lunaison" to tr("Toucher pour ouvrir", "Tap to open", pl = "Dotknij, aby otworzyć", uk = "Торкніться, щоб відкрити", es = "Toca para abrir", de = "Zum Öffnen tippen")
+                settings.pausePredictions -> tr("Lunaison : en pause", "Lunaison: paused", pl = "Lunaison: wstrzymane", uk = "Lunaison: на паузі", es = "Lunaison: en pausa", de = "Lunaison: pausiert") to tr("Noter ma journée", "Log my day", pl = "Zanotuj mój dzień", uk = "Записати мій день", es = "Anotar mi día", de = "Meinen Tag eintragen")
                 state is CycleState.Known -> {
-                    val head = tr("Jour ${state.dayOfCycle} · ${Format.phaseName(state.phase)}", "Day ${state.dayOfCycle} · ${Format.phaseName(state.phase)}")
+                    val head = tr("Jour ${state.dayOfCycle} · ${Format.phaseName(state.phase)}", "Day ${state.dayOfCycle} · ${Format.phaseName(state.phase)}", pl = "Dzień ${state.dayOfCycle} · ${Format.phaseName(state.phase)}", uk = "День ${state.dayOfCycle} · ${Format.phaseName(state.phase)}", es = "Día ${state.dayOfCycle} · ${Format.phaseName(state.phase)}", de = "Tag ${state.dayOfCycle} · ${Format.phaseName(state.phase)}")
                     val sub = when {
-                        state.inPeriod -> tr("Règles en cours", "Period in progress")
-                        state.daysLate > 0 -> tr("${Format.days(state.daysLate)} de retard", "${Format.days(state.daysLate)} late")
-                        state.daysUntilNext <= 1 -> tr("Règles très bientôt", "Period very soon")
-                        else -> tr("Prochaines règles vers le ${Format.dayMonth(state.next.start)}", "Next period around ${Format.dayMonth(state.next.start)}")
+                        state.inPeriod -> tr("Règles en cours", "Period in progress", pl = "Trwa miesiączka", uk = "Місячні тривають", es = "Regla en curso", de = "Periode läuft")
+                        state.daysLate > 0 -> tr("${Format.days(state.daysLate)} de retard", "${Format.days(state.daysLate)} late", pl = "${Format.days(state.daysLate)} spóźnienia", uk = "Затримка: ${Format.days(state.daysLate)}", es = "${Format.days(state.daysLate)} de retraso", de = "${Format.days(state.daysLate)} verspätet")
+                        state.daysUntilNext <= 1 -> tr("Règles très bientôt", "Period very soon", pl = "Miesiączka już wkrótce", uk = "Місячні зовсім скоро", es = "Regla muy pronto", de = "Periode sehr bald")
+                        else -> tr("Prochaines règles vers le ${Format.dayMonth(state.next.start)}", "Next period around ${Format.dayMonth(state.next.start)}", pl = "Następna miesiączka około ${Format.dayMonth(state.next.start)}", uk = "Наступні місячні близько ${Format.dayMonth(state.next.start)}", es = "Próxima regla hacia el ${Format.dayMonth(state.next.start)}", de = "Nächste Periode um den ${Format.dayMonth(state.next.start)}")
                     }
                     head to sub
                 }
-                else -> "Lunaison" to tr("Noter mes dernières règles", "Log my last period")
+                else -> "Lunaison" to tr("Noter mes dernières règles", "Log my last period", pl = "Zanotuj ostatnią miesiączkę", uk = "Записати останні місячні", es = "Anotar mi última regla", de = "Letzte Periode eintragen")
             }
 
             val launchIntent = Intent(context, MainActivity::class.java)

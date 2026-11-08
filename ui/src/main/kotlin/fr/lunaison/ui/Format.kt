@@ -29,6 +29,8 @@ object Format {
         val weekday: DateTimeFormatter = DateTimeFormatter.ofPattern(weekday, locale)
         val monthYear: DateTimeFormatter = DateTimeFormatter.ofPattern(monthYear, locale)
         val dayOfWeek: DateTimeFormatter = DateTimeFormatter.ofPattern(dayOfWeek, locale)
+        /** Initiale autonome du jour (L, M, M… / M, T, W…), données CLDR de la langue. */
+        val narrowDay: DateTimeFormatter = DateTimeFormatter.ofPattern("ccccc", locale)
     }
 
     private val current: Formatters
@@ -40,6 +42,8 @@ object Format {
             Language.ES -> spanish
             Language.DE -> german
         }
+
+    fun narrowWeekday(date: LocalDate): String = date.format(current.narrowDay).uppercase()
 
     fun dayMonth(date: LocalDate): String = date.format(current.dayMonth)
 
