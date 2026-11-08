@@ -68,7 +68,6 @@ import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.DayLog
-import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -832,15 +831,7 @@ private fun RecentDaysStrip(
                 val hasBleeding = log.flow?.isBleeding == true
                 val hasOtherLog = !log.isEmpty && !hasBleeding
 
-                val shortWeekday = when (date.dayOfWeek) {
-                    DayOfWeek.MONDAY -> tr("L", "M", "P", "П", "L", "M")
-                    DayOfWeek.TUESDAY -> tr("M", "T", "W", "В", "M", "D")
-                    DayOfWeek.WEDNESDAY -> tr("M", "W", "Ś", "С", "X", "M")
-                    DayOfWeek.THURSDAY -> tr("J", "T", "C", "Ч", "J", "D")
-                    DayOfWeek.FRIDAY -> tr("V", "F", "P", "П", "V", "F")
-                    DayOfWeek.SATURDAY -> tr("S", "S", "S", "С", "S", "S")
-                    DayOfWeek.SUNDAY -> tr("D", "S", "N", "Н", "D", "S")
-                }
+                val shortWeekday = Format.narrowWeekday(date)
 
                 val containerColor = when {
                     isToday -> colors.primaryContainer
