@@ -6,7 +6,7 @@
 
 A free and open source menstrual cycle tracker, with no account. To log your periods, symptoms and mood, understand what is happening in each phase, know when your next period is coming, and let your partner know if you wish.
 
-Lunaison is a free Android app, open source (GPL-3.0), with no ads, no trackers and **no Internet access**. Everything stays on the phone.
+Lunaison is a free Android app, open source (MPL-2.0), with no ads, no trackers and **no Internet access**. Everything stays on the phone.
 
 **[Lunaison website](https://relthdrarxash.github.io/lunaison/en/)** · **[Google Play](https://play.google.com/store/apps/details?id=fr.lunaison)** · **[Download APK](https://github.com/Relthdrarxash/lunaison/releases/latest)** · [For health professionals](https://relthdrarxash.github.io/lunaison/en/professionals.html) · [Medical evidence](https://relthdrarxash.github.io/lunaison/en/evidence.html) · [Privacy](https://relthdrarxash.github.io/lunaison/en/privacy.html)
 
@@ -99,9 +99,7 @@ Features that have been studied but not yet built, such as importing your histor
 
 ## Contact and license
 
-Contact: [pilmil.studio@proton.me](mailto:pilmil.studio@proton.me). Distributed under the [GNU GPL v3.0](LICENSE) license.
-
-An [additional permission](LICENSE-EXCEPTION.md) (GPL section 7) allows distribution through app stores, including the Apple App Store, as long as the source code remains available under the same license.
+Contact: [pilmil.studio@proton.me](mailto:pilmil.studio@proton.me). Distributed under the [Mozilla Public License 2.0](LICENSE) (MPL-2.0): you can use, study, modify and redistribute it; files you modify must stay under the same license, with their source code.
 
 ## A note on development
 
