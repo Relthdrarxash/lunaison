@@ -864,12 +864,12 @@ fun HormoneCurvesDiagram() {
             HormoneLegendItem(
                 color = Color(0xFF2E7D5E),
                 name = tr("Œstrogènes (Ligne continue)", "Estrogen (Solid line)"),
-                role = tr("Pic juste avant l'ovulation. Stimule la régénération du nid utérin (endomètre), éclaircit la glaire et soutient l'énergie.", "Peaks right before ovulation. Stimulates uterine lining growth, clarifies mucus and supports energy."),
+                role = tr("Pic pré-ovulatoire. Stimule le renouvellement de l'endomètre, fluidifie la glaire cervicale et soutient l'énergie.", "Peaks before ovulation. Stimulates endometrial renewal, thins cervical mucus and supports energy."),
             )
             HormoneLegendItem(
                 color = Color(0xFFC04E3A),
                 name = tr("Progestérone (Ligne tiretée)", "Progesterone (Dashed line)"),
-                role = tr("Pic au milieu de la phase lutéale (sécrétée par le corps jaune). Maintient le nid douillet prêt pour un embryon. Sa chute déclenche les règles.", "Peaks in mid-luteal phase (secreted by corpus luteum). Maintains lining for potential pregnancy. Its sharp drop triggers menstruation."),
+                role = tr("Pic en milieu de phase lutéale (sécrétée par le corps jaune). Maintient l'endomètre réceptif pour une éventuelle nidation. Sa chute déclenche les règles.", "Peaks in mid-luteal phase (secreted by corpus luteum). Maintains endometrial readiness for implantation. Its drop triggers menstruation."),
             )
             HormoneLegendItem(
                 color = Color(0xFFD49B24),
@@ -939,16 +939,16 @@ enum class UterusPart {
 }
 
 private fun uterusPartTitle(part: UterusPart): String = when (part) {
-    UterusPart.ENDOMETRIUM -> tr("L'endomètre (le nid douillet intérieur)", "The endometrium (the inner velvet nest)")
-    UterusPart.MYOMETRIUM -> tr("Le myomètre (le moteur musculaire)", "The myometrium (the muscular engine)")
-    UterusPart.CERVIX -> tr("Le col de l'utérus (le gardien protecteur)", "The cervix (the smart gatekeeper)")
-    UterusPart.TUBES -> tr("Les trompes de Fallope (le lieu de rencontre)", "The fallopian tubes (the meeting place)")
-    UterusPart.OVARIES -> tr("Les ovaires (les chefs d'orchestre)", "The ovaries (the hormone conductors)")
-    UterusPart.VAGINA -> tr("Le vagin (le couloir en accordéon)", "The vagina (the accordion hallway)")
+    UterusPart.ENDOMETRIUM -> tr("L'endomètre (muqueuse utérine)", "The endometrium (uterine lining)")
+    UterusPart.MYOMETRIUM -> tr("Le myomètre (paroi musculaire)", "The myometrium (muscular wall)")
+    UterusPart.CERVIX -> tr("Le col de l'utérus (zone de passage)", "The cervix (cervical canal)")
+    UterusPart.TUBES -> tr("Les trompes de Fallope (conduits utéro-ovariens)", "The fallopian tubes (uterine tubes)")
+    UterusPart.OVARIES -> tr("Les ovaires (glandes hormonales et reproductrices)", "The ovaries (hormonal and reproductive glands)")
+    UterusPart.VAGINA -> tr("Le vagin (canal musculaire élastique)", "The vagina (elastic muscular canal)")
 }
 
 private fun uterusPartChipLabel(part: UterusPart): String = when (part) {
-    UterusPart.ENDOMETRIUM -> tr("Endomètre (nid)", "Endometrium (nest)")
+    UterusPart.ENDOMETRIUM -> tr("Endomètre (muqueuse)", "Endometrium (lining)")
     UterusPart.MYOMETRIUM -> tr("Myomètre (muscle)", "Myometrium (muscle)")
     UterusPart.CERVIX -> tr("Col de l'utérus", "Cervix")
     UterusPart.TUBES -> tr("Trompes de Fallope", "Fallopian tubes")
@@ -958,54 +958,54 @@ private fun uterusPartChipLabel(part: UterusPart): String = when (part) {
 
 private fun uterusPartSummary(part: UterusPart): String = when (part) {
     UterusPart.ENDOMETRIUM -> tr(
-        "Un tapis de velours vivant qui tapisse l'intérieur de l'utérus. Chaque mois, sous l'effet des œstrogènes, il s'épaissit et se gorge de micro-vaisseaux pour préparer un nid douillet à une éventuelle grossesse. Si aucun ovule n'est fécondé, le corps n'en a plus besoin : cette couche de velours se détache doucement et s'évacue vers l'extérieur. C'est exactement cela, le sang des règles ! Ce n'est pas une blessure, c'est un fabuleux renouvellement mensuel de vos tissus.",
-        "A velvety living lining that carpets the inside of the uterus. Each month, spurred by estrogen, it thickens and fills with tiny blood vessels to prepare a cozy nest for a potential pregnancy. If fertilization does not happen, the body gently lets it go: this top layer detaches and flows outward. That is what your period is! It is not a wound—it is your body's healthy, regular tissue renewal."
+        "La muqueuse vivante qui tapisse la cavité interne de l'utérus. Chaque mois, sous l'effet des œstrogènes puis de la progestérone, elle s'épaissit et développe de fins vaisseaux sanguins pour préparer une éventuelle implantation embryonnaire (nidation). En l'absence de fécondation, la chute hormonale entraîne son décollement et son élimination : c'est le flux menstruel des règles. Il s'agit d'un processus naturel de renouvellement tissulaire.",
+        "The mucous membrane lining the inner uterine cavity. Each month, influenced by estrogen and progesterone, it thickens and develops micro-vessels in preparation for potential embryo implantation. If pregnancy does not occur, hormone decline causes this layer to shed and flow outward: this is menstruation. It is a natural process of regular tissue renewal."
     )
     UterusPart.MYOMETRIUM -> tr(
-        "Le muscle ultra-puissant qui constitue les parois de l'utérus. Pendant les règles, il se serre par vagues grâce à de petites molécules (les prostaglandines) pour aider le nid usé à se détacher et glisser dehors. Quand il se contracte fort, il écrase temporairement ses propres petits vaisseaux sanguins : privés brièvement d'oxygène, les tissus envoient un signal douloureux au cerveau. C'est exactement comme la crampe d'un coureur en plein sprint ! Une bouillotte chaude dilate les vaisseaux et soulage efficacement. En revanche, des douleurs qui clouent au lit ne sont pas normales et doivent faire penser à l'endométriose ou l'adénomyose.",
-        "The remarkably strong muscle that forms the thick walls of the uterus. During your period, it contracts in gentle waves using chemical signals (prostaglandins) to help clear out the old lining. When it squeezes tightly, it temporarily pinches its own tiny blood vessels: starved briefly of oxygen, the tissue sends a cramp signal to the brain, just like a runner's muscle cramp! A hot water bottle relaxes the muscle by restoring blood flow. But beware: pain that paralyzes your day is not normal and warrants a check for endometriosis or adenomyosis."
+        "L'épaisse paroi musculaire qui compose le corps de l'utérus. Pendant les règles, il effectue des contractions rythmées, déclenchées par les prostaglandines, pour faciliter l'évacuation de la muqueuse utérine. Lorsque ces contractions sont intenses, la compression temporaire des petits vaisseaux sanguins réduit brièvement l'apport en oxygène des tissus, provoquant la sensation de crampe. La chaleur (bouillotte, bain tiède) soulage en détendant les fibres musculaires. En revanche, des douleurs invalidantes qui empêchent les activités quotidiennes ne sont pas normales et justifient un avis médical (suspicion d'endométriose ou d'adénomyose).",
+        "The thick muscular wall that forms the body of the uterus. During menstruation, it contracts in rhythmic waves triggered by prostaglandins to help shed the uterine lining. Strong contractions can temporarily compress local micro-vessels, briefly reducing oxygen delivery and causing cramp pain. Applying gentle heat relaxes the muscle fibers. However, debilitating pain that disrupts daily activities is not normal and warrants medical evaluation for conditions such as endometriosis or adenomyosis."
     )
     UterusPart.CERVIX -> tr(
-        "Le passage circulaire qui relie le fond du vagin à l'utérus. Il fait office de gardien intelligent : la majeure partie du mois, son entrée est scellée par un bouchon épais et acide qui bloque les microbes extérieurs. Au moment de l'ovulation, il s'entrouvre et fabrique une glaire fluide et glissante qui sert de toboggan pour aider les spermatozoïdes à passer. Pendant les règles, il s'assouplit juste assez pour laisser couler le sang vers la sortie.",
-        "The circular passage connecting the deep end of the vagina to the uterus. It acts like an intelligent security guard: most of the month, its canal is tightly closed by a thick, acidic mucus plug that blocks harmful bacteria. Around ovulation, it softens, opens, and secretes slippery, nourishing mucus to guide sperm upward. During periods, it loosens just enough to let menstrual blood flow safely out."
+        "La portion cylindrique inférieure reliant la cavité utérine au fond du vagin. Il assure un rôle protecteur et fonctionnel : la majeure partie du cycle, son canal est scellé par un bouchon muqueux dense et acide qui fait obstacle aux bactéries extérieures. À l'approche de l'ovulation, il s'assouplit et produit une glaire limpide et fluide facilitant le passage des spermatozoïdes. Pendant les règles, son orifice s'entrouvre légèrement pour laisser s'écouler le flux menstruel.",
+        "The lower cylindrical portion of the uterus connecting the uterine cavity to the upper vagina. It provides both protection and guidance: during most of the cycle, its canal is closed by thick, acidic mucus blocking bacterial entry. Near ovulation, it softens and secretes clear, fluid mucus facilitating sperm passage. During menstruation, it slightly relaxes to allow menstrual flow to pass."
     )
     UterusPart.TUBES -> tr(
-        "Deux fins tuyaux souples de 10 à 12 cm qui relient l'utérus aux ovaires. Leurs extrémités s'évasent en petites franges mobiles qui caressent l'ovaire pour attraper l'ovule au vol dès qu'il sort. C'est dans le creux de la trompe qu'a lieu la grande rencontre amoureuse : si un spermatozoïde féconde l'ovule, c'est ici que tout commence ! De minuscules cils vibratiles font ensuite glisser l'ovule vers l'utérus comme sur un tapis roulant.",
-        "Two delicate, flexible channels (10 to 12 cm long) linking each ovary to the uterus. Their outer ends bloom into soft, waving fingers that gently brush over the ovary to scoop up the egg at ovulation. The tube is the true meeting place: if a sperm meets the egg, fertilization begins right here! Microscopic cilia then nudge the egg down toward the uterus like a gentle conveyor belt."
+        "Deux fins conduits musculo-membraneux d'environ 10 à 12 cm reliant les ovaires à l'utérus. Leurs pavillons bordés de franges mobiles (les fimbriae) captent l'ovocyte dès son expulsion de l'ovaire. C'est dans le tiers externe de la trompe qu'a lieu la fécondation si un spermatozoïde rencontre l'ovule. Des micro-cils vibratiles et des mouvements péristaltiques acheminent ensuite l'ovocyte ou l'embryon vers la cavité utérine.",
+        "Two delicate channels (10 to 12 cm long) linking each ovary to the uterus. Their flared outer ends, fringed with mobile fingers (fimbriae), capture the released egg at ovulation. Fertilization occurs in the outer portion of the tube when sperm is present. Microscopic cilia and gentle muscular contractions then transport the egg or embryo toward the uterine cavity."
     )
     UterusPart.OVARIES -> tr(
-        "Deux petites glandes en forme d'amande situées de chaque côté. Vous y portez dès votre naissance la réserve de toute votre vie : des milliers de graines d'ovules au repos. Chaque mois, une petite équipe se réveille et le plus vaillant libère son ovule (l'ovulation). Les ovaires sont aussi vos chefs d'orchestre hormonaux : ils diffusent les œstrogènes (énergie, créativité, reconstruction de la muqueuse) puis la progestérone (apaisement et maintien du nid douillet).",
-        "Two almond-sized glands nestled on each side of the uterus. You are born holding your entire lifetime reserve inside them: thousands of dormant eggs tucked in tiny sacs. Each month, a cohort awakens and the strongest releases its egg (ovulation). The ovaries are also your master hormonal conductors: they release estrogen (energy, vitality, lining growth) followed by progesterone (calm, lining support)."
+        "Deux glandes en forme d'amande situées de chaque côté de l'utérus. Dès la naissance, elles renferment la réserve complète d'ovocytes sous forme de follicules au repos. À chaque cycle, une cohorte de follicules entre en phase de maturation sous contrôle hormonal, et le plus développé libère un ovule (ovulation). Les ovaires sont aussi les principaux producteurs d'hormones sexuelles : les œstrogènes (croissance des tissus et vitalité) et la progestérone (stabilisation de la muqueuse utérine).",
+        "Two almond-shaped glands nestled on either side of the uterus. From birth, they contain the complete lifetime reserve of egg cells in dormant follicles. Each cycle, a cohort of follicles matures under hormonal cues, and the leading follicle releases an egg (ovulation). The ovaries also produce primary sex hormones: estrogen (supporting tissue growth and vitality) and progesterone (stabilizing the uterine lining)."
     )
     UterusPart.VAGINA -> tr(
-        "Le conduit musculaire souple qui relie la vulve extérieure au col de l'utérus. Au repos, ce n'est pas un tuyau ouvert ou béant : ses parois douces se touchent et se replient comme un accordéon. Cela lui permet de s'étirer sans douleur pour accueillir un tampon, une coupe menstruelle ou lors d'un rapport, puis de reprendre sa taille initiale. Il est autonettoyant grâce à de bonnes bactéries amies (les lactobacilles) : il n'a jamais besoin d'être lavé à l'intérieur !",
-        "The flexible, elastic muscular canal connecting the outside vulva to the cervix. At rest, it is not an open hollow tunnel: its soft walls rest gently together like an accordion. This allows it to stretch effortlessly for a tampon, menstrual cup, or sexual intimacy, and naturally snap back to shape. It is entirely self-cleaning thanks to friendly protective bacteria (lactobacilli)—it never needs douching or internal washing!"
+        "Le canal fibro-musculaire souple reliant la vulve au col de l'utérus. Au repos, ses parois antérieures et postérieures sont naturellement en contact. Sa muqueuse pourvue de plis transversaux lui confère une grande souplesse et une capacité d'extension indolore, lui permettant d'accueillir tampons, coupes menstruelles ou rapports sexuels, ainsi que le passage du bébé lors de l'accouchement, avant de retrouver ses dimensions de repos. Son milieu acide protecteur est préservé par une flore bactérienne équilibrée (lactobacilles), sans nécessiter de lavage interne.",
+        "The flexible muscular canal connecting the vulva to the cervix. At rest, its anterior and posterior walls naturally rest against each other. Transverse mucosal folds provide great elasticity, allowing it to stretch comfortably to accommodate tampons, menstrual cups, or intimacy, as well as childbirth, before returning to resting dimensions. Its protective acidic ecosystem is maintained by balanced flora (lactobacilli), requiring no internal washing."
     )
 }
 
 private fun cyclePhaseName(day: Int): String = when (day) {
-    in 1..5 -> tr("1. Le grand nettoyage (Les règles)", "1. The fresh reset (Period)")
-    in 6..13 -> tr("2. Le renouveau (Folliculaire)", "2. The rebuilding (Follicular)")
-    14 -> tr("3. Le grand saut (L'ovulation)", "3. The fertile leap (Ovulation)")
-    else -> tr("4. Le cocon douillet (Lutéale)", "4. The cozy cocoon (Luteal)")
+    in 1..5 -> tr("1. Phase menstruelle (Règles)", "1. Menstrual phase (Period)")
+    in 6..13 -> tr("2. Phase folliculaire (Pré-ovulation)", "2. Follicular phase (Pre-ovulation)")
+    14 -> tr("3. Phase ovulatoire (Ovulation)", "3. Ovulatory phase (Ovulation)")
+    else -> tr("4. Phase lutéale (Post-ovulation)", "4. Luteal phase (Post-ovulation)")
 }
 
 private fun cyclePhaseDescription(day: Int): String = when (day) {
     in 1..5 -> tr(
-        "J1 à J5 — Le premier jour de saignement rouge marque le Jour 1 du cycle ! En l'absence de grossesse, les hormones redescendent : le corps élimine le nid de velours utérin qui n'a pas servi. Le muscle de l'utérus se contracte par petites vagues pour aider à tout évacuer. C'est une vraie remise à zéro bienfaisante pour repartir sur des bases neuves.",
-        "D1 to D5 — The first day of red flow is Day 1 of your whole cycle! When no pregnancy occurs, hormone levels drop: your body gently sheds the unused velvet lining. The uterine muscle contracts in waves to clear it out through the cervix. It is a completely natural, healthy monthly reset."
+        "J1 à J5 — Le premier jour de saignement rouge vif marque le Jour 1 du cycle. En l'absence de nidation, les taux d'hormones chutent : la couche superficielle de la muqueuse utérine se détache et s'évacue. Les contractions régulières du myomètre favorisent cette élimination. Ce renouvellement marque le départ d'un nouveau cycle physiologique.",
+        "D1 to D5 — The first day of bright red flow marks Day 1 of the cycle. When no implantation occurs, hormone levels drop: the superficial uterine lining sheds and flows outward. Regular contractions of the uterine muscle facilitate this shedding, initiating a fresh cycle of tissue renewal."
     )
     in 6..13 -> tr(
-        "J6 à J13 — Un follicule grandit dans l'ovaire pour faire mûrir un ovule. Ce follicule fabrique des œstrogènes, les grandes hormones de l'énergie et de la vitalité : elles rebâtissent une muqueuse utérine toute neuve et épaisse, tout en vous apportant souvent un regain de dynamisme, un moral au beau fixe et une peau plus éclatante !",
-        "D6 to D13 — In one ovary, a follicle matures an egg while pouring out estrogen, the hormone of vitality. Estrogen reconstructs a brand-new, plush uterine lining while often providing an energy boost, mental clarity, and glowing skin!"
+        "J6 à J13 — Un follicule grandit dans l'un des ovaires pour mener un ovocyte à maturité. Il sécrète des œstrogènes en quantité progressive, stimulant l'épaississement de la muqueuse utérine et accompagnant souvent une période d'énergie et de vitalité.",
+        "D6 to D13 — A follicle develops inside one ovary to bring an egg to maturity. It secretes increasing amounts of estrogen, rebuilding the uterine lining while often supporting energy and overall vitality."
     )
     14 -> tr(
-        "J14 — Au sommet d'un pic hormonal rapide, le follicule libère son ovule mûr, happé par la trompe. L'ovule ne vit que 12 à 24 heures ! Pour lui ouvrir la voie, le col fabrique une glaire abondante, transparente et élastique comme du blanc d'œuf cru : elle protège et propulse les spermatozoïdes comme sur une patinoire.",
-        "D14 — Sparked by a swift hormone surge, the ovary releases its mature egg, caught by the sweeping tube. The egg lives for just 12 to 24 hours! To pave the way, the cervix secretes clear, slippery mucus stretchy like raw egg white, guiding and nourishing sperm like an ice rink."
+        "J14 — Sous l'effet d'un pic soudain d'hormone lutéinisante (LH), le follicule dominant libère son ovule mûr, capté par la trompe. L'ovule est fécondable pendant 12 à 24 heures. Pour optimiser le passage des spermatozoïdes, le col sécrète une glaire cervicale limpide, fluide et étirable.",
+        "D14 — Triggered by a rapid surge in luteinizing hormone (LH), the mature follicle releases its egg, captured by the fallopian tube. The egg remains viable for fertilization for 12 to 24 hours. The cervix produces clear, slippery, and stretchy mucus to facilitate sperm transit."
     )
     else -> tr(
-        "J15 à J28 — Le follicule vide s'est transformé en « corps jaune », une fabrique éphémère de progestérone. Cette hormone apaise et gorge la muqueuse de nutriments comme un oreiller bien dodu. Si l'ovule n'est pas fécondé, cette usine s'arrête, les hormones chutent, le moral peut temporairement osciller (SPM), et un nouveau cycle va pouvoir démarrer !",
-        "D15 to D28 — The empty follicle transforms into a temporary wonder-gland called the corpus luteum, producing progesterone. This hormone fluffs the uterine lining like a soft pillow. If no pregnancy begins, hormone levels tumble, mood may briefly wobble (PMS), and a fresh cycle is ready to start!"
+        "J15 à J28 — Le follicule libéré s'est transformé en corps jaune et sécrète de la progestérone. Cette hormone enrichit la muqueuse utérine en glycogène et en vaisseaux sanguins, la rendant propice à une éventuelle nidation. En l'absence de fécondation, le corps jaune régresse, les hormones diminuent, ce qui peut influencer l'humeur ou l'énergie (syndrome prémenstruel), avant l'arrivée du cycle suivant.",
+        "D15 to D28 — The follicle transforms into the corpus luteum, secreting progesterone. This hormone enriches the uterine lining with nutrients and blood vessels for potential embryo implantation. Without fertilization, the corpus luteum regresses, hormone levels decline—sometimes prompting premenstrual symptoms (PMS)—before the next cycle begins."
     )
 }
 
