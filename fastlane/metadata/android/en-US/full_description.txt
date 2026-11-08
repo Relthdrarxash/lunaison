@@ -1,6 +1,6 @@
 Lunaison is an intimate menstrual cycle and symptom tracker designed for everyone experiencing cycles, from teenagers to adults and peri-menopause.
 
-Fully open-source (GPL-3.0), free, ad-free, account-free, and 100% offline: Lunaison requires zero network permissions in its Android manifest. Your private reproductive health data is stored strictly on your device and is never uploaded anywhere.
+Fully open-source (MPL-2.0), free, ad-free, account-free, and 100% offline: Lunaison requires zero network permissions in its Android manifest. Your private reproductive health data is stored strictly on your device and is never uploaded anywhere.
 
 CYCLE TRACKING AND PHYSIOLOGY
 • Menstrual calendar with cycle phases: menstruation, follicular phase, estimated ovulation, luteal phase.

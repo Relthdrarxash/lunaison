@@ -13,8 +13,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -65,7 +68,13 @@ private enum class Tab(
 }
 
 @Composable
-fun LunaisonApp(repository: LunaisonRepository, versionName: String) {
+fun LunaisonApp(
+    repository: LunaisonRepository,
+    versionName: String,
+    /** « log » : ouvrir la saisie du jour (rappel du soir), une fois l'appli déverrouillée. */
+    link: String? = null,
+    onLinkHandled: () -> Unit = {},
+) {
     val logs by repository.logs.collectAsStateWithLifecycle(initialValue = null)
     val settings by repository.settings.collectAsStateWithLifecycle(initialValue = null)
     // La date change à minuit sans redémarrer l'appli.
@@ -77,6 +86,8 @@ fun LunaisonApp(repository: LunaisonRepository, versionName: String) {
     }
     val scope = rememberCoroutineScope()
     var unlocked by rememberSaveable { mutableStateOf(false) }
+    // Fin d'onboarding avec « Noter ma journée maintenant » : même chemin qu'un lien de notification.
+    var localLink by rememberSaveable { mutableStateOf<String?>(null) }
 
     val currentLogs = logs
     val currentSettings = settings
@@ -102,6 +113,12 @@ fun LunaisonApp(repository: LunaisonRepository, versionName: String) {
                     repository.updateSettings { it.copy(onboarded = true, baseline = baseline) }
                 }
             },
+            onFinishAndLog = { baseline ->
+                localLink = LINK_LOG
+                scope.launch {
+                    repository.updateSettings { it.copy(onboarded = true, baseline = baseline) }
+                }
+            },
             onFinishAsPartner = { snapshot ->
                 scope.launch {
                     repository.updateSettings {
@@ -118,8 +135,19 @@ fun LunaisonApp(repository: LunaisonRepository, versionName: String) {
 
     val state = remember(currentLogs, currentSettings, today) { AppState.compute(currentLogs, currentSettings, today) }
     val actions = remember(repository) { RepositoryActions(repository, scope) }
-    MainScaffold(state, actions, versionName)
+    MainScaffold(
+        state,
+        actions,
+        versionName,
+        link = link ?: localLink,
+        onLinkHandled = {
+            localLink = null
+            onLinkHandled()
+        },
+    )
 }
+
+const val LINK_LOG = "log"
 
 /** Ce que les écrans peuvent faire. Une interface, pour afficher les écrans sans base de données dans les captures. */
 interface Actions {
@@ -158,14 +186,30 @@ class RepositoryActions(private val repository: LunaisonRepository, private val 
 }
 
 @Composable
-private fun MainScaffold(state: AppState, actions: Actions, versionName: String) {
+private fun MainScaffold(
+    state: AppState,
+    actions: Actions,
+    versionName: String,
+    link: String? = null,
+    onLinkHandled: () -> Unit = {},
+) {
     val navController = rememberNavController()
     val backStack by navController.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
     val showBar = Tab.entries.any { it.route == route }
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    // Lien de notification : la navigation n'est prête qu'une fois la première destination affichée.
+    LaunchedEffect(link, route == null) {
+        if (link == null || route == null) return@LaunchedEffect
+        if (link == LINK_LOG) navController.navigate("jour/${state.today}") { launchSingleTop = true }
+        onLinkHandled()
+    }
+    val savedMessage = tr("Journée enregistrée", "Day saved", pl = "Dzień zapisany", uk = "День збережено", es = "Día guardado", de = "Tag gespeichert")
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
             if (showBar) {
                 val navLabel = tr(
@@ -238,8 +282,11 @@ private fun MainScaffold(state: AppState, actions: Actions, versionName: String)
                     onSave = { log ->
                         actions.save(log)
                         navController.popBackStack()
+                        // Confirmation discrète : la saisie est bien prise en compte.
+                        scope.launch { snackbar.showSnackbar(savedMessage) }
                     },
                     onBack = { navController.popBackStack() },
+                    onPersist = { log -> actions.save(log) },
                 )
             }
             composable("fiche/{id}") { entry ->
