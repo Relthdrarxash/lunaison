@@ -7,6 +7,8 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,6 +33,10 @@ import fr.lunaison.ui.AppState
 import fr.lunaison.ui.ArticleScreen
 import fr.lunaison.ui.CalendarScreen
 import fr.lunaison.ui.HomeScreen
+import fr.lunaison.ui.HormoneCurvesDiagram
+import fr.lunaison.ui.InteractiveUterusDiagram
+import fr.lunaison.ui.UterusPart
+import fr.lunaison.ui.VulvaDiagram
 import fr.lunaison.ui.LearnScreen
 import fr.lunaison.ui.LogScreen
 import fr.lunaison.ui.OnboardingScreen
@@ -131,6 +137,8 @@ abstract class LocalizedScreens(private val locale: Locale) {
         shot("journee") { LogScreen(state, Sample.today, periodStart = false, onSave = {}, onBack = {}) }
         shot("calendrier") { CalendarScreen(state, onDay = {}) }
         shot("comprendre") { LearnScreen(onArticle = {}) }
+        shot("fiche_cycle") { ArticleScreen("cycle", onBack = {}) }
+        shot("fiche_cycle_sombre", dark = true) { ArticleScreen("cycle", onBack = {}) }
         shot("fiche_douleurs") { ArticleScreen("douleurs", onBack = {}) }
         shot("partage") { ShareScreen(state, NoActions, onBack = {}, onArticle = {}) }
         shot("reglages") { SettingsScreen(state, NoActions, versionName = "0.1.0", onArticle = {}) }
@@ -140,3 +148,36 @@ abstract class LocalizedScreens(private val locale: Locale) {
 class ScreensTest : LocalizedScreens(Locale.FRENCH)
 
 class ScreensEnTest : LocalizedScreens(Locale.ENGLISH)
+
+/** Schémas de la fiche « cycle », sur un écran très haut pour les voir en entier (non publié dans la doc). */
+class DiagrammesTest {
+    init {
+        Locale.setDefault(Locale.FRENCH)
+    }
+
+    @get:Rule
+    val paparazzi = Paparazzi(
+        deviceConfig = DeviceConfig.PIXEL_5.copy(locale = "fr", screenHeight = 2600),
+        maxPercentDifference = 0.1,
+    )
+
+    private fun shot(name: String, dark: Boolean = false, content: @Composable () -> Unit) {
+        paparazzi.snapshot(name) {
+            LunaisonTheme(dark = dark) {
+                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(16.dp)) { content() }
+            }
+        }
+    }
+
+    @Test
+    fun captures() {
+        shot("vulve") { VulvaDiagram() }
+        shot("vulve_sombre", dark = true) { VulvaDiagram() }
+        shot("hormones") { HormoneCurvesDiagram() }
+        shot("hormones_sombre", dark = true) { HormoneCurvesDiagram() }
+        shot("uterus_j14") { InteractiveUterusDiagram() }
+        shot("uterus_j14_sombre", dark = true) { InteractiveUterusDiagram() }
+        shot("uterus_j2_col", dark = false) { InteractiveUterusDiagram(UterusPart.CERVIX, 2) }
+        shot("uterus_j21_ovaires_sombre", dark = true) { InteractiveUterusDiagram(UterusPart.OVARIES, 21) }
+    }
+}

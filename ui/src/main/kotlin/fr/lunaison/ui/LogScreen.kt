@@ -1,6 +1,10 @@
 package fr.lunaison.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -56,6 +61,8 @@ fun LogScreen(
     periodStart: Boolean,
     onSave: (DayLog) -> Unit,
     onBack: () -> Unit,
+    /** Enregistre sans quitter l'écran (changement de jour avec des modifications en cours). */
+    onPersist: (DayLog) -> Unit = {},
 ) {
     var date by remember { mutableStateOf(initialDate) }
     var confirmClear by rememberSaveable { mutableStateOf(false) }
@@ -66,11 +73,21 @@ fun LogScreen(
         mutableStateOf(if (periodStart && date == initialDate && saved.flow?.isBleeding != true) saved.copy(flow = Flow.MEDIUM) else saved)
     }
 
+    // Modifications non enregistrées : on demande avant de les perdre (retour ou changement de jour).
+    val dirty = draft != savedLog
+    var pendingLeave by remember { mutableStateOf<(() -> Unit)?>(null) }
+    fun leave(then: () -> Unit) {
+        if (dirty) pendingLeave = then else then()
+    }
+    BackHandler { leave(onBack) }
+
+    Column(Modifier.fillMaxSize()) {
+    Box(Modifier.weight(1f)) {
     Page {
-        PageTitle(tr("Ma journée", "My day"), onBack = onBack)
+        PageTitle(tr("Ma journée", "My day", pl = "Mój dzień", uk = "Мій день", es = "Mi día", de = "Mein Tag"), onBack = { leave(onBack) })
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { date = date.minusDays(1) }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = tr("Jour précédent", "Previous day"))
+            IconButton(onClick = { leave { date = date.minusDays(1) } }) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = tr("Jour précédent", "Previous day", pl = "Poprzedni dzień", uk = "Попередній день", es = "Día anterior", de = "Vorheriger Tag"))
             }
             Text(
                 Format.relativeDay(date, state.today),
@@ -78,24 +95,24 @@ fun LogScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f),
             )
-            IconButton(onClick = { date = date.plusDays(1) }, enabled = date.isBefore(state.today)) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = tr("Jour suivant", "Next day"))
+            IconButton(onClick = { leave { date = date.plusDays(1) } }, enabled = date.isBefore(state.today)) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = tr("Jour suivant", "Next day", pl = "Następny dzień", uk = "Наступний день", es = "Día siguiente", de = "Nächster Tag"))
             }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionTitle(tr("Règles", "Period"))
+            SectionTitle(tr("Règles", "Period", pl = "Miesiączka", uk = "Місячні", es = "Regla", de = "Periode"))
             ChoiceChips(
                 options = Flow.entries,
                 label = { it.label },
                 isSelected = { draft.flow == it },
                 onToggle = { draft = draft.copy(flow = if (draft.flow == it) null else it) },
             )
-            Muted(tr("De simples traces ne marquent pas le début des règles.", "Spotting alone does not mark the start of a period."))
+            Muted(tr("De simples traces ne marquent pas le début des règles.", "Spotting alone does not mark the start of a period.", pl = "Samo plamienie nie oznacza początku miesiączki.", uk = "Лише мажучі виділення не означають початку місячних.", es = "Un simple manchado no marca el inicio de la regla.", de = "Schmierblutung allein markiert nicht den Beginn der Periode."))
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionTitle(tr("Douleur", "Pain"))
+            SectionTitle(tr("Douleur", "Pain", pl = "Ból", uk = "Біль", es = "Dolor", de = "Schmerz"))
             ChoiceChips(
                 options = Pain.entries,
                 label = { it.label },
@@ -123,7 +140,7 @@ fun LogScreen(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionTitle(tr("Symptômes", "Symptoms"))
+            SectionTitle(tr("Symptômes", "Symptoms", pl = "Objawy", uk = "Симптоми", es = "Síntomas", de = "Symptome"))
             ChoiceChips(
                 options = visibleSymptoms,
                 label = { it.label },
@@ -132,7 +149,7 @@ fun LogScreen(
             )
             if (visibleSymptoms.size < Symptom.entries.size) {
                 LunaButton(
-                    tr("Plus de symptômes (endométriose, bouffées, sommeil…)", "More symptoms (endometriosis, hot flashes, sleep…)"),
+                    tr("Plus de symptômes (endométriose, bouffées, sommeil…)", "More symptoms (endometriosis, hot flashes, sleep…)", pl = "Więcej objawów (endometrioza, uderzenia gorąca, sen…)", uk = "Більше симптомів (ендометріоз, припливи, сон…)", es = "Más síntomas (endometriosis, sofocos, sueño…)", de = "Mehr Symptome (Endometriose, Hitzewallungen, Schlaf…)"),
                     onClick = { showAllSymptoms = true },
                     style = LunaButtonStyle.Quiet,
                 )
@@ -140,7 +157,7 @@ fun LogScreen(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionTitle(tr("Humeur", "Mood"))
+            SectionTitle(tr("Humeur", "Mood", pl = "Nastrój", uk = "Настрій", es = "Estado de ánimo", de = "Stimmung"))
             ChoiceChips(
                 options = Mood.entries,
                 label = { it.label },
@@ -155,7 +172,7 @@ fun LogScreen(
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val medName = state.settings.reminders.medicationLabel.trim()
-            val title = if (medName.isNotEmpty()) tr("Pilule & contraception ($medName)", "Pill & contraception ($medName)") else tr("Pilule & contraception", "Pill & contraception")
+            val title = if (medName.isNotEmpty()) tr("Pilule & contraception ($medName)", "Pill & contraception ($medName)", pl = "Tabletka i antykoncepcja ($medName)", uk = "Таблетка й контрацепція ($medName)", es = "Píldora y anticoncepción ($medName)", de = "Pille & Verhütung ($medName)") else tr("Pilule & contraception", "Pill & contraception", pl = "Tabletka i antykoncepcja", uk = "Таблетка й контрацепція", es = "Píldora y anticoncepción", de = "Pille & Verhütung")
             SectionTitle(title)
             ChoiceChips(
                 options = PillStatus.entries,
@@ -172,7 +189,7 @@ fun LogScreen(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SectionTitle(tr("Vie intime & désir", "Intimacy & desire"))
+            SectionTitle(tr("Vie intime & désir", "Intimacy & desire", pl = "Intymność i pożądanie", uk = "Інтимність і бажання", es = "Intimidad y deseo", de = "Intimität & Lust"))
             ChoiceChips(
                 options = IntimacyKind.entries,
                 label = { it.label },
@@ -189,10 +206,10 @@ fun LogScreen(
 
         val hasMeasurements = draft.weight != null || draft.medications.isNotEmpty() || draft.basalTemperature != null || draft.mucus != null
         val toggleLabel = if (showMeasurements) {
-            tr("Masquer les options secondaires", "Hide secondary options")
+            tr("Masquer les options secondaires", "Hide secondary options", pl = "Ukryj dodatkowe opcje", uk = "Сховати додаткові параметри", es = "Ocultar opciones secundarias", de = "Weitere Optionen ausblenden")
         } else {
-            val badge = if (hasMeasurements) tr(" (notées)", " (logged)") else ""
-            tr("Plus d'options : poids, température, traitements…$badge", "More options: weight, temperature, medications…$badge")
+            val badge = if (hasMeasurements) tr(" (notées)", " (logged)", pl = " (zanotowane)", uk = " (записано)", es = " (anotado)", de = " (eingetragen)") else ""
+            tr("Plus d'options : poids, température, traitements…$badge", "More options: weight, temperature, medications…$badge", pl = "Więcej opcji: waga, temperatura, leki…$badge", uk = "Більше параметрів: вага, температура, ліки…$badge", es = "Más opciones: peso, temperatura, medicamentos…$badge", de = "Mehr Optionen: Gewicht, Temperatur, Medikamente…$badge")
         }
         LunaButton(
             toggleLabel,
@@ -202,7 +219,7 @@ fun LogScreen(
 
         if (showMeasurements) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SectionTitle(tr("Médicaments pris", "Medications taken"))
+                SectionTitle(tr("Médicaments pris", "Medications taken", pl = "Przyjęte leki", uk = "Прийняті ліки", es = "Medicamentos tomados", de = "Eingenommene Medikamente"))
                 ChoiceChips(
                     options = MedicationKind.entries,
                     label = { it.label },
@@ -212,11 +229,11 @@ fun LogScreen(
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SectionTitle(tr("Poids du jour", "Today's weight"))
+                SectionTitle(tr("Poids du jour", "Today's weight", pl = "Dzisiejsza waga", uk = "Вага сьогодні", es = "Peso de hoy", de = "Heutiges Gewicht"))
                 val w = draft.weight
                 if (w == null) {
                     LunaButton(
-                        tr("Noter mon poids (kg)", "Log weight (kg)"),
+                        tr("Noter mon poids (kg)", "Log weight (kg)", pl = "Zanotuj wagę (kg)", uk = "Записати вагу (кг)", es = "Anotar el peso (kg)", de = "Gewicht eintragen (kg)"),
                         onClick = { draft = draft.copy(weight = 60.0f) },
                         style = LunaButtonStyle.Outlined,
                     )
@@ -233,7 +250,7 @@ fun LogScreen(
                         },
                     )
                     LunaButton(
-                        tr("Effacer le poids", "Clear weight"),
+                        tr("Effacer le poids", "Clear weight", pl = "Usuń wagę", uk = "Видалити вагу", es = "Borrar el peso", de = "Gewicht löschen"),
                         onClick = { draft = draft.copy(weight = null) },
                         style = LunaButtonStyle.Quiet,
                     )
@@ -241,7 +258,7 @@ fun LogScreen(
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SectionTitle(tr("Signes d'ovulation (glaire et température)", "Ovulation signs (mucus and temperature)"))
+                SectionTitle(tr("Signes d'ovulation (glaire et température)", "Ovulation signs (mucus and temperature)", pl = "Oznaki owulacji (śluz i temperatura)", uk = "Ознаки овуляції (слиз і температура)", es = "Signos de ovulación (flujo y temperatura)", de = "Eisprungzeichen (Schleim und Temperatur)"))
                 ChoiceChips(
                     options = CervicalMucus.entries,
                     label = { it.label },
@@ -251,7 +268,7 @@ fun LogScreen(
                 val temp = draft.basalTemperature
                 if (temp == null) {
                     LunaButton(
-                        tr("Noter ma température au réveil", "Log waking basal temperature"),
+                        tr("Noter ma température au réveil", "Log waking basal temperature", pl = "Zanotuj temperaturę po przebudzeniu", uk = "Записати базальну температуру після пробудження", es = "Anotar la temperatura basal al despertar", de = "Aufwachtemperatur eintragen"),
                         onClick = { draft = draft.copy(basalTemperature = 36.5f) },
                         style = LunaButtonStyle.Outlined,
                     )
@@ -268,7 +285,7 @@ fun LogScreen(
                         },
                     )
                     LunaButton(
-                        tr("Effacer la température", "Clear temperature"),
+                        tr("Effacer la température", "Clear temperature", pl = "Usuń temperaturę", uk = "Видалити температуру", es = "Borrar la temperatura", de = "Temperatur löschen"),
                         onClick = { draft = draft.copy(basalTemperature = null) },
                         style = LunaButtonStyle.Quiet,
                     )
@@ -279,12 +296,11 @@ fun LogScreen(
         OutlinedTextField(
             value = draft.note,
             onValueChange = { draft = draft.copy(note = it.take(500)) },
-            label = { Text(tr("Note personnelle (facultatif)", "Personal note (optional)")) },
+            label = { Text(tr("Note personnelle (facultatif)", "Personal note (optional)", pl = "Notatka osobista (opcjonalnie)", uk = "Особиста нотатка (необов’язково)", es = "Nota personal (opcional)", de = "Persönliche Notiz (optional)")) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 2,
         )
 
-        LunaButton(tr("Enregistrer", "Save"), onClick = { onSave(draft) }, icon = Icons.Filled.Check)
         if (!savedLog.isEmpty) {
             LunaButton(
                 tr(
@@ -300,6 +316,38 @@ fun LogScreen(
                 icon = Icons.Filled.Delete,
             )
         }
+    }
+    }
+    // Bouton fixe : enregistrer sans avoir à descendre en bas d'un long formulaire.
+    Surface(color = MaterialTheme.colorScheme.background, shadowElevation = 6.dp) {
+        LunaButton(
+            tr("Enregistrer", "Save", pl = "Zapisz", uk = "Зберегти", es = "Guardar", de = "Speichern"),
+            onClick = { onSave(draft) },
+            icon = Icons.Filled.Check,
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+        )
+    }
+    }
+
+    pendingLeave?.let { then ->
+        AlertDialog(
+            onDismissRequest = { pendingLeave = null },
+            title = { Text(tr("Enregistrer les modifications ?", "Save your changes?", pl = "Zapisać zmiany?", uk = "Зберегти зміни?", es = "¿Guardar los cambios?", de = "Änderungen speichern?")) },
+            text = { Text(tr("Ce que vous venez de noter n'est pas encore enregistré.", "What you just logged is not saved yet.", pl = "To, co właśnie zanotowałaś, nie jest jeszcze zapisane.", uk = "Те, що ви щойно записали, ще не збережено.", es = "Lo que acabas de anotar aún no está guardado.", de = "Was du gerade eingetragen hast, ist noch nicht gespeichert.")) },
+            confirmButton = {
+                TextButton(onClick = {
+                    pendingLeave = null
+                    onPersist(draft)
+                    then()
+                }) { Text(tr("Enregistrer", "Save", pl = "Zapisz", uk = "Зберегти", es = "Guardar", de = "Speichern")) }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    pendingLeave = null
+                    then()
+                }) { Text(tr("Ne pas enregistrer", "Discard", pl = "Odrzuć", uk = "Не зберігати", es = "Descartar", de = "Verwerfen")) }
+            },
+        )
     }
 
     if (confirmClear) {
