@@ -13,7 +13,7 @@ Les trois dépôts incluent déjà l'arborescence `fastlane/metadata/android/` (
 Categories:
   - Science & Education
   - Sports & Health
-License: GPL-3.0-or-later
+License: MPL-2.0
 AuthorName: Pilmil Studio
 AuthorEmail: pilmil.studio@proton.me
 WebSite: https://relthdrarxash.github.io/lunaison/
@@ -46,7 +46,7 @@ CurrentVersionCode: 10200
 Categories:
   - Science & Education
   - Sports & Health
-License: GPL-3.0-or-later
+License: MPL-2.0
 AuthorName: Pilmil Studio
 AuthorEmail: pilmil.studio@proton.me
 WebSite: https://relthdrarxash.github.io/sommelle/
@@ -79,7 +79,7 @@ CurrentVersionCode: 10200
 Categories:
   - Time
   - System
-License: GPL-3.0-or-later
+License: MPL-2.0
 AuthorName: Pilmil Studio
 AuthorEmail: pilmil.studio@proton.me
 WebSite: https://relthdrarxash.github.io/respire/

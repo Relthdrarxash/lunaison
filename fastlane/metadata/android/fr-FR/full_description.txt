@@ -1,6 +1,6 @@
 Lunaison est une application de suivi du cycle menstruel et des symptômes intimes, conçue pour toutes les personnes menstruées (adolescentes, adultes, péri-ménopause).
 
-Libre (GPL-3.0), gratuite, sans publicité, sans inscription et 100 % hors-ligne : Lunaison ne dispose d'aucune permission réseau dans son manifeste Android. Vos données gynécologiques et intimes sont stockées exclusivement sur votre téléphone et ne sont jamais transmises à aucun serveur.
+Libre (MPL-2.0), gratuite, sans publicité, sans inscription et 100 % hors-ligne : Lunaison ne dispose d'aucune permission réseau dans son manifeste Android. Vos données gynécologiques et intimes sont stockées exclusivement sur votre téléphone et ne sont jamais transmises à aucun serveur.
 
 CALENDRIER ET SUIVI PHYSIOLOGIQUE
 • Calendrier menstruel avec phases du cycle : règles, phase folliculaire, ovulation estimée, phase lutéale.
