@@ -1,6 +1,10 @@
 package fr.lunaison.ui
 
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,27 +15,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import fr.lunaison.core.content.InsightTexts
 import fr.lunaison.core.cycle.CycleInsights
 import fr.lunaison.core.cycle.CycleState
-import fr.lunaison.core.cycle.HealthReport
 import fr.lunaison.core.designsystem.ChoiceChips
 import fr.lunaison.core.designsystem.LunaButton
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
-import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.IntimacyKind
 import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.PillStatus
 import fr.lunaison.core.model.Symptom
 import fr.lunaison.core.model.tr
+import java.io.File
 import java.util.Locale
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** Rubriques personnalisables pouvant être incluses ou masquées lors du bilan médical. */
 enum class ReportSection(
@@ -72,6 +81,8 @@ fun HealthReportScreen(
         cycle?.let { CycleInsights.healthReport(state.logs, it, ageGroup) }
     }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var exporting by remember { mutableStateOf(false) }
 
     val logsLast90Days = remember(state.logs, state.today) {
         state.logs.filter { !it.date.isBefore(state.today.minusDays(90)) }
@@ -310,159 +321,48 @@ fun HealthReportScreen(
         }
 
         LunaButton(
-            tr("Partager ou exporter ce bilan", "Share or export this report"),
+            if (exporting) tr("Création du PDF...", "Creating the PDF...") else tr("Exporter en PDF", "Export as PDF"),
             onClick = {
-                val text = formatPlainReport(
-                    report = report,
-                    medicationLabel = state.settings.reminders.medicationLabel,
-                    logsLast90Days = logsLast90Days,
-                    sections = selectedSections,
-                )
-                val intent = Intent(Intent.ACTION_SEND)
-                    .setType("text/plain")
-                    .putExtra(Intent.EXTRA_SUBJECT, tr("Bilan de cycle Lunaison", "Lunaison cycle health report"))
-                    .putExtra(Intent.EXTRA_TEXT, text)
-                context.startActivity(Intent.createChooser(intent, null))
+                if (!exporting) {
+                    exporting = true
+                    val sections = selectedSections
+                    val medicationLabel = state.settings.reminders.medicationLabel
+                    scope.launch {
+                        try {
+                            val file = withContext(Dispatchers.IO) {
+                                val document = buildReportDocument(report, medicationLabel, logsLast90Days, sections)
+                                HealthReportPdf.export(context, document)
+                            }
+                            sharePdf(context, file)
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (_: Exception) {
+                            Toast.makeText(context, tr("Impossible de créer le PDF.", "Could not create the PDF."), Toast.LENGTH_LONG).show()
+                        } finally {
+                            exporting = false
+                        }
+                    }
+                }
             },
             icon = Icons.Filled.Share,
+            enabled = !exporting,
         )
         Muted(tr("Ce résumé est généré sur votre téléphone pour faciliter l'échange avec un professionnel de santé. Il ne constitue pas un diagnostic médical.", "This summary is generated on your phone to help discuss with a healthcare professional. It is not a medical diagnosis."))
     }
 }
 
-private fun formatPlainReport(
-    report: HealthReport,
-    medicationLabel: String,
-    logsLast90Days: List<DayLog>,
-    sections: Set<ReportSection>,
-): String = buildString {
-    appendLine(tr("BILAN DE CYCLE LUNAISON (${Format.dayMonth(report.generatedOn)})", "LUNAISON CYCLE REPORT (${Format.dayMonth(report.generatedOn)})"))
-    appendLine(tr("Début des dernières règles : ${Format.dayMonth(report.lastPeriodStart)} (jour ${report.dayOfCycle})", "Last period start: ${Format.dayMonth(report.lastPeriodStart)} (day ${report.dayOfCycle})"))
-    if (report.spottingCountLast90Days > 0) {
-        appendLine(tr("Saignements hors règles (90 j) : ${Format.days(report.spottingCountLast90Days)}", "Spotting outside periods (90 d): ${Format.days(report.spottingCountLast90Days)}"))
+/** Ouvre le sélecteur de partage pour le PDF, lu par les autres applis via le FileProvider de Lunaison. */
+private fun sharePdf(context: Context, file: File) {
+    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fichiers", file)
+    val send = Intent(Intent.ACTION_SEND)
+        .setType("application/pdf")
+        .putExtra(Intent.EXTRA_SUBJECT, tr("Bilan de cycle Lunaison", "Lunaison cycle health report"))
+        .putExtra(Intent.EXTRA_STREAM, uri)
+        .setClipData(ClipData.newRawUri(file.name, uri))
+        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    try {
+        context.startActivity(Intent.createChooser(send, null).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION))
+    } catch (_: ActivityNotFoundException) {
+        Toast.makeText(context, tr("Aucune appli pour partager ce PDF.", "No app available to share this PDF."), Toast.LENGTH_LONG).show()
     }
-
-    if (ReportSection.OVERVIEW in sections) {
-        report.overview?.let { ov ->
-            appendLine()
-            InsightTexts.overviewLines(ov).forEach { appendLine("- $it") }
-        }
-    }
-
-    if (ReportSection.CYCLES_HISTORY in sections) {
-        report.overview?.let { ov ->
-            appendLine()
-            appendLine(tr("Cycles complets récents :", "Recent completed cycles:"))
-            ov.records.reversed().forEach { rec ->
-                val p = rec.periodLength?.let { tr(", règles ${it}j", ", period ${it}d") }.orEmpty()
-                val d = if (rec.painDays > 0) tr(", douleur gênante/forte ${rec.painDays}j", ", moderate/severe pain ${rec.painDays}d") else ""
-                appendLine("- ${Format.dayMonth(rec.start)} : ${rec.length}j$p$d")
-            }
-        }
-    }
-
-    if (ReportSection.PAIN_AND_ENDOMETRIOSIS in sections) {
-        val severePainDays = logsLast90Days.count { it.pain == Pain.SEVERE }
-        val moderatePainDays = logsLast90Days.count { it.pain == Pain.MODERATE }
-        val pelvicPainDays = logsLast90Days.count { Symptom.PELVIC_PAIN in it.symptoms }
-        val dyspareuniaDays = logsLast90Days.count { Symptom.DYSPAREUNIA in it.symptoms }
-        val digestivePainDays = logsLast90Days.count { Symptom.DIGESTIVE_PAIN in it.symptoms }
-        val urinaryPainDays = logsLast90Days.count { Symptom.URINARY_PAIN in it.symptoms }
-        val radiatingPainDays = logsLast90Days.count { Symptom.RADIATING_PAIN in it.symptoms }
-        val crampsDays = logsLast90Days.count { Symptom.CRAMPS in it.symptoms }
-        val hasPainData = severePainDays > 0 || moderatePainDays > 0 || pelvicPainDays > 0 ||
-            dyspareuniaDays > 0 || digestivePainDays > 0 || urinaryPainDays > 0 ||
-            radiatingPainDays > 0 || crampsDays > 0
-
-        if (hasPainData) {
-            appendLine()
-            appendLine(tr("Douleurs & repères endométriose (90 j) :", "Pain & endometriosis indicators (90 d):"))
-            if (severePainDays > 0 || moderatePainDays > 0) {
-                appendLine("- " + tr("Douleur gênante ou forte : ${severePainDays + moderatePainDays} j (dont $severePainDays sévère(s))", "Bothersome or severe pain: ${severePainDays + moderatePainDays} d (including $severePainDays severe)"))
-            }
-            if (crampsDays > 0) appendLine("- " + tr("Crampes : $crampsDays j", "Cramps: $crampsDays d"))
-            if (pelvicPainDays > 0) appendLine("- " + tr("Douleurs pelviennes : $pelvicPainDays j", "Pelvic pain: $pelvicPainDays d"))
-            if (dyspareuniaDays > 0) appendLine("- " + tr("Douleurs aux rapports : $dyspareuniaDays j", "Pain during sex: $dyspareuniaDays d"))
-            if (digestivePainDays > 0) appendLine("- " + tr("Douleurs digestives / défécation : $digestivePainDays j", "Painful bowel movement: $digestivePainDays d"))
-            if (urinaryPainDays > 0) appendLine("- " + tr("Douleurs en urinant : $urinaryPainDays j", "Painful urination: $urinaryPainDays d"))
-            if (radiatingPainDays > 0) appendLine("- " + tr("Douleurs irradiantes (dos/jambes) : $radiatingPainDays j", "Radiating pain (back/legs): $radiatingPainDays d"))
-        }
-    }
-
-    if (ReportSection.SYMPTOMS_AND_MOODS in sections && report.phasePatterns.isNotEmpty()) {
-        appendLine()
-        appendLine(tr("Motifs récurrents par phase :", "Recurring patterns by phase:"))
-        report.phasePatterns.forEach { p ->
-            val items = p.symptoms.map { "${it.first.label.lowercase()} (${it.second}/${p.cycles})" } +
-                p.moods.map { "${it.first.label.lowercase()} (${it.second}/${p.cycles})" }
-            appendLine("- ${Format.phaseName(p.phase)} : ${items.joinToString(", ")}")
-        }
-    }
-
-    if (ReportSection.MEDICATIONS in sections) {
-        val pillTakenCount = logsLast90Days.count { it.pillStatus == PillStatus.TAKEN || it.medicationTaken }
-        val pillMissedCount = logsLast90Days.count { it.pillStatus == PillStatus.MISSED }
-        val medsCount = logsLast90Days.flatMap { it.medications }.groupingBy { it }.eachCount()
-        if (pillTakenCount > 0 || pillMissedCount > 0 || medsCount.isNotEmpty()) {
-            appendLine()
-            appendLine(tr("Contraception & traitements notés (90 j) :", "Contraception & medications (90 d):"))
-            val med = medicationLabel.trim().ifBlank { tr("Pilule / Contraception", "Pill / Contraception") }
-            if (pillTakenCount > 0) appendLine("- $med : $pillTakenCount prise(s)")
-            if (pillMissedCount > 0) appendLine("- $med : $pillMissedCount oubli(s)")
-            medsCount.forEach { (kind, count) ->
-                appendLine("- ${kind.label} : ${Format.days(count)}")
-            }
-        }
-    }
-
-    if (ReportSection.WEIGHT in sections) {
-        val weights = logsLast90Days.filter { it.weight != null }.sortedByDescending { it.date }
-        if (weights.isNotEmpty()) {
-            appendLine()
-            appendLine(tr("Poids (90 j) :", "Weight (90 d):"))
-            val latest = weights.first()
-            appendLine("- ${Format.dayMonth(latest.date)} : ${"%.1f".format(Locale.FRENCH, latest.weight)} kg")
-        }
-    }
-
-    if (ReportSection.OVULATION_SIGNS in sections) {
-        val mucusDays = logsLast90Days.filter { it.mucus != null }
-        val tempDays = logsLast90Days.filter { it.basalTemperature != null }
-        if (mucusDays.isNotEmpty() || tempDays.isNotEmpty()) {
-            appendLine()
-            appendLine(tr("Signes d'ovulation (90 j) :", "Ovulation signs (90 d):"))
-            if (mucusDays.isNotEmpty()) appendLine("- Glaire notée : ${mucusDays.size} j")
-            if (tempDays.isNotEmpty()) {
-                val avg = tempDays.map { it.basalTemperature!! }.average()
-                appendLine("- Température moyenne : ${"%.1f".format(Locale.FRENCH, avg)} °C (${tempDays.size} j)")
-            }
-        }
-    }
-
-    if (ReportSection.INTIMACY in sections) {
-        val protectedCount = logsLast90Days.count { IntimacyKind.PROTECTED in it.intimacy }
-        val unprotectedCount = logsLast90Days.count { IntimacyKind.UNPROTECTED in it.intimacy }
-        val totalIntimacy = protectedCount + unprotectedCount
-        if (totalIntimacy > 0) {
-            appendLine()
-            appendLine(tr("Vie intime (90 j) :", "Intimacy (90 d):"))
-            if (protectedCount > 0) appendLine("- Rapports protégés : $protectedCount")
-            if (unprotectedCount > 0) appendLine("- Rapports non protégés : $unprotectedCount")
-        }
-    }
-
-    if (ReportSection.NOTES in sections) {
-        val recentNotes = logsLast90Days.filter { it.note.isNotBlank() }.sortedByDescending { it.date }.take(5)
-        if (recentNotes.isNotEmpty()) {
-            appendLine()
-            appendLine(tr("Notes personnelles récentes :", "Recent personal notes:"))
-            recentNotes.forEach { appendLine("- ${Format.dayMonth(it.date)} : ${it.note}") }
-        }
-    }
-
-    if (ReportSection.ALERTS in sections && report.alerts.isNotEmpty()) {
-        appendLine()
-        appendLine(tr("Points d'attention :", "Points of attention:"))
-        report.alerts.forEach { appendLine("- ${it.title}") }
-    }
-}.trimEnd()
+}
