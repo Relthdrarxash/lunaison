@@ -31,7 +31,6 @@ import java.io.FileOutputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Locale
 
 // ---------------------------------------------------------------------------------------------
 // Contenu du bilan : aucune dépendance Android, testable sur la JVM.
@@ -88,16 +87,20 @@ data class ReportDocument(
     }
 }
 
-private fun decimal(value: Double): String =
-    "%.1f".format(if (Language.current() == Language.FR) Locale.FRENCH else Locale.ENGLISH, value)
-
 private fun fullDate(date: LocalDate): String =
-    date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.getDefault()))
+    date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(ReportText.locale()))
 
 private fun shortDate(date: LocalDate): String =
-    date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault()))
+    date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(ReportText.locale()))
 
 private const val MAX_NOTE_LENGTH = 600
+
+/**
+ * Le polonais et l'ukrainien ont des lettres (ą ć ę ł ń ś ź ż, cyrillique) absentes d'Atkinson Hyperlegible
+ * telle qu'embarquée dans l'appli (219 glyphes : latin de base et Latin-1, sans Latin étendu A ni cyrillique).
+ * Pour ces langues le PDF utilise la police sans empattement du système, qui les couvre.
+ */
+internal fun reportNeedsSystemFont(language: Language): Boolean = language == Language.PL || language == Language.UK
 
 /**
  * Construit le contenu du bilan : mêmes comptes et mêmes conditions d'affichage que l'écran,
@@ -110,17 +113,38 @@ fun buildReportDocument(
     sections: Set<ReportSection>,
 ): ReportDocument {
     val overview = report.overview
-    val period = tr("90 derniers jours", "last 90 days")
+    val period = ReportText.last90Days()
 
     val tiles = buildList {
-        add(ReportTile(report.dayOfCycle.toString(), tr("Jour du cycle", "Cycle day")))
-        add(ReportTile(Format.dayMonth(report.lastPeriodStart), tr("Début des dernières règles", "Last period start")))
+        add(
+            ReportTile(
+                report.dayOfCycle.toString(),
+                tr(
+                    fr = "Jour du cycle",
+                    en = "Cycle day",
+                    pl = "Dzień cyklu",
+                    uk = "День циклу",
+                    es = "Día del ciclo",
+                    de = "Zyklustag",
+                ),
+            ),
+        )
+        add(ReportTile(Format.dayMonth(report.lastPeriodStart), ReportText.lastPeriodStart()))
         if (ReportSection.OVERVIEW in sections && overview != null) {
             add(
                 ReportTile(
                     Format.days(overview.usualLength),
-                    tr("Durée habituelle du cycle", "Usual cycle length"),
-                    overview.usualPeriodLength?.let { tr("règles : ${Format.days(it)}", "period: ${Format.days(it)}") },
+                    usualCycleLength(),
+                    overview.usualPeriodLength?.let {
+                        tr(
+                            fr = "règles : ${Format.days(it)}",
+                            en = "period: ${Format.days(it)}",
+                            pl = "miesiączka: ${Format.days(it)}",
+                            uk = "менструація: ${Format.days(it)}",
+                            es = "menstruación: ${Format.days(it)}",
+                            de = "Blutungsdauer: ${Format.days(it)}",
+                        )
+                    },
                 ),
             )
         }
@@ -128,7 +152,7 @@ fun buildReportDocument(
             add(
                 ReportTile(
                     Format.days(report.spottingCountLast90Days),
-                    tr("Saignements hors règles (90 jours)", "Spotting outside periods (90 days)"),
+                    "${ReportText.spotting()} (${ReportText.ninetyDays()})",
                 ),
             )
         }
@@ -159,35 +183,104 @@ fun buildReportDocument(
     }
 
     return ReportDocument(
-        title = tr("Bilan de cycle", "Cycle report"),
-        subtitle = tr("Synthèse pour une consultation médicale", "Summary for a medical consultation"),
-        generatedLabel = tr("Généré le ${fullDate(report.generatedOn)}", "Generated on ${fullDate(report.generatedOn)}"),
-        situationTitle = tr("Situation actuelle", "Current status"),
+        title = tr(
+            fr = "Bilan de cycle",
+            en = "Cycle report",
+            pl = "Raport o cyklu",
+            uk = "Звіт про цикл",
+            es = "Informe del ciclo",
+            de = "Zyklusbericht",
+        ),
+        subtitle = ReportText.subtitle(),
+        generatedLabel = tr(
+            fr = "Généré le ${fullDate(report.generatedOn)}",
+            en = "Generated on ${fullDate(report.generatedOn)}",
+            pl = "Wygenerowano: ${fullDate(report.generatedOn)}",
+            uk = "Створено: ${fullDate(report.generatedOn)}",
+            es = "Generado el ${fullDate(report.generatedOn)}",
+            de = "Erstellt am ${fullDate(report.generatedOn)}",
+        ),
+        situationTitle = tr(
+            fr = "Situation actuelle",
+            en = "Current status",
+            pl = "Stan obecny",
+            uk = "Поточна ситуація",
+            es = "Situación actual",
+            de = "Aktueller Stand",
+        ),
         tiles = tiles,
         parts = parts,
-        referencesTitle = tr("Repères utilisés", "References used"),
+        referencesTitle = tr(
+            fr = "Repères utilisés",
+            en = "References used",
+            pl = "Wykorzystane źródła i wartości referencyjne",
+            uk = "Використані орієнтири",
+            es = "Referencias utilizadas",
+            de = "Verwendete Referenzen",
+        ),
         references = references,
     )
 }
 
+private fun usualCycleLength(): String = tr(
+    fr = "Durée habituelle du cycle",
+    en = "Usual cycle length",
+    pl = "Typowa długość cyklu",
+    uk = "Звична тривалість циклу",
+    es = "Duración habitual del ciclo",
+    de = "Übliche Zykluslänge",
+)
+
 private fun overviewPart(overview: CycleOverview?): ReportPart? {
     if (overview == null) return null
     val rows = buildList {
-        add(tr("Cycles complets analysés", "Completed cycles analysed") to overview.records.size.toString())
-        add(tr("Durée habituelle du cycle", "Usual cycle length") to Format.days(overview.usualLength))
+        add(
+            tr(
+                fr = "Cycles complets analysés",
+                en = "Completed cycles analysed",
+                pl = "Przeanalizowane pełne cykle",
+                uk = "Проаналізовані повні цикли",
+                es = "Ciclos completos analizados",
+                de = "Ausgewertete vollständige Zyklen",
+            ) to overview.records.size.toString(),
+        )
+        add(usualCycleLength() to Format.days(overview.usualLength))
         if (overview.shortest != overview.longest) {
-            add(tr("Cycle le plus court et le plus long", "Shortest and longest cycle") to tr("${overview.shortest} à ${Format.days(overview.longest)}", "${overview.shortest} to ${Format.days(overview.longest)}"))
+            add(
+                tr(
+                    fr = "Cycle le plus court et le plus long",
+                    en = "Shortest and longest cycle",
+                    pl = "Najkrótszy i najdłuższy cykl",
+                    uk = "Найкоротший і найдовший цикл",
+                    es = "Ciclo más corto y más largo",
+                    de = "Kürzester und längster Zyklus",
+                ) to tr(
+                    fr = "${overview.shortest} à ${Format.days(overview.longest)}",
+                    en = "${overview.shortest} to ${Format.days(overview.longest)}",
+                    pl = "${overview.shortest} do ${Format.days(overview.longest)}",
+                    uk = "від ${overview.shortest} до ${Format.days(overview.longest)}",
+                    es = "${overview.shortest} a ${Format.days(overview.longest)}",
+                    de = "${overview.shortest} bis ${Format.days(overview.longest)}",
+                ),
+            )
         }
-        overview.usualPeriodLength?.let { add(tr("Durée habituelle des règles", "Usual period length") to Format.days(it)) }
+        overview.usualPeriodLength?.let {
+            add(
+                tr(
+                    fr = "Durée habituelle des règles",
+                    en = "Usual period length",
+                    pl = "Typowy czas trwania miesiączki",
+                    uk = "Звична тривалість менструації",
+                    es = "Duración habitual de la menstruación",
+                    de = "Übliche Blutungsdauer",
+                ) to Format.days(it),
+            )
+        }
     }
-    val reference = if (overview.withinReferences) {
-        tr("Repères médicaux (FIGO / ACOG) : durées et régularité dans les valeurs habituelles.", "Medical references (FIGO / ACOG): lengths and regularity within usual ranges.")
-    } else {
-        tr("Repères médicaux (FIGO / ACOG) : au moins un cycle sort des repères habituels.", "Medical references (FIGO / ACOG): at least one cycle is outside usual ranges.")
-    }
+    val reference = if (overview.withinReferences) ReportText.referencesWithin() else ReportText.referencesOutside()
     return ReportPart(
         ReportSection.OVERVIEW,
-        tr("Synthèse des derniers cycles (repères FIGO)", "Recent cycles summary (FIGO references)"),
+        ReportText.overviewTitle(),
         listOf(ReportBlock.Rows(rows), ReportBlock.Paragraph(reference)),
     )
 }
@@ -202,26 +295,36 @@ private fun cyclesHistoryPart(overview: CycleOverview?): ReportPart? {
             if (rec.painDays > 0) Format.days(rec.painDays) else "-",
         )
     }
+    // Le nombre de cycles passe en « libellé : nombre » hors français et anglais (pas d'accord à faire).
+    val count = overview.records.size
     val summary = if (overview.shortest == overview.longest) {
         tr(
-            "Sur ${overview.records.size} cycles : ${Format.days(overview.usualLength)} à chaque fois.",
-            "Over ${overview.records.size} cycles: ${Format.days(overview.usualLength)} every time.",
+            fr = "Sur $count cycles : ${Format.days(overview.usualLength)} à chaque fois.",
+            en = "Over $count cycles: ${Format.days(overview.usualLength)} every time.",
+            pl = "Liczba cykli: $count. Za każdym razem: ${Format.days(overview.usualLength)}.",
+            uk = "Кількість циклів: $count. Щоразу: ${Format.days(overview.usualLength)}.",
+            es = "Ciclos analizados: $count. Duración en todos: ${Format.days(overview.usualLength)}.",
+            de = "Anzahl der Zyklen: $count. Jedes Mal: ${Format.days(overview.usualLength)}.",
         )
     } else {
         tr(
-            "Sur ${overview.records.size} cycles : durée habituelle ${Format.days(overview.usualLength)} (médiane), de ${overview.shortest} à ${Format.days(overview.longest)}.",
-            "Over ${overview.records.size} cycles: usual length ${Format.days(overview.usualLength)} (median), from ${overview.shortest} to ${Format.days(overview.longest)}.",
+            fr = "Sur $count cycles : durée habituelle ${Format.days(overview.usualLength)} (médiane), de ${overview.shortest} à ${Format.days(overview.longest)}.",
+            en = "Over $count cycles: usual length ${Format.days(overview.usualLength)} (median), from ${overview.shortest} to ${Format.days(overview.longest)}.",
+            pl = "Liczba cykli: $count. Typowa długość: ${Format.days(overview.usualLength)} (mediana), zakres: od ${overview.shortest} do ${Format.days(overview.longest)}.",
+            uk = "Кількість циклів: $count. Звична тривалість: ${Format.days(overview.usualLength)} (медіана), діапазон: від ${overview.shortest} до ${Format.days(overview.longest)}.",
+            es = "Ciclos analizados: $count. Duración habitual: ${Format.days(overview.usualLength)} (mediana), de ${overview.shortest} a ${Format.days(overview.longest)}.",
+            de = "Anzahl der Zyklen: $count. Übliche Länge: ${Format.days(overview.usualLength)} (Median), Spanne: ${overview.shortest} bis ${Format.days(overview.longest)}.",
         )
     }
     val headers = listOf(
-        tr("Début", "Start"),
-        tr("Durée du cycle", "Cycle length"),
-        tr("Durée des règles", "Period length"),
-        tr("Douleur gênante ou forte", "Bothersome or severe pain"),
+        tr(fr = "Début", en = "Start", pl = "Początek", uk = "Початок", es = "Inicio", de = "Beginn"),
+        ReportText.cycleLength(),
+        ReportText.periodLength(),
+        ReportText.painBothersomeOrSevere(),
     )
     return ReportPart(
         ReportSection.CYCLES_HISTORY,
-        tr("Historique des cycles complets", "Completed cycles history"),
+        ReportText.cyclesHistoryTitle(),
         listOf(ReportBlock.CycleTable(headers, rows, summary)),
     )
 }
@@ -242,41 +345,73 @@ private fun painPart(logs: List<DayLog>, period: String): ReportPart? {
     fun bar(label: String, days: Int) = ReportBar(label, days, Format.days(days))
     val bars = buildList {
         if (severe > 0 || moderate > 0) {
-            add(bar(tr("Douleur gênante ou forte", "Bothersome or severe pain"), severe + moderate))
-            if (severe > 0) add(bar(tr("dont douleur forte", "of which severe pain"), severe))
+            add(bar(ReportText.painBothersomeOrSevere(), severe + moderate))
+            if (severe > 0) {
+                add(
+                    bar(
+                        tr(
+                            fr = "dont douleur forte",
+                            en = "of which severe pain",
+                            pl = "w tym ból silny",
+                            uk = "з них сильний біль",
+                            es = "de los cuales, dolor fuerte",
+                            de = "davon starke Schmerzen",
+                        ),
+                        severe,
+                    ),
+                )
+            }
         }
-        if (cramps > 0) add(bar(tr("Crampes abdominales", "Abdominal cramps"), cramps))
-        if (pelvic > 0) add(bar(tr("Douleurs pelviennes (bas-ventre)", "Pelvic pain"), pelvic))
-        if (dyspareunia > 0) add(bar(tr("Douleurs aux rapports (dyspareunie)", "Pain during sex (dyspareunia)"), dyspareunia))
-        if (digestive > 0) add(bar(tr("Douleurs au transit ou à la défécation", "Pain with bowel movements"), digestive))
-        if (urinary > 0) add(bar(tr("Douleurs en urinant (dysurie)", "Pain when urinating"), urinary))
-        if (radiating > 0) add(bar(tr("Douleurs irradiantes (dos, lombaires, jambes)", "Radiating pain (back, legs)"), radiating))
+        if (cramps > 0) add(bar(ReportText.painCramps(), cramps))
+        if (pelvic > 0) add(bar(ReportText.painPelvic(), pelvic))
+        if (dyspareunia > 0) add(bar(ReportText.painDyspareunia(), dyspareunia))
+        if (digestive > 0) add(bar(ReportText.painDigestive(), digestive))
+        if (urinary > 0) add(bar(ReportText.painUrinary(), urinary))
+        if (radiating > 0) add(bar(ReportText.painRadiating(), radiating))
     }
-    val note = tr(
-        "Nombre de jours notés sur ${ReportDocument.PERIOD_DAYS}. Repères utiles pour le dialogue soignant selon les recommandations HAS / ESHRE.",
-        "Number of days logged out of ${ReportDocument.PERIOD_DAYS}. Helpful indicators for clinician dialogue per HAS / ESHRE guidelines.",
+    val daysNote = tr(
+        fr = "Nombre de jours notés sur ${ReportDocument.PERIOD_DAYS}.",
+        en = "Number of days logged out of ${ReportDocument.PERIOD_DAYS}.",
+        pl = "Liczba dni z zapisem na ${ReportDocument.PERIOD_DAYS}.",
+        uk = "Кількість днів із записами з ${ReportDocument.PERIOD_DAYS}.",
+        es = "Número de días con registro sobre ${ReportDocument.PERIOD_DAYS}.",
+        de = "Anzahl der erfassten Tage von ${ReportDocument.PERIOD_DAYS}.",
     )
     return ReportPart(
         ReportSection.PAIN_AND_ENDOMETRIOSIS,
-        tr("Douleurs et repères endométriose ($period)", "Pain and endometriosis indicators ($period)"),
-        listOf(ReportBlock.Bars(bars), ReportBlock.Paragraph(note, muted = true)),
+        tr(
+            fr = "Douleurs et repères endométriose ($period)",
+            en = "Pain and endometriosis indicators ($period)",
+            pl = "Ból i wskaźniki endometriozy ($period)",
+            uk = "Біль та ознаки ендометріозу ($period)",
+            es = "Dolor e indicadores de endometriosis ($period)",
+            de = "Schmerzen und Endometriose-Anhaltspunkte ($period)",
+        ),
+        listOf(ReportBlock.Bars(bars), ReportBlock.Paragraph("$daysNote ${ReportText.painGuidelines()}", muted = true)),
     )
 }
 
 private fun symptomsPart(report: HealthReport): ReportPart? {
     if (report.phasePatterns.isEmpty()) return null
     val rows = report.phasePatterns.map { p ->
-        val items = p.symptoms.map { "${it.first.label.lowercase()} (${it.second}/${p.cycles})" } +
-            p.moods.map { "${it.first.label.lowercase()} (${it.second}/${p.cycles})" }
+        val items = p.symptoms.map { "${ReportText.inline(it.first.label)} (${it.second}/${p.cycles})" } +
+            p.moods.map { "${ReportText.inline(it.first.label)} (${it.second}/${p.cycles})" }
         Format.phaseName(p.phase) to items.joinToString(", ")
     }
     return ReportPart(
         ReportSection.SYMPTOMS_AND_MOODS,
-        tr("Symptômes et humeurs récurrents par phase", "Recurring symptoms and moods by phase"),
+        ReportText.symptomsTitle(),
         listOf(
             ReportBlock.Rows(rows),
             ReportBlock.Paragraph(
-                tr("Entre parenthèses : nombre de cycles où l'élément a été noté, sur le nombre de cycles renseignés pour la phase.", "In brackets: number of cycles where the item was logged, out of the cycles logged for that phase."),
+                tr(
+                    fr = "Entre parenthèses : nombre de cycles où l'élément a été noté, sur le nombre de cycles renseignés pour la phase.",
+                    en = "In brackets: number of cycles where the item was logged, out of the cycles logged for that phase.",
+                    pl = "W nawiasach: liczba cykli, w których dany element zapisano, w stosunku do liczby cykli z zapisami dla danej fazy.",
+                    uk = "У дужках: кількість циклів, у яких пункт було відмічено, з кількості циклів із записами для фази.",
+                    es = "Entre paréntesis: número de ciclos en los que se registró el elemento, sobre el número de ciclos con datos de esa fase.",
+                    de = "In Klammern: Anzahl der Zyklen, in denen der Punkt erfasst wurde, bezogen auf die Zyklen mit Einträgen für die Phase.",
+                ),
                 muted = true,
             ),
         ),
@@ -288,15 +423,22 @@ private fun medicationsPart(medicationLabel: String, logs: List<DayLog>, period:
     val missed = logs.count { it.pillStatus == PillStatus.MISSED }
     val meds = logs.flatMap { it.medications }.groupingBy { it }.eachCount()
     if (taken == 0 && missed == 0 && meds.isEmpty()) return null
-    val label = medicationLabel.trim().ifBlank { tr("Pilule / Contraception", "Pill / Contraception") }
+    val label = medicationLabel.trim().ifBlank { ReportText.defaultMedicationLabel() }
     val rows = buildList {
-        if (taken > 0) add(label to tr(if (taken == 1) "1 prise notée" else "$taken prises notées", if (taken == 1) "1 dose logged" else "$taken doses logged"))
-        if (missed > 0) add(label to tr(if (missed == 1) "1 oubli noté" else "$missed oublis notés", if (missed == 1) "1 missed dose logged" else "$missed missed doses logged"))
-        meds.forEach { (kind, count) -> add(kind.label to tr("noté ${Format.days(count)}", "logged ${Format.days(count)}")) }
+        if (taken > 0) add(label to ReportText.pillTaken(taken))
+        if (missed > 0) add(label to ReportText.pillMissed(missed))
+        meds.forEach { (kind, count) -> add(kind.label to ReportText.loggedDays(count)) }
     }
     return ReportPart(
         ReportSection.MEDICATIONS,
-        tr("Contraception et traitements notés ($period)", "Contraception and medications ($period)"),
+        tr(
+            fr = "Contraception et traitements notés ($period)",
+            en = "Contraception and medications ($period)",
+            pl = "Antykoncepcja i leki, zapisy ($period)",
+            uk = "Контрацепція та ліки, записи ($period)",
+            es = "Anticoncepción y tratamientos registrados ($period)",
+            de = "Verhütung und erfasste Medikamente ($period)",
+        ),
         listOf(ReportBlock.Rows(rows)),
     )
 }
@@ -306,17 +448,25 @@ private fun weightPart(logs: List<DayLog>, period: String): ReportPart? {
     if (weights.isEmpty()) return null
     val (latestDate, latest) = weights.first()
     val rows = buildList {
-        add(tr("Dernier poids noté", "Last weight logged") to "${decimal(latest)} kg (${Format.dayMonth(latestDate)})")
+        add(ReportText.lastWeight() to "${ReportText.decimal(latest)} ${ReportText.kg()} (${Format.dayMonth(latestDate)})")
         if (weights.size > 1) {
             val min = weights.minOf { it.second }
             val max = weights.maxOf { it.second }
-            add(
-                tr("Plage sur 90 jours", "90-day range") to
-                    tr("${decimal(min)} à ${decimal(max)} kg (${weights.size} pesées)", "${decimal(min)} to ${decimal(max)} kg (${weights.size} entries)"),
-            )
+            add(ReportText.weightRange() to ReportText.weightRangeValue(min, max, weights.size))
         }
     }
-    return ReportPart(ReportSection.WEIGHT, tr("Suivi du poids ($period)", "Weight tracking ($period)"), listOf(ReportBlock.Rows(rows)))
+    return ReportPart(
+        ReportSection.WEIGHT,
+        tr(
+            fr = "Suivi du poids ($period)",
+            en = "Weight tracking ($period)",
+            pl = "Kontrola wagi ($period)",
+            uk = "Контроль ваги ($period)",
+            es = "Seguimiento del peso ($period)",
+            de = "Gewichtsverlauf ($period)",
+        ),
+        listOf(ReportBlock.Rows(rows)),
+    )
 }
 
 private fun ovulationPart(logs: List<DayLog>, period: String): ReportPart? {
@@ -324,17 +474,19 @@ private fun ovulationPart(logs: List<DayLog>, period: String): ReportPart? {
     val temps = logs.mapNotNull { it.basalTemperature?.toDouble() }
     if (mucusDays == 0 && temps.isEmpty()) return null
     val rows = buildList {
-        if (mucusDays > 0) add(tr("Observations de glaire", "Mucus observations") to Format.days(mucusDays))
-        if (temps.isNotEmpty()) {
-            add(
-                tr("Température basale notée", "Basal temperature logged") to
-                    tr("${Format.days(temps.size)} (moyenne : ${decimal(temps.average())} °C)", "${Format.days(temps.size)} (avg: ${decimal(temps.average())} °C)"),
-            )
-        }
+        if (mucusDays > 0) add(ReportText.mucusObservations() to Format.days(mucusDays))
+        if (temps.isNotEmpty()) add(ReportText.basalTemperature() to ReportText.basalTemperatureValue(temps.size, temps.average()))
     }
     return ReportPart(
         ReportSection.OVULATION_SIGNS,
-        tr("Signes d'ovulation, glaire et température ($period)", "Ovulation signs, mucus and temperature ($period)"),
+        tr(
+            fr = "Signes d'ovulation, glaire et température ($period)",
+            en = "Ovulation signs, mucus and temperature ($period)",
+            pl = "Objawy owulacji, śluz szyjkowy i temperatura ($period)",
+            uk = "Ознаки овуляції, цервікальний слиз і температура ($period)",
+            es = "Signos de ovulación, moco cervical y temperatura ($period)",
+            de = "Ovulationszeichen, Zervixschleim und Temperatur ($period)",
+        ),
         listOf(ReportBlock.Rows(rows)),
     )
 }
@@ -345,11 +497,22 @@ private fun intimacyPart(logs: List<DayLog>, period: String): ReportPart? {
     val nonPenetrativeCount = logs.count { IntimacyKind.NON_PENETRATIVE in it.intimacy }
     if (protectedCount + unprotectedCount + nonPenetrativeCount == 0) return null
     val rows = buildList {
-        if (protectedCount > 0) add(tr("Rapports protégés", "Protected intercourse") to Format.days(protectedCount))
-        if (unprotectedCount > 0) add(tr("Rapports non protégés", "Unprotected intercourse") to Format.days(unprotectedCount))
-        if (nonPenetrativeCount > 0) add(tr("Sans pénétration ou solo", "Non-penetrative or solo") to Format.days(nonPenetrativeCount))
+        if (protectedCount > 0) add(ReportText.intimacyProtected() to Format.days(protectedCount))
+        if (unprotectedCount > 0) add(ReportText.intimacyUnprotected() to Format.days(unprotectedCount))
+        if (nonPenetrativeCount > 0) add(ReportText.intimacyNonPenetrative() to Format.days(nonPenetrativeCount))
     }
-    return ReportPart(ReportSection.INTIMACY, tr("Vie intime notée ($period)", "Logged intimacy ($period)"), listOf(ReportBlock.Rows(rows)))
+    return ReportPart(
+        ReportSection.INTIMACY,
+        tr(
+            fr = "Vie intime notée ($period)",
+            en = "Logged intimacy ($period)",
+            pl = "Życie intymne, zapisy ($period)",
+            uk = "Інтимне життя, записи ($period)",
+            es = "Vida íntima registrada ($period)",
+            de = "Erfasste Intimität ($period)",
+        ),
+        listOf(ReportBlock.Rows(rows)),
+    )
 }
 
 private fun notesPart(logs: List<DayLog>, period: String): ReportPart? {
@@ -359,14 +522,25 @@ private fun notesPart(logs: List<DayLog>, period: String): ReportPart? {
         val text = log.note.trim()
         Format.dayMonth(log.date) to if (text.length > MAX_NOTE_LENGTH) text.take(MAX_NOTE_LENGTH).trimEnd() + "..." else text
     }
-    return ReportPart(ReportSection.NOTES, tr("Notes personnelles récentes ($period)", "Recent personal notes ($period)"), listOf(ReportBlock.Rows(rows)))
+    return ReportPart(
+        ReportSection.NOTES,
+        tr(
+            fr = "Notes personnelles récentes ($period)",
+            en = "Recent personal notes ($period)",
+            pl = "Ostatnie notatki osobiste ($period)",
+            uk = "Останні особисті нотатки ($period)",
+            es = "Notas personales recientes ($period)",
+            de = "Aktuelle persönliche Notizen ($period)",
+        ),
+        listOf(ReportBlock.Rows(rows)),
+    )
 }
 
 private fun alertsPart(report: HealthReport): ReportPart? {
     if (report.alerts.isEmpty()) return null
     return ReportPart(
         ReportSection.ALERTS,
-        tr("Points d'attention relevés", "Points of attention noted"),
+        ReportText.alertsTitle(),
         listOf(ReportBlock.Alerts(report.alerts.map { ReportAlert(it.title, it.message) })),
     )
 }
@@ -402,7 +576,7 @@ object HealthReportPdf {
     }
 
     fun write(context: Context, document: ReportDocument, file: File) {
-        val fonts = Fonts.load(context)
+        val fonts = Fonts.load(context, Language.current())
         val chunks = ReportLayout(fonts).chunks(document)
         val pages = paginate(chunks)
         val pdf = PdfDocument()
@@ -535,17 +709,28 @@ object HealthReportPdf {
         rule.strokeWidth = 0.75f
         canvas.drawLine(MARGIN, FOOTER_RULE_Y, PAGE_WIDTH - MARGIN, FOOTER_RULE_Y, rule)
 
-        val left = tr("Lunaison · page $page / $total", "Lunaison · page $page / $total")
+        val left = tr(
+            fr = "Lunaison · page $page / $total",
+            en = "Lunaison · page $page / $total",
+            pl = "Lunaison · strona $page / $total",
+            uk = "Lunaison · стор. $page / $total",
+            es = "Lunaison · página $page / $total",
+            de = "Lunaison · Seite $page / $total",
+        )
         val leftPaint = fonts.textPaint(LunaColors.InkMuted, 8f, bold = true)
-        val leftWidth = 110
+        val leftWidth = 125
         canvas.save()
         canvas.translate(MARGIN, FOOTER_RULE_Y + 8f)
         textLayout(left, leftPaint, leftWidth).draw(canvas)
         canvas.restore()
 
         val note = tr(
-            "Généré sur le téléphone de la patiente. Ce document n'est pas un diagnostic médical.",
-            "Generated on the patient's phone. This document is not a medical diagnosis.",
+            fr = "Généré sur le téléphone de la patiente. Ce document n'est pas un diagnostic médical.",
+            en = "Generated on the patient's phone. This document is not a medical diagnosis.",
+            pl = "Wygenerowano na telefonie pacjentki. Ten dokument nie jest diagnozą medyczną.",
+            uk = "Створено на телефоні пацієнтки. Цей документ не є медичним діагнозом.",
+            es = "Generado en el teléfono de la paciente. Este documento no es un diagnóstico médico.",
+            de = "Auf dem Smartphone der Patientin erstellt. Dieses Dokument ist keine medizinische Diagnose.",
         )
         val notePaint = fonts.textPaint(LunaColors.InkMuted, 8f)
         val noteWidth = (CONTENT_WIDTH - leftWidth - 12f).toInt()
@@ -600,8 +785,14 @@ object HealthReportPdf {
             textPaint(color, size, bold)
 
         companion object {
-            /** Atkinson Hyperlegible comme dans l'appli, ou la police sans empattement du système. */
-            fun load(context: Context): Fonts {
+            /**
+             * Atkinson Hyperlegible comme dans l'appli, ou la police sans empattement du système quand elle
+             * ne couvre pas la langue (polonais, ukrainien : voir [reportNeedsSystemFont]).
+             */
+            fun load(context: Context, language: Language): Fonts {
+                if (reportNeedsSystemFont(language)) {
+                    return Fonts(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL), Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD))
+                }
                 fun font(id: Int, style: Int): Typeface = try {
                     ResourcesCompat.getFont(context, id) ?: Typeface.create(Typeface.SANS_SERIF, style)
                 } catch (_: Exception) {
