@@ -26,14 +26,26 @@ import java.time.LocalTime
 import fr.lunaison.core.model.tr
 
 /** Messagerie utilisée pour le partage. L'appli ne fait que préparer le message. */
-enum class PartnerChannel(private val fr: String, private val en: String) {
-    SMS("SMS", "SMS"),
-    WHATSAPP("WhatsApp", "WhatsApp"),
-    SIGNAL("Signal", "Signal"),
-    OTHER("Autre appli", "Another app"),
+enum class PartnerChannel {
+    SMS,
+    WHATSAPP,
+    SIGNAL,
+    OTHER,
     ;
 
-    val label: String get() = tr(fr, en)
+    val label: String get() = when (this) {
+        SMS -> "SMS"
+        WHATSAPP -> "WhatsApp"
+        SIGNAL -> "Signal"
+        OTHER -> tr(
+            fr = "Autre appli",
+            en = "Another app",
+            pl = "Inna aplikacja",
+            uk = "Інший застосунок",
+            es = "Otra aplicación",
+            de = "Andere App",
+        )
+    }
 }
 
 data class Partner(val name: String, val phone: String?, val channel: PartnerChannel)
@@ -107,10 +119,16 @@ class LunaisonRepository(private val dao: LunaisonDao) {
 
     /** Export lisible par un tableur. Rien ne quitte le téléphone sans que la personne choisisse où l'enregistrer. */
     suspend fun exportCsv(): String = buildString {
-        appendLine(tr(
-            "date;flux;douleur;symptomes;humeurs;traitement;glaire;temperature;pilule;medicaments;poids;intimite;libido;note",
-            "date;flow;pain;symptoms;moods;medication;mucus;temperature;pill;medications;weight;intimacy;libido;note",
-        ))
+        appendLine(
+            tr(
+                fr = "date;flux;douleur;symptomes;humeurs;traitement;glaire;temperature;pilule;medicaments;poids;intimite;libido;note",
+                en = "date;flow;pain;symptoms;moods;medication;mucus;temperature;pill;medications;weight;intimacy;libido;note",
+                pl = "data;krwawienie;bol;objawy;nastroje;leczenie;sluz;temperatura;tabletka;leki;waga;intymnosc;libido;notatka",
+                uk = "дата;виділення;біль;симптоми;настрій;лікування;слиз;температура;таблетка;ліки;вага;інтимність;лібідо;нотатка",
+                es = "fecha;flujo;dolor;sintomas;estados de animo;tratamiento;moco;temperatura;pildora;medicamentos;peso;intimidad;libido;nota",
+                de = "datum;blutung;schmerz;symptome;stimmung;behandlung;zervixschleim;temperatur;pille;medikamente;gewicht;intimitaet;libido;notiz",
+            ),
+        )
         logsOnce().forEach { log ->
             appendLine(
                 listOf(
@@ -119,7 +137,7 @@ class LunaisonRepository(private val dao: LunaisonDao) {
                     log.pain?.label.orEmpty(),
                     log.symptoms.joinToString(", ") { it.label },
                     log.moods.joinToString(", ") { it.label },
-                    if (log.medicationTaken || log.pillStatus == PillStatus.TAKEN) tr("oui", "yes") else "",
+                    if (log.medicationTaken || log.pillStatus == PillStatus.TAKEN) tr(fr = "oui", en = "yes", pl = "tak", uk = "так", es = "sí", de = "ja") else "",
                     log.mucus?.label.orEmpty(),
                     log.basalTemperature?.let { "%.1f".format(java.util.Locale.ROOT, it) }.orEmpty(),
                     log.pillStatus?.label.orEmpty(),

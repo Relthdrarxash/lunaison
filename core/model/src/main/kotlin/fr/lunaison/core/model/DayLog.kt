@@ -248,14 +248,47 @@ data class DayLog(
 }
 
 /** Palette de couleurs de l'interface, toutes conformes au contraste WCAG AA. */
-enum class ThemePalette(private val fr: String, private val en: String) {
-    PLUM("Nuit de lune (Prune)", "Moonlight (Plum)"),
-    SAGE("Forêt calme (Sauge)", "Calm forest (Sage)"),
-    OCEAN("Marée (Océan)", "Tide (Ocean)"),
-    TERRACOTTA("Terre chaude (Terracotta)", "Warm earth (Terracotta)"),
+enum class ThemePalette {
+    PLUM,
+    SAGE,
+    OCEAN,
+    TERRACOTTA,
     ;
 
-    val label: String get() = tr(fr, en)
+    val label: String get() = when (this) {
+        PLUM -> tr(
+            fr = "Nuit de lune (Prune)",
+            en = "Moonlight (Plum)",
+            pl = "Noc księżycowa (Śliwka)",
+            uk = "Місячна ніч (Слива)",
+            es = "Noche de luna (Ciruela)",
+            de = "Mondnacht (Pflaume)",
+        )
+        SAGE -> tr(
+            fr = "Forêt calme (Sauge)",
+            en = "Calm forest (Sage)",
+            pl = "Spokojny las (Szałwia)",
+            uk = "Тихий ліс (Шавлія)",
+            es = "Bosque en calma (Salvia)",
+            de = "Ruhiger Wald (Salbei)",
+        )
+        OCEAN -> tr(
+            fr = "Marée (Océan)",
+            en = "Tide (Ocean)",
+            pl = "Przypływ (Ocean)",
+            uk = "Приплив (Океан)",
+            es = "Marea (Océano)",
+            de = "Gezeiten (Ozean)",
+        )
+        TERRACOTTA -> tr(
+            fr = "Terre chaude (Terracotta)",
+            en = "Warm earth (Terracotta)",
+            pl = "Ciepła ziemia (Terakota)",
+            uk = "Тепла земля (Теракота)",
+            es = "Tierra cálida (Terracota)",
+            de = "Warme Erde (Terrakotta)",
+        )
+    }
 }
 
 /** Tranche d'âge déclarée : elle règle les repères de cycle et l'accès au partage. */

@@ -90,7 +90,7 @@ data class PartnerSnapshot(
             val decoded = String(Base64.getUrlDecoder().decode(b64), StandardCharsets.UTF_8)
             val parts = decoded.split("|")
             if (parts.size < 6 || parts[0] != "v1") return null
-            val name = parts[1].trim().ifEmpty { tr("Partenaire", "Partner") }
+            val name = parts[1].trim().ifEmpty { tr(fr = "Partenaire", en = "Partner", pl = "Partner", uk = "Партнер", es = "Pareja", de = "Partner") }
             val sharedAt = LocalDate.ofEpochDay(parts[2].toLong())
             val usualLength = parts[3].toInt().coerceIn(21, 45)
             val showFertility = parts[4] == "1"
