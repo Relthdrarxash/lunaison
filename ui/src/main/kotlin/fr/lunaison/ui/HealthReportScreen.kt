@@ -358,8 +358,8 @@ private fun sharePdf(context: Context, file: File) {
         .setType("application/pdf")
         .putExtra(Intent.EXTRA_SUBJECT, tr("Bilan de cycle Lunaison", "Lunaison cycle health report"))
         .putExtra(Intent.EXTRA_STREAM, uri)
-        .setClipData(ClipData.newRawUri(file.name, uri))
         .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    send.clipData = ClipData.newRawUri(file.name, uri)
     try {
         context.startActivity(Intent.createChooser(send, null).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION))
     } catch (_: ActivityNotFoundException) {
