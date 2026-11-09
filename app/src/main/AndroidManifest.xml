@@ -47,6 +47,17 @@
             </intent-filter>
         </activity>
 
+        <!-- Partage du bilan de santé en PDF : fichier du cache lu par l'appli choisie, sans permission ni réseau. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fichiers"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <!-- Actions des notifications (règles commencées, prise faite) : interne à l'appli. -->
         <receiver
             android:name=".reminders.ReminderActionReceiver"
