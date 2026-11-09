@@ -76,16 +76,16 @@ fun BreathingScreen(onBack: () -> Unit) {
     )
 
     val instruction = when {
-        !running -> tr("Prête à commencer", "Ready to begin")
-        inhaling -> tr("Inspirez doucement par le nez", "Breathe in gently through your nose")
-        else -> tr("Expirez lentement en relâchant le ventre", "Breathe out slowly, relaxing your belly")
+        !running -> tr("Prête à commencer", "Ready to begin", pl = "Gotowe do rozpoczęcia", uk = "Готово до початку", es = "Todo listo para empezar", de = "Bereit zum Start")
+        inhaling -> tr("Inspirez doucement par le nez", "Breathe in gently through your nose", pl = "Wdychaj powoli nosem", uk = "Вдихайте повільно через ніс", es = "Inspira suavemente por la nariz", de = "Atme sanft durch die Nase ein")
+        else -> tr("Expirez lentement en relâchant le ventre", "Breathe out slowly, relaxing your belly", pl = "Wydychaj powoli, rozluźniając brzuch", uk = "Видихайте повільно, розслабляючи живіт", es = "Espira despacio relajando el vientre", de = "Atme langsam aus und entspanne dabei den Bauch")
     }
 
     Page {
         PageTitle(
-            tr("Respirer et relâcher", "Breathe and relax"),
+            tr("Respirer et relâcher", "Breathe and relax", pl = "Oddychaj i odpuść", uk = "Дихайте й розслабтеся", es = "Respirar y relajar", de = "Atmen und entspannen"),
             onBack = onBack,
-            subtitle = tr("Respiration abdominale apaisante (4 s / 6 s)", "Soothing abdominal breathing (4 s / 6 s)"),
+            subtitle = tr("Respiration abdominale apaisante (4 s / 6 s)", "Soothing abdominal breathing (4 s / 6 s)", pl = "Kojące oddychanie brzuszne (4 s / 6 s)", uk = "Заспокійливе дихання животом (4 с / 6 с)", es = "Respiración abdominal relajante (4 s / 6 s)", de = "Beruhigende Bauchatmung (4 s / 6 s)"),
         )
 
         LunaCard(container = MaterialTheme.colorScheme.primaryContainer) {
@@ -111,7 +111,7 @@ fun BreathingScreen(onBack: () -> Unit) {
                             )
                             if (completedCycles > 0) {
                                 Text(
-                                    tr("$completedCycles cycles", "$completedCycles cycles"),
+                                    tr("$completedCycles cycles", "$completedCycles cycles", pl = "cykle oddechowe: $completedCycles", uk = "дихальні цикли: $completedCycles", es = "$completedCycles ciclos", de = "$completedCycles Zyklen"),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onPrimary,
                                 )
@@ -130,18 +130,18 @@ fun BreathingScreen(onBack: () -> Unit) {
                     .semantics { liveRegion = LiveRegionMode.Polite },
             )
             LunaButton(
-                if (running) tr("Mettre en pause", "Pause") else tr("Commencer (3 minutes conseillées)", "Start (3 minutes recommended)"),
+                if (running) tr("Mettre en pause", "Pause", pl = "Wstrzymaj", uk = "Призупинити", es = "Pausar", de = "Pausieren") else tr("Commencer (3 minutes conseillées)", "Start (3 minutes recommended)", pl = "Zacznij (zalecane 3 minuty)", uk = "Почати (рекомендовано 3 хвилини)", es = "Empezar (se recomiendan 3 minutos)", de = "Starten (3 Minuten empfohlen)"),
                 onClick = { running = !running },
                 style = if (running) LunaButtonStyle.Outlined else LunaButtonStyle.Primary,
             )
         }
 
-        SectionTitle(tr("Pourquoi l'expiration longue aide", "Why a longer exhale helps"))
+        SectionTitle(tr("Pourquoi l'expiration longue aide", "Why a longer exhale helps", pl = "Dlaczego długi wydech pomaga", uk = "Чому довгий видих допомагає", es = "Por qué ayuda espirar más tiempo", de = "Warum ein langes Ausatmen hilft"))
         LunaCard {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Bullet(tr("Une expiration plus longue que l'inspiration (6 secondes contre 4) active le système nerveux parasympathique et réduit la perception de la douleur.", "Exhaling longer than you inhale (6 seconds vs. 4) activates the parasympathetic nervous system and lowers pain perception."))
-                Bullet(tr("En laissant le bas-ventre et le périnée se détendre à chaque expiration, on diminue la crispation musculaire autour de l'utérus.", "Letting your lower belly and pelvic floor soften on each exhale reduces muscle tension around the uterus."))
-                Bullet(tr("Trois minutes (soit 18 respirations) suffisent souvent à apaiser un pic de crampe ou de tension en fin de cycle.", "Three minutes (about 18 breaths) is often enough to ease a cramp peak or late-cycle tension."))
+                Bullet(tr("Une expiration plus longue que l'inspiration (6 secondes contre 4) active le système nerveux parasympathique et réduit la perception de la douleur.", "Exhaling longer than you inhale (6 seconds vs. 4) activates the parasympathetic nervous system and lowers pain perception.", pl = "Wydech dłuższy niż wdech (6 sekund wobec 4) aktywuje przywspółczulny układ nerwowy i zmniejsza odczuwanie bólu.", uk = "Видих, довший за вдих (6 секунд проти 4), активує парасимпатичну нервову систему та знижує сприйняття болю.", es = "Una espiración más larga que la inspiración (6 segundos frente a 4) activa el sistema nervioso parasimpático y reduce la percepción del dolor.", de = "Ein längeres Ausatmen als Einatmen (6 Sekunden gegenüber 4) aktiviert das parasympathische Nervensystem und verringert die Schmerzwahrnehmung."))
+                Bullet(tr("En laissant le bas-ventre et le périnée se détendre à chaque expiration, on diminue la crispation musculaire autour de l'utérus.", "Letting your lower belly and pelvic floor soften on each exhale reduces muscle tension around the uterus.", pl = "Gdy przy każdym wydechu podbrzusze i dno miednicy się rozluźniają, zmniejsza się napięcie mięśni wokół macicy.", uk = "Коли на кожному видиху низ живота й тазове дно розслабляються, зменшується напруження м'язів навколо матки.", es = "Al dejar que el bajo vientre y el suelo pélvico se relajen en cada espiración, disminuye la tensión muscular alrededor del útero.", de = "Wenn sich Unterbauch und Beckenboden bei jedem Ausatmen entspannen, lässt die Muskelspannung rund um die Gebärmutter nach."))
+                Bullet(tr("Trois minutes (soit 18 respirations) suffisent souvent à apaiser un pic de crampe ou de tension en fin de cycle.", "Three minutes (about 18 breaths) is often enough to ease a cramp peak or late-cycle tension.", pl = "Trzy minuty (czyli 18 oddechów) często wystarczą, by złagodzić szczyt skurczu lub napięcie pod koniec cyklu.", uk = "Три хвилини (тобто 18 вдихів) часто достатньо, щоб полегшити пік спазму чи напруження наприкінці циклу.", es = "Tres minutos (es decir, 18 respiraciones) suelen bastar para aliviar un pico de calambres o la tensión al final del ciclo.", de = "Drei Minuten (also 18 Atemzüge) reichen oft aus, um einen Krampfschub oder die Anspannung am Zyklusende zu lindern."))
             }
         }
     }

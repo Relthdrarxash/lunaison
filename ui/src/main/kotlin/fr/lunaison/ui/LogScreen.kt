@@ -239,7 +239,7 @@ fun LogScreen(
                     )
                 } else {
                     Stepper(
-                        label = tr("Poids : ${"%.1f".format(Locale.FRENCH, w)} kg", "Weight: ${"%.1f".format(Locale.ENGLISH, w)} kg"),
+                        label = tr("Poids : ${"%.1f".format(Locale.FRENCH, w)} kg", "Weight: ${"%.1f".format(Locale.ENGLISH, w)} kg", pl = "Waga: ${ReportText.decimal(w.toDouble())} kg", uk = "Вага: ${ReportText.decimal(w.toDouble())} кг", es = "Peso: ${ReportText.decimal(w.toDouble())} kg", de = "Gewicht: ${ReportText.decimal(w.toDouble())} kg"),
                         onMinus = {
                             val next = ((w * 10).roundToInt() - 5).coerceAtLeast(300) / 10f
                             draft = draft.copy(weight = next)
@@ -274,7 +274,7 @@ fun LogScreen(
                     )
                 } else {
                     Stepper(
-                        label = tr("Température : ${"%.1f".format(Locale.FRENCH, temp)} °C", "Temperature: ${"%.1f".format(Locale.ENGLISH, temp)} °C"),
+                        label = tr("Température : ${"%.1f".format(Locale.FRENCH, temp)} °C", "Temperature: ${"%.1f".format(Locale.ENGLISH, temp)} °C", pl = "Temperatura: ${ReportText.decimal(temp.toDouble())} °C", uk = "Температура: ${ReportText.decimal(temp.toDouble())} °C", es = "Temperatura: ${ReportText.decimal(temp.toDouble())} °C", de = "Temperatur: ${ReportText.decimal(temp.toDouble())} °C"),
                         onMinus = {
                             val next = ((temp * 10).roundToInt() - 1).coerceAtLeast(355) / 10f
                             draft = draft.copy(basalTemperature = next)
