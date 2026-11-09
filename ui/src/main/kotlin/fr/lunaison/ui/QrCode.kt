@@ -86,7 +86,7 @@ fun QrCodeBox(
     }
     if (matrix == null) return
 
-    val qrDescription = tr("QR Code de partage Lunaison", "Lunaison sharing QR Code")
+    val qrDescription = tr("QR Code de partage Lunaison", "Lunaison sharing QR Code", pl = "Kod QR do udostępniania Lunaison", uk = "QR-код для обміну Lunaison", es = "Código QR para compartir de Lunaison", de = "Lunaison-QR-Code zum Teilen")
     Surface(
         color = Color(0xFFFBF5F2),
         shape = RoundedCornerShape(16.dp),
@@ -212,9 +212,9 @@ fun QrScannerDialog(
         title = {
             Text(
                 if (existingPartner != null) {
-                    tr("Mettre à jour le cycle de ${existingPartner.partnerName}", "Update ${existingPartner.partnerName}'s cycle")
+                    tr("Mettre à jour le cycle de ${existingPartner.partnerName}", "Update ${existingPartner.partnerName}'s cycle", pl = "Zaktualizuj cykl: ${existingPartner.partnerName}", uk = "Оновити цикл: ${existingPartner.partnerName}", es = "Actualizar el ciclo de ${existingPartner.partnerName}", de = "Zyklus von ${existingPartner.partnerName} aktualisieren")
                 } else {
-                    tr("Scanner ou coller un code", "Scan or paste a code")
+                    tr("Scanner ou coller un code", "Scan or paste a code", pl = "Zeskanuj lub wklej kod", uk = "Відскануйте або вставте код", es = "Escanear o pegar un código", de = "Code scannen oder einfügen")
                 },
             )
         },
@@ -301,10 +301,10 @@ fun QrScannerDialog(
                         pasteError = false
                         PartnerSnapshot.decode(it)?.let(deliver)
                     },
-                    label = { Text(tr("Ou coller le SMS / code LUNA1:...", "Or paste SMS / LUNA1:... code")) },
+                    label = { Text(tr("Ou coller le SMS / code LUNA1:...", "Or paste SMS / LUNA1:... code", pl = "Lub wklej SMS / kod LUNA1:...", uk = "Або вставте SMS / код LUNA1:...", es = "O pega el SMS / código LUNA1:...", de = "Oder SMS / LUNA1:...-Code einfügen")) },
                     isError = pasteError,
                     supportingText = if (pasteError) {
-                        { Text(tr("Aucun code Lunaison valide trouvé dans ce texte.", "No valid Lunaison code found in this text.")) }
+                        { Text(tr("Aucun code Lunaison valide trouvé dans ce texte.", "No valid Lunaison code found in this text.", pl = "Nie znaleziono prawidłowego kodu Lunaison w tym tekście.", uk = "У цьому тексті не знайдено дійсного коду Lunaison.", es = "No se ha encontrado ningún código Lunaison válido en este texto.", de = "In diesem Text wurde kein gültiger Lunaison-Code gefunden.")) }
                     } else {
                         null
                     },
@@ -321,13 +321,13 @@ fun QrScannerDialog(
                         if (decoded != null) deliver(decoded) else pasteError = true
                     },
                 ) {
-                    Text(if (existingPartner != null) tr("Mettre à jour", "Update") else tr("Importer", "Import"))
+                    Text(if (existingPartner != null) tr("Mettre à jour", "Update", pl = "Aktualizuj", uk = "Оновити", es = "Actualizar", de = "Aktualisieren") else tr("Importer", "Import", pl = "Importuj", uk = "Імпортувати", es = "Importar", de = "Importieren"))
                 }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(tr("Fermer", "Close"))
+                Text(tr("Fermer", "Close", pl = "Zamknij", uk = "Закрити", es = "Cerrar", de = "Schließen"))
             }
         },
     )
@@ -423,7 +423,7 @@ fun PartnerSnapshotCard(
     val guide = remember(cycle.phase) { ShareMessages.partnerGuide(cycle.phase) }
     LunaCard(container = MaterialTheme.colorScheme.secondaryContainer) {
         Text(
-            tr("Cycle de ${snapshot.partnerName} · Jour ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", "${snapshot.partnerName}'s cycle · Day ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})"),
+            tr("Cycle de ${snapshot.partnerName} · Jour ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", "${snapshot.partnerName}'s cycle · Day ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", pl = "Cykl: ${snapshot.partnerName} · Dzień ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", uk = "Цикл: ${snapshot.partnerName} · День ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", es = "Ciclo de ${snapshot.partnerName} · Día ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", de = "Zyklus von ${snapshot.partnerName} · Tag ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})"),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
         )
@@ -447,7 +447,7 @@ fun PartnerSnapshotCard(
             }
         }
         Text(
-            tr("Comment soutenir aujourd'hui :", "How to support today:"),
+            tr("Comment soutenir aujourd'hui :", "How to support today:", pl = "Jak wspierać dzisiaj:", uk = "Як підтримати сьогодні:", es = "Cómo apoyar hoy:", de = "So kann man heute unterstützen:"),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
         )
@@ -455,7 +455,7 @@ fun PartnerSnapshotCard(
             Bullet(tip)
         }
         Text(
-            tr("Partagé le ${Format.dayMonth(snapshot.sharedAt)}. Rescannez ou demandez un SMS au prochain cycle pour garder des estimations à jour.", "Shared on ${Format.dayMonth(snapshot.sharedAt)}. Rescan or request an SMS next cycle to keep estimates up to date."),
+            tr("Partagé le ${Format.dayMonth(snapshot.sharedAt)}. Rescannez ou demandez un SMS au prochain cycle pour garder des estimations à jour.", "Shared on ${Format.dayMonth(snapshot.sharedAt)}. Rescan or request an SMS next cycle to keep estimates up to date.", pl = "Udostępniono ${Format.dayMonth(snapshot.sharedAt)}. Zeskanuj ponownie lub poproś o SMS w następnym cyklu, aby prognozy były aktualne.", uk = "Передано ${Format.dayMonth(snapshot.sharedAt)}. Скануйте знову або попросіть SMS наступного циклу, щоб прогнози залишалися актуальними.", es = "Compartido el ${Format.dayMonth(snapshot.sharedAt)}. Vuelve a escanear o pide un SMS el próximo ciclo para mantener las estimaciones al día.", de = "Geteilt am ${Format.dayMonth(snapshot.sharedAt)}. Scanne erneut oder fordere im nächsten Zyklus eine SMS an, damit die Schätzungen aktuell bleiben."),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSecondaryContainer,
         )

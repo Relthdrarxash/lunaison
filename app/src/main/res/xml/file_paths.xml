@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Seul le dossier des bilans PDF temporaires est partageable. -->
+<paths>
+    <cache-path name="rapports" path="rapports/" />
+</paths>
