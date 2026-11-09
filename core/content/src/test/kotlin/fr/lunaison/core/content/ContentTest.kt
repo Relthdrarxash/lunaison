@@ -66,7 +66,7 @@ class ContentTest {
 
     @Test
     fun `aucun tiret cadratin dans les textes`() = eachLanguage {
-        val offending = allTexts().filter { '—' in it }
+        val offending = allTexts().filter { '\u2014' in it }
         assertTrue(offending.isEmpty(), "Tirets cadratins : $offending")
     }
 
@@ -173,7 +173,7 @@ class ContentTest {
         val en = InsightTexts.recapLines(recap)
         assertEquals("It lasted 32 days, 4 days longer than usual (28).", en[0])
         assertEquals("Your period arrived 3 days after the estimated date.", en[2])
-        assertTrue((fr + en).none { '—' in it })
+        assertTrue((fr + en).none { '\u2014' in it })
     }
 
     /** Les nombres d'un texte, virgule ou point décimal ramenés au point. */
@@ -220,7 +220,7 @@ class ContentTest {
                     assertNotEquals(english[i], line, "$language phrase $i identique à l'anglais")
                     assertNotEquals(french[i], line, "$language phrase $i identique au français")
                     assertEquals(numbers(french[i]), numbers(line), "$language phrase $i : nombres différents du français")
-                    assertTrue('—' !in line, "$language phrase $i : tiret cadratin")
+                    assertTrue('\u2014' !in line, "$language phrase $i : tiret cadratin")
                 }
             } finally {
                 Locale.setDefault(initialLocale)
