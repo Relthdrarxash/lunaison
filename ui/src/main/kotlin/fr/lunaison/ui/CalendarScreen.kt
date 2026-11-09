@@ -82,7 +82,7 @@ fun CalendarScreen(
     }
 
     Page {
-        PageTitle(tr("Calendrier", "Calendar"), subtitle = tr("Touchez un jour pour le noter ou le modifier.", "Tap a day to log or edit it."))
+        PageTitle(tr("Calendrier", "Calendar", pl = "Kalendarz", uk = "Календар", es = "Calendario", de = "Kalender"), subtitle = tr("Touchez un jour pour le noter ou le modifier.", "Tap a day to log or edit it.", pl = "Dotknij dnia, aby go zapisać lub zmienić.", uk = "Торкніться дня, щоб записати або змінити його.", es = "Toca un día para anotarlo o modificarlo.", de = "Tippe auf einen Tag, um ihn einzutragen oder zu ändern."))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             LunaButton(
                 tr("Analyse des cycles", "Cycle insights", "Analiza cykli", "Аналіз циклів", "Análisis de ciclos", "Zyklusanalyse"),
@@ -99,11 +99,11 @@ fun CalendarScreen(
         }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { monthText = month.minusMonths(1).toString() }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = tr("Mois précédent", "Previous month"))
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = tr("Mois précédent", "Previous month", pl = "Poprzedni miesiąc", uk = "Попередній місяць", es = "Mes anterior", de = "Vorheriger Monat"))
             }
             Text(Format.monthYear(month.atDay(1)), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
             IconButton(onClick = { monthText = month.plusMonths(1).toString() }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = tr("Mois suivant", "Next month"))
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = tr("Mois suivant", "Next month", pl = "Następny miesiąc", uk = "Наступний місяць", es = "Mes siguiente", de = "Nächster Monat"))
             }
         }
 
@@ -147,7 +147,7 @@ private fun MonthGrid(
     val colors = MaterialTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(Modifier.fillMaxWidth()) {
-            tr("LMMJVSD", "MTWTFSS").map { it.toString() }.forEach {
+            tr("LMMJVSD", "MTWTFSS", pl = "PWŚCPSN", uk = "ПВСЧПСН", es = "LMXJVSD", de = "MDMDFSS").map { it.toString() }.forEach {
                 Text(
                     it,
                     style = MaterialTheme.typography.labelMedium,
@@ -190,13 +190,13 @@ private fun DayCell(date: LocalDate, today: LocalDate, mark: DayMark, logged: Bo
     val description = buildString {
         append(Format.weekday(date))
         when (mark) {
-            DayMark.PERIOD -> append(tr(", règles", ", period"))
-            DayMark.SPOTTING -> append(tr(", traces", ", spotting"))
-            DayMark.PREDICTED -> append(tr(", règles probables", ", likely period"))
+            DayMark.PERIOD -> append(tr(", règles", ", period", pl = ", miesiączka", uk = ", менструація", es = ", regla", de = ", Periode"))
+            DayMark.SPOTTING -> append(tr(", traces", ", spotting", pl = ", plamienie", uk = ", мажучі виділення", es = ", manchado", de = ", Schmierblutung"))
+            DayMark.PREDICTED -> append(tr(", règles probables", ", likely period", pl = ", prawdopodobna miesiączka", uk = ", ймовірна менструація", es = ", regla probable", de = ", voraussichtliche Periode"))
             DayMark.NONE -> Unit
         }
-        if (logged && mark == DayMark.NONE) append(tr(", journée notée", ", day logged"))
-        if (date == today) append(tr(", aujourd'hui", ", today"))
+        if (logged && mark == DayMark.NONE) append(tr(", journée notée", ", day logged", pl = ", dzień zapisany", uk = ", день записано", es = ", día anotado", de = ", Tag eingetragen"))
+        if (date == today) append(tr(", aujourd'hui", ", today", pl = ", dzisiaj", uk = ", сьогодні", es = ", hoy", de = ", heute"))
     }
     var modifier = Modifier
         .fillMaxWidth()
@@ -233,9 +233,9 @@ private fun DayCell(date: LocalDate, today: LocalDate, mark: DayMark, logged: Bo
 private fun Legend() {
     val colors = MaterialTheme.colorScheme
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
-        LegendItem(tr("Règles", "Period")) { Surface(color = colors.secondary, shape = CircleShape, modifier = Modifier.size(16.dp)) {} }
-        LegendItem(tr("Traces", "Spotting")) { Surface(color = colors.secondaryContainer, shape = CircleShape, modifier = Modifier.size(16.dp)) {} }
-        LegendItem(tr("Prévues", "Predicted")) {
+        LegendItem(tr("Règles", "Period", pl = "Miesiączka", uk = "Менструація", es = "Regla", de = "Periode")) { Surface(color = colors.secondary, shape = CircleShape, modifier = Modifier.size(16.dp)) {} }
+        LegendItem(tr("Traces", "Spotting", pl = "Plamienie", uk = "Мажучі виділення", es = "Manchado", de = "Schmierblutung")) { Surface(color = colors.secondaryContainer, shape = CircleShape, modifier = Modifier.size(16.dp)) {} }
+        LegendItem(tr("Prévues", "Predicted", pl = "Prognozowane", uk = "Прогнозовані", es = "Previstas", de = "Vorhergesagt")) {
             Box(Modifier.size(16.dp).border(BorderStroke(2.dp, colors.secondary), CircleShape))
         }
     }
@@ -252,21 +252,21 @@ private fun LegendItem(label: String, swatch: @Composable () -> Unit) {
 @Composable
 private fun History(state: CycleState.Known) {
     val cycles = state.cycles.filter { it.isPlausible }.takeLast(6).reversed()
-    SectionTitle(tr("Vos cycles", "Your cycles"))
+    SectionTitle(tr("Vos cycles", "Your cycles", pl = "Twoje cykle", uk = "Ваші цикли", es = "Tus ciclos", de = "Deine Zyklen"))
     LunaCard {
         if (cycles.isEmpty()) {
-            Text(tr("Dès que vous aurez noté deux débuts de règles, vos cycles apparaîtront ici.", "Once you have logged the start of two periods, your cycles will appear here."), style = MaterialTheme.typography.bodyMedium)
+            Text(tr("Dès que vous aurez noté deux débuts de règles, vos cycles apparaîtront ici.", "Once you have logged the start of two periods, your cycles will appear here.", pl = "Gdy zapiszesz początki dwóch miesiączek, Twoje cykle pojawią się tutaj.", uk = "Щойно ви запишете початок двох менструацій, ваші цикли з'являться тут.", es = "En cuanto hayas anotado dos inicios de regla, tus ciclos aparecerán aquí.", de = "Sobald du den Beginn von zwei Perioden eingetragen hast, erscheinen deine Zyklen hier."), style = MaterialTheme.typography.bodyMedium)
         } else {
             Text(
-                tr("Votre cycle dure en général ${Format.days(state.stats.cycleLength)}, et vos règles ${Format.days(state.stats.periodLength)}.", "Your cycle usually lasts ${Format.days(state.stats.cycleLength)}, and your period ${Format.days(state.stats.periodLength)}."),
+                tr("Votre cycle dure en général ${Format.days(state.stats.cycleLength)}, et vos règles ${Format.days(state.stats.periodLength)}.", "Your cycle usually lasts ${Format.days(state.stats.cycleLength)}, and your period ${Format.days(state.stats.periodLength)}.", pl = "Twój cykl trwa zwykle ${Format.days(state.stats.cycleLength)}, a miesiączka ${Format.days(state.stats.periodLength)}.", uk = "Ваш цикл зазвичай триває ${Format.days(state.stats.cycleLength)}, а менструація ${Format.days(state.stats.periodLength)}.", es = "Tu ciclo suele durar ${Format.days(state.stats.cycleLength)} y tu regla ${Format.days(state.stats.periodLength)}.", de = "Dein Zyklus dauert in der Regel ${Format.days(state.stats.cycleLength)} und deine Periode ${Format.days(state.stats.periodLength)}."),
                 style = MaterialTheme.typography.bodyLarge,
             )
             cycles.forEach { cycle ->
                 val period = state.periods.firstOrNull { it.start == cycle.start }
-                val periodText = period?.let { tr(", règles de ${Format.days(it.length)}", ", period of ${Format.days(it.length)}") }.orEmpty()
-                Bullet(tr("Depuis le ${Format.dayMonth(cycle.start)} : ${Format.days(cycle.length)}$periodText", "From ${Format.dayMonth(cycle.start)}: ${Format.days(cycle.length)}$periodText"))
+                val periodText = period?.let { tr(", règles de ${Format.days(it.length)}", ", period of ${Format.days(it.length)}", pl = ", miesiączka: ${Format.days(it.length)}", uk = ", менструація: ${Format.days(it.length)}", es = ", regla de ${Format.days(it.length)}", de = ", Periode: ${Format.days(it.length)}") }.orEmpty()
+                Bullet(tr("Depuis le ${Format.dayMonth(cycle.start)} : ${Format.days(cycle.length)}$periodText", "From ${Format.dayMonth(cycle.start)}: ${Format.days(cycle.length)}$periodText", pl = "Od ${Format.dayMonth(cycle.start)}: ${Format.days(cycle.length)}$periodText", uk = "Від ${Format.dayMonth(cycle.start)}: ${Format.days(cycle.length)}$periodText", es = "Desde el ${Format.dayMonth(cycle.start)}: ${Format.days(cycle.length)}$periodText", de = "Ab dem ${Format.dayMonth(cycle.start)}: ${Format.days(cycle.length)}$periodText"))
             }
-            Muted(tr("Un écart de quelques jours d'un cycle à l'autre est normal.", "A difference of a few days from one cycle to the next is normal."))
+            Muted(tr("Un écart de quelques jours d'un cycle à l'autre est normal.", "A difference of a few days from one cycle to the next is normal.", pl = "Różnica kilku dni między kolejnymi cyklami jest normalna.", uk = "Різниця в кілька днів між одним циклом і наступним є нормальною.", es = "Una diferencia de unos días de un ciclo a otro es normal.", de = "Ein Unterschied von einigen Tagen von einem Zyklus zum nächsten ist normal."))
         }
     }
 }
