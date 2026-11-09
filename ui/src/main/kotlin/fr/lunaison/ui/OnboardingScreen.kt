@@ -126,7 +126,7 @@ fun OnboardingScreen(
                 DatePicker(state = pickerState, title = null, headline = null, showModeToggle = false)
                 val selected = pickerState.selectedDateMillis?.let { Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate() }
                 LunaButton(
-                    if (selected != null) tr("Le ${Format.dayMonth(selected)}", "${Format.dayMonth(selected)}") else tr("Choisissez une date", "Choose a date", pl = "Wybierz datę", uk = "Оберіть дату", es = "Elige una fecha", de = "Datum wählen"),
+                    if (selected != null) tr("Le ${Format.dayMonth(selected)}", "${Format.dayMonth(selected)}", pl = "${Format.dayMonth(selected)}", uk = "${Format.dayMonth(selected)}", es = "El ${Format.dayMonth(selected)}", de = "Am ${Format.dayMonth(selected)}") else tr("Choisissez une date", "Choose a date", pl = "Wybierz datę", uk = "Оберіть дату", es = "Elige una fecha", de = "Datum wählen"),
                     onClick = { lastStart = selected?.toString(); step = 3 },
                     enabled = selected != null,
                     icon = Icons.Filled.Check,

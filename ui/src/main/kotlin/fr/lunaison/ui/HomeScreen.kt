@@ -565,11 +565,11 @@ private fun TodaySummary(log: DayLog, medicationLabel: String = "") {
             add(tr("Pris aujourd'hui : $label", "Taken today: $label", pl = "Przyjęte dziś: $label", uk = "Прийнято сьогодні: $label", es = "Tomado hoy: $label", de = "Heute genommen: $label"))
         }
         if (log.medications.isNotEmpty()) add(tr("Médicaments : ", "Medications: ", pl = "Leki: ", uk = "Ліки: ", es = "Medicamentos: ", de = "Medikamente: ") + log.medications.joinToString(", ") { it.label.lowercase() })
-        log.weight?.let { add(tr("Poids : ${"%.1f".format(java.util.Locale.FRENCH, it)} kg", "Weight: ${"%.1f".format(java.util.Locale.ENGLISH, it)} kg")) }
+        log.weight?.let { add(tr("Poids : ${"%.1f".format(java.util.Locale.FRENCH, it)} kg", "Weight: ${"%.1f".format(java.util.Locale.ENGLISH, it)} kg", pl = "Waga: ${ReportText.decimal(it.toDouble())} kg", uk = "Вага: ${ReportText.decimal(it.toDouble())} кг", es = "Peso: ${ReportText.decimal(it.toDouble())} kg", de = "Gewicht: ${ReportText.decimal(it.toDouble())} kg")) }
         if (log.intimacy.isNotEmpty()) add(tr("Intimité : ", "Intimacy: ", pl = "Intymność: ", uk = "Інтимність: ", es = "Intimidad: ", de = "Intimität: ") + log.intimacy.joinToString(", ") { it.label.lowercase() })
         log.libido?.let { add(tr("Désir : ${it.label.lowercase()}", "Desire: ${it.label.lowercase()}", pl = "Pożądanie: ${it.label.lowercase()}", uk = "Бажання: ${it.label.lowercase()}", es = "Deseo: ${it.label.lowercase()}", de = "Lust: ${it.label.lowercase()}")) }
         log.mucus?.let { add(tr("Glaire : ${it.label.lowercase()}", "Mucus: ${it.label.lowercase()}", pl = "Śluz: ${it.label.lowercase()}", uk = "Слиз: ${it.label.lowercase()}", es = "Flujo cervical: ${it.label.lowercase()}", de = "Zervixschleim: ${it.label.lowercase()}")) }
-        log.basalTemperature?.let { add(tr("Température : ${"%.1f".format(java.util.Locale.FRENCH, it)} °C", "Temperature: ${"%.1f".format(java.util.Locale.ENGLISH, it)} °C")) }
+        log.basalTemperature?.let { add(tr("Température : ${"%.1f".format(java.util.Locale.FRENCH, it)} °C", "Temperature: ${"%.1f".format(java.util.Locale.ENGLISH, it)} °C", pl = "Temperatura: ${ReportText.decimal(it.toDouble())} °C", uk = "Температура: ${ReportText.decimal(it.toDouble())} °C", es = "Temperatura: ${ReportText.decimal(it.toDouble())} °C", de = "Temperatur: ${ReportText.decimal(it.toDouble())} °C")) }
     }
     LunaCard {
         Text(tr("Noté aujourd'hui", "Logged today", pl = "Zanotowane dziś", uk = "Записано сьогодні", es = "Anotado hoy", de = "Heute eingetragen"), style = MaterialTheme.typography.titleMedium)
