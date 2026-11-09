@@ -75,8 +75,8 @@ fun PinUnlockScreen(
             Text("Lunaison", style = MaterialTheme.typography.headlineMedium)
             Spacer(Modifier.height(8.dp))
             Text(
-                if (error) tr("Code incorrect, réessayez", "Incorrect code, please try again")
-                else tr("Entrez votre code à 4 chiffres", "Enter your 4-digit code"),
+                if (error) tr("Code incorrect, réessayez", "Incorrect code, please try again", pl = "Nieprawidłowy kod, spróbuj ponownie", uk = "Неправильний код, спробуйте ще раз", es = "Código incorrecto, inténtalo de nuevo", de = "Falscher Code, bitte erneut versuchen")
+                else tr("Entrez votre code à 4 chiffres", "Enter your 4-digit code", pl = "Wpisz swój 4-cyfrowy kod", uk = "Введіть свій 4-значний код", es = "Introduce tu código de 4 dígitos", de = "Gib deinen 4-stelligen Code ein"),
                 style = MaterialTheme.typography.bodyLarge,
                 color = if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -84,7 +84,7 @@ fun PinUnlockScreen(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.semantics {
-                    contentDescription = tr("${entered.length} chiffres saisis sur 4", "${entered.length} of 4 digits entered")
+                    contentDescription = tr("${entered.length} chiffres saisis sur 4", "${entered.length} of 4 digits entered", pl = "Wpisane cyfry: ${entered.length} z 4", uk = "Введено цифр: ${entered.length} з 4", es = "${entered.length} de 4 dígitos introducidos", de = "${entered.length} von 4 Ziffern eingegeben")
                 },
             ) {
                 repeat(4) { index ->
@@ -151,17 +151,17 @@ fun PinSetupDialog(
     var pin by rememberSaveable { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(tr("Choisir un code à 4 chiffres", "Choose a 4-digit PIN")) },
+        title = { Text(tr("Choisir un code à 4 chiffres", "Choose a 4-digit PIN", pl = "Wybierz 4-cyfrowy kod", uk = "Оберіть 4-значний код", es = "Elige un código de 4 dígitos", de = "4-stelligen Code wählen")) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    tr("Ce code sera demandé à l'ouverture de Lunaison et masquera l'aperçu dans les applications récentes. Attention : comme tout reste sur votre téléphone, il n'existe pas de récupération à distance.", "This code will be requested when opening Lunaison and will hide the preview in recent apps. Note: since everything stays on your phone, there is no remote recovery."),
+                    tr("Ce code sera demandé à l'ouverture de Lunaison et masquera l'aperçu dans les applications récentes. Attention : comme tout reste sur votre téléphone, il n'existe pas de récupération à distance.", "This code will be requested when opening Lunaison and will hide the preview in recent apps. Note: since everything stays on your phone, there is no remote recovery.", pl = "Ten kod będzie wymagany przy otwieraniu Lunaison i ukryje podgląd w ostatnio używanych aplikacjach. Uwaga: ponieważ wszystko pozostaje na Twoim telefonie, nie ma zdalnego odzyskiwania.", uk = "Цей код вимагатиметься під час відкриття Lunaison і приховуватиме попередній перегляд у нещодавніх застосунках. Увага: оскільки все залишається на вашому телефоні, віддаленого відновлення не існує.", es = "Este código se pedirá al abrir Lunaison y ocultará la vista previa en las aplicaciones recientes. Atención: como todo se queda en tu teléfono, no existe recuperación a distancia.", de = "Dieser Code wird beim Öffnen von Lunaison abgefragt und blendet die Vorschau in den zuletzt verwendeten Apps aus. Achtung: Da alles auf deinem Telefon bleibt, gibt es keine Wiederherstellung aus der Ferne."),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 OutlinedTextField(
                     value = pin,
                     onValueChange = { value -> pin = value.filter { it.isDigit() }.take(4) },
-                    label = { Text(tr("Code (4 chiffres)", "PIN (4 digits)")) },
+                    label = { Text(tr("Code (4 chiffres)", "PIN (4 digits)", pl = "Kod (4 cyfry)", uk = "Код (4 цифри)", es = "Código (4 dígitos)", de = "Code (4 Ziffern)")) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
@@ -174,12 +174,12 @@ fun PinSetupDialog(
                 onClick = { if (pin.length == 4) onSavePin(pin) },
                 enabled = pin.length == 4,
             ) {
-                Text(tr("Activer", "Enable"))
+                Text(tr("Activer", "Enable", pl = "Włącz", uk = "Увімкнути", es = "Activar", de = "Aktivieren"))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(tr("Annuler", "Cancel"))
+                Text(tr("Annuler", "Cancel", pl = "Anuluj", uk = "Скасувати", es = "Cancelar", de = "Abbrechen"))
             }
         },
     )

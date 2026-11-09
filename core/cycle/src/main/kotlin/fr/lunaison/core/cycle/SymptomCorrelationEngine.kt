@@ -1,6 +1,7 @@
 package fr.lunaison.core.cycle
 
 import fr.lunaison.core.model.DayLog
+import fr.lunaison.core.model.Language
 import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.Symptom
 import fr.lunaison.core.model.tr
@@ -131,6 +132,32 @@ object SymptomCorrelationEngine {
             1 -> "the day before"
             else -> "$lagDays days before"
         }
+        // Pluriel : « dni » et « дн. » invariables. Le groupe de temps porte déjà l'accord de « vos épisodes ».
+        val plTiming = when (lagDays) {
+            0 -> "tego samego dnia co Twoje epizody:"
+            1 -> "dzień przed Twoimi epizodami:"
+            else -> "$lagDays dni przed Twoimi epizodami:"
+        }
+        val ukTiming = when (lagDays) {
+            0 -> "того самого дня, що й ваші епізоди"
+            1 -> "за день до ваших епізодів"
+            else -> "за $lagDays дн. до ваших епізодів"
+        }
+        val esTiming = when (lagDays) {
+            0 -> "el mismo día que"
+            1 -> "el día antes de"
+            else -> "$lagDays días antes de"
+        }
+        val deTiming = when (lagDays) {
+            0 -> "am selben Tag wie deine Episoden von"
+            1 -> "am Tag vor deinen Episoden von"
+            else -> "$lagDays Tage vor deinen Episoden von"
+        }
+
+        // Les libellés passent en minuscules, sauf en allemand où les noms gardent leur majuscule.
+        val german = Language.current() == Language.DE
+        val from = precursor.label.let { if (german) it else it.lowercase() }
+        val to = target.label.let { if (german) it else it.lowercase() }
 
         val frNote = "Lors de plusieurs cycles précédents, ${precursor.label.lowercase()} a été noté $frTiming vos épisodes de ${target.label.lowercase()}. " +
             "Prendre un temps calme, une source de chaleur ou adapter vos activités quand ce signe apparaît peut vous aider à vivre cette période plus sereinement."
@@ -138,6 +165,18 @@ object SymptomCorrelationEngine {
         val enNote = "Across several previous cycles, ${precursor.label.lowercase()} was noted $enTiming your episodes of ${target.label.lowercase()}. " +
             "Taking a quiet moment, applying gentle warmth or pacing your day when this sign appears may help you feel more comfortable."
 
-        return tr(frNote, enNote)
+        val plNote = "W kilku wcześniejszych cyklach „$from” zapisano $plTiming „$to”. " +
+            "Chwila spokoju, źródło ciepła albo dostosowanie aktywności, gdy pojawia się ten sygnał, może pomóc Ci spokojniej przeżyć ten okres."
+
+        val ukNote = "Протягом кількох попередніх циклів «$from» записувалося $ukTiming «$to». " +
+            "Спокійна пауза, джерело тепла чи пристосування активностей, коли з'являється цей сигнал, можуть допомогти вам спокійніше пережити цей період."
+
+        val esNote = "En varios ciclos anteriores se anotó $from $esTiming tus episodios de $to. " +
+            "Dedicar un momento de calma, aplicar calor o adaptar tus actividades cuando aparece esta señal puede ayudarte a vivir este periodo con más serenidad."
+
+        val deNote = "In mehreren früheren Zyklen wurde „$from“ $deTiming „$to“ eingetragen. " +
+            "Eine ruhige Pause, eine Wärmequelle oder angepasste Aktivitäten, wenn dieses Anzeichen auftritt, können dir helfen, diese Zeit gelassener zu erleben."
+
+        return tr(fr = frNote, en = enNote, pl = plNote, uk = ukNote, es = esNote, de = deNote)
     }
 }
