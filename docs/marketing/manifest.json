@@ -1,0 +1,170 @@
+{
+  "brand": {
+    "name": "Lunaison",
+    "bg1": "#4A2C4F",
+    "bg2": "#1D1024",
+    "accent": "#E39A8F",
+    "onBg": "#FBF5F2",
+    "icon": "fastlane/metadata/android/fr-FR/images/icon.png",
+    "font": {
+      "file": "docs/fonts/atkinson-800.woff2",
+      "weight": 800,
+      "body_file": "docs/fonts/atkinson-400.woff2",
+      "bold_file": "docs/fonts/atkinson-700.woff2"
+    }
+  },
+  "langs": {
+    "fr": {
+      "tagline": "Votre cycle reste chez vous",
+      "social_line": "Suivi du cycle menstruel libre, sans compte et sans Internet, avec des fiches sourcées.",
+      "chips": [
+        "Sans compte",
+        "Hors ligne"
+      ],
+      "screens": [
+        {
+          "slug": "accueil",
+          "capture": "docs/marketing/captures/fr/accueil.png",
+          "layout": "solo",
+          "tilt": -3,
+          "title": "Où en est votre cycle",
+          "subtitle": "La phase en cours, les prochaines règles estimées et un conseil du jour.",
+          "chips": [
+            "Libre",
+            "Sans compte"
+          ]
+        },
+        {
+          "slug": "journee",
+          "capture": "docs/marketing/captures/fr/journee.png",
+          "layout": "duo",
+          "tilt": 3,
+          "title": "Noter sa journée en quelques taps",
+          "subtitle": "Flux, douleur, symptômes, humeur : tout se note sans clavier.",
+          "chips": [],
+          "second": "docs/marketing/captures/fr/calendrier.png"
+        },
+        {
+          "slug": "comprendre",
+          "capture": "docs/marketing/captures/fr/comprendre.png",
+          "layout": "duo",
+          "tilt": -3,
+          "title": "Comprendre chaque phase",
+          "subtitle": "Ce qui se passe dans le corps et ce qui aide, phase par phase.",
+          "chips": [],
+          "second": "docs/marketing/captures/fr/fiche_cycle.png"
+        },
+        {
+          "slug": "fiches",
+          "capture": "docs/marketing/captures/fr/fiche_douleurs.png",
+          "layout": "solo",
+          "tilt": 3,
+          "title": "Des fiches sourcées",
+          "subtitle": "Chaque fiche cite ses références et son niveau de preuve.",
+          "chips": []
+        },
+        {
+          "slug": "partage",
+          "capture": "docs/marketing/captures/fr/partage.png",
+          "layout": "solo",
+          "tilt": -3,
+          "title": "Prévenir son ou sa partenaire",
+          "subtitle": "Par message ou par QR Code, d'un téléphone à l'autre, sans serveur.",
+          "chips": [
+            "Facultatif",
+            "Sans serveur"
+          ]
+        },
+        {
+          "slug": "confidentialite",
+          "capture": "docs/marketing/captures/fr/accueil_sombre.png",
+          "layout": "duo",
+          "tilt": 3,
+          "title": "Tout reste sur votre téléphone",
+          "subtitle": "Pas de compte, pas de permission Internet, code PIN facultatif.",
+          "chips": [
+            "Hors ligne",
+            "Sans publicité"
+          ],
+          "second": "docs/marketing/captures/fr/reglages.png"
+        }
+      ]
+    },
+    "en": {
+      "tagline": "Your cycle stays on your phone",
+      "social_line": "Free and open source period tracker, no account, no Internet, with sourced articles.",
+      "chips": [
+        "No account",
+        "Offline"
+      ],
+      "screens": [
+        {
+          "slug": "accueil",
+          "capture": "docs/marketing/captures/en/accueil.png",
+          "layout": "solo",
+          "tilt": -3,
+          "title": "Where you are in your cycle",
+          "subtitle": "The current phase, your estimated next period and a daily tip.",
+          "chips": [
+            "Open source",
+            "No account"
+          ]
+        },
+        {
+          "slug": "journee",
+          "capture": "docs/marketing/captures/en/journee.png",
+          "layout": "duo",
+          "tilt": 3,
+          "title": "Log your day in a few taps",
+          "subtitle": "Flow, pain, symptoms, mood: all logged without typing.",
+          "chips": [],
+          "second": "docs/marketing/captures/en/calendrier.png"
+        },
+        {
+          "slug": "comprendre",
+          "capture": "docs/marketing/captures/en/comprendre.png",
+          "layout": "duo",
+          "tilt": -3,
+          "title": "Understand each phase",
+          "subtitle": "What happens in the body and what helps, phase by phase.",
+          "chips": [],
+          "second": "docs/marketing/captures/en/fiche_cycle.png"
+        },
+        {
+          "slug": "fiches",
+          "capture": "docs/marketing/captures/en/fiche_douleurs.png",
+          "layout": "solo",
+          "tilt": 3,
+          "title": "Sourced articles",
+          "subtitle": "Each article cites its references and level of evidence.",
+          "chips": []
+        },
+        {
+          "slug": "partage",
+          "capture": "docs/marketing/captures/en/partage.png",
+          "layout": "solo",
+          "tilt": -3,
+          "title": "Keep your partner in the loop",
+          "subtitle": "By message or QR code, phone to phone, with no server.",
+          "chips": [
+            "Optional",
+            "No server"
+          ]
+        },
+        {
+          "slug": "confidentialite",
+          "capture": "docs/marketing/captures/en/accueil_sombre.png",
+          "layout": "duo",
+          "tilt": 3,
+          "title": "Everything stays on your phone",
+          "subtitle": "No account, no Internet permission, optional PIN code.",
+          "chips": [
+            "Offline",
+            "No ads"
+          ],
+          "second": "docs/marketing/captures/en/reglages.png"
+        }
+      ]
+    }
+  }
+}

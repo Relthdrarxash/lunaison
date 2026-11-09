@@ -48,8 +48,15 @@ data class AppState(
                     ?.takeIf { it.record.start != settings.recapSeen }
             }
             val anticipation = if (settings.pausePredictions) null else known?.let { CycleInsights.anticipation(logs, it) }
+            // Un snapshot persisté illisible ne doit jamais provoquer une boucle de plantage au démarrage.
             val followedPartnerCycle = settings.followedPartner?.let { snap ->
-                CycleAnalyzer.analyze(snap.toDayLogs(), snap.toBaseline(), today) as? CycleState.Known
+                runCatching {
+                    if (!snap.isPlausible(today)) return@runCatching null
+                    (CycleAnalyzer.analyze(snap.toDayLogs(), snap.toBaseline(), today) as? CycleState.Known)
+                        ?.takeIf { known ->
+                            known.dayOfCycle in 1..365 && !known.lastStart.isBefore(today.minusYears(3)) && !known.lastStart.isAfter(today)
+                        }
+                }.getOrNull()
             }
             return AppState(today, logs, settings, cycle, alerts, recap, anticipation, followedPartnerCycle)
         }

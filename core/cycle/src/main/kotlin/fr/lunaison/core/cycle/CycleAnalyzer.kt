@@ -250,7 +250,7 @@ object CycleAnalyzer {
             ?: baseline?.usualPeriodLength?.coerceIn(1, 10)
             ?: CycleConfig.DEFAULT_PERIOD_LENGTH
 
-        val dayOfCycle = daysBetween(lastStart, today) + 1
+        val dayOfCycle = (daysBetween(lastStart, today).toLong() + 1L).coerceIn(1L, 3650L).toInt()
         val inPeriod = when {
             lastPeriod != null -> daysBetween(lastPeriod.end, today) <= 1 && dayOfCycle <= maxOf(periodLength, lastPeriod.length) + 1
             else -> dayOfCycle <= periodLength
