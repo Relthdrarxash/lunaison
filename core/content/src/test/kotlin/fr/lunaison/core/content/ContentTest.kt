@@ -1,9 +1,11 @@
 package fr.lunaison.core.content
 
 import fr.lunaison.core.cycle.AlertKind
+import fr.lunaison.core.cycle.CycleOverview
 import fr.lunaison.core.cycle.CycleRecap
 import fr.lunaison.core.cycle.CycleRecord
 import fr.lunaison.core.cycle.CycleState
+import fr.lunaison.core.cycle.Onset
 import fr.lunaison.core.cycle.Phase
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Flow
@@ -172,6 +174,58 @@ class ContentTest {
         assertEquals("It lasted 32 days, 4 days longer than usual (28).", en[0])
         assertEquals("Your period arrived 3 days after the estimated date.", en[2])
         assertTrue((fr + en).none { '—' in it })
+    }
+
+    /** Les nombres d'un texte, virgule ou point décimal ramenés au point. */
+    private fun numbers(text: String): List<String> =
+        Regex("""\d+(?:[.,]\d+)?""").findAll(text).map { it.value.replace(',', '.') }.sorted().toList()
+
+    private val overview = CycleOverview(
+        records = List(6) { CycleRecord(LocalDate.of(2026, 1 + it, 1), length = 26 + it, periodLength = 5, painDays = 1, expectedLength = 28) },
+        usualLength = 28,
+        shortest = 26,
+        longest = 31,
+        usualPeriodLength = 5,
+        withinReferences = false,
+        typicalPredictionError = 2,
+        predictionsChecked = 5,
+    )
+
+    private fun insightLines(): List<String> =
+        InsightTexts.recapLines(recap.copy(withinReferences = false)) +
+            InsightTexts.overviewLines(overview) +
+            InsightTexts.overviewLines(overview.copy(shortest = 28, longest = 28, withinReferences = true)) +
+            InsightTexts.predictionLine(overview) +
+            InsightTexts.predictionLine(overview.copy(typicalPredictionError = 0)) +
+            InsightTexts.predictionLine(overview.copy(typicalPredictionError = null)) +
+            InsightTexts.onsetLine(Onset("Label", daysBefore = 3, cycles = 4)) +
+            InsightTexts.onsetLine(Onset("Label", daysBefore = 1, cycles = 4)) +
+            Phase.entries.map { InsightTexts.phaseName(it) } +
+            listOf(InsightTexts.NOTHING_YET, InsightTexts.HOW_IT_WORKS)
+
+    @Test
+    fun `les phrases des statistiques sont traduites et gardent les memes nombres que le francais`() {
+        setLanguage(Language.FR)
+        val french = insightLines()
+        setLanguage(Language.EN)
+        val english = insightLines()
+        assertEquals(french.size, english.size)
+        listOf(Language.PL, Language.UK, Language.ES, Language.DE).forEach { language ->
+            try {
+                setLanguage(language)
+                val lines = insightLines()
+                assertEquals(french.size, lines.size)
+                lines.forEachIndexed { i, line ->
+                    assertTrue(line.isNotBlank(), "$language phrase $i vide")
+                    assertNotEquals(english[i], line, "$language phrase $i identique à l'anglais")
+                    assertNotEquals(french[i], line, "$language phrase $i identique au français")
+                    assertEquals(numbers(french[i]), numbers(line), "$language phrase $i : nombres différents du français")
+                    assertTrue('—' !in line, "$language phrase $i : tiret cadratin")
+                }
+            } finally {
+                Locale.setDefault(initialLocale)
+            }
+        }
     }
 
     /**
