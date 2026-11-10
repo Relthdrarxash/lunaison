@@ -6,13 +6,10 @@
         Autorisations facultatives :
         - notifications, demandée quand la personne active un rappel ;
         - caméra, demandée uniquement si la personne ouvre le lecteur de QR Code partenaire ;
-        - NFC, pour synchroniser les estimations en posant deux téléphones dos à dos (facultatif).
     -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
-    <uses-permission android:name="android.permission.NFC" />
-    <uses-feature android:name="android.hardware.nfc" android:required="false" />
 
     <!-- Messageries vers lesquelles le partage peut ouvrir directement la conversation. -->
     <queries>
@@ -74,17 +71,5 @@
                 android:resource="@xml/lunaison_widget_info" />
         </receiver>
 
-        <!-- Émulation de carte NFC pour la transmission de cycle point à point sans serveur -->
-        <service
-            android:name="fr.lunaison.ui.LunaisonHceService"
-            android:exported="true"
-            android:permission="android.permission.BIND_NFC_SERVICE">
-            <intent-filter>
-                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.nfc.cardemulation.host_apdu_service"
-                android:resource="@xml/apduservice" />
-        </service>
     </application>
 </manifest>

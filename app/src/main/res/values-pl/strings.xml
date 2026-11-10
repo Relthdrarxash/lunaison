@@ -4,5 +4,4 @@
     <string name="reminders_channel">Przypomnienia</string>
     <string name="reminders_channel_description">Powiadomienie o nadchodzącej miesiączce i przypomnienie o wpisie dnia</string>
     <string name="widget_description">Dyskretny wskaźnik dnia i fazy cyklu</string>
-    <string name="nfc_sync_description">Synchronizacja cyklu Lunaison</string>
 </resources>

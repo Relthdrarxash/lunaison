@@ -21,7 +21,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -228,12 +227,12 @@ private fun QrSyncSection(
 
     SectionTitle(
         tr(
-            "Partage et mise à jour (QR Code, NFC ou SMS)",
-            "Share and update (QR Code, NFC or SMS)",
-            pl = "Udostępnianie i aktualizacja (QR Code, NFC lub SMS)",
-            uk = "Поширення та оновлення (QR-код, NFC або SMS)",
-            es = "Compartir y actualizar (código QR, NFC o SMS)",
-            de = "Teilen und Aktualisieren (QR-Code, NFC oder SMS)",
+            "Partage et mise à jour (QR Code ou SMS)",
+            "Share and update (QR Code or SMS)",
+            pl = "Udostępnianie i aktualizacja (QR Code lub SMS)",
+            uk = "Поширення та оновлення (QR-код або SMS)",
+            es = "Compartir y actualizar (código QR o SMS)",
+            de = "Teilen und Aktualisieren (QR-Code oder SMS)",
         ),
     )
 
@@ -259,15 +258,6 @@ private fun QrSyncSection(
         }
         val encoded = remember(snapshot) { snapshot.encode() }
 
-        DisposableEffect(encoded) {
-            LunaisonHceService.currentPayload = encoded
-            onDispose {
-                if (LunaisonHceService.currentPayload == encoded) {
-                    LunaisonHceService.currentPayload = null
-                }
-            }
-        }
-
         LunaCard {
             Text(
                 tr("Transmettre ou mettre à jour mes estimations (sans serveur)", "Share or update my estimates (serverless)", pl = "Przekaż lub zaktualizuj moje prognozy (bez serwera)", uk = "Передати або оновити мої прогнози (без сервера)", es = "Enviar o actualizar mis estimaciones (sin servidor)", de = "Meine Schätzungen übermitteln oder aktualisieren (ohne Server)"),
@@ -275,12 +265,12 @@ private fun QrSyncSection(
             )
             Text(
                 tr(
-                    "Ce même QR Code (ou approche NFC, ou code SMS) sert aussi bien la première fois que pour mettre à jour le calendrier de votre partenaire au cycle suivant : les cycles déjà connus sont fusionnés sans doublon. Vous pouvez aussi coller les deux téléphones dos à dos (NFC) pour synchroniser instantanément sans viser. Vos notes personnelles ne sont jamais incluses.",
-                    "This same QR Code (or NFC tap, or SMS code) works both the first time and to update your partner's calendar next cycle: already-known cycles are merged without duplicates. You can also tap phones back-to-back (NFC) to sync instantly without aiming. Your personal notes are never included.",
-                    pl = "Ten sam kod QR (albo zbliżenie NFC, czy SMS) służy zarówno przy pierwszym połączeniu, jak i do aktualizacji kalendarza partnera w kolejnym cyklu: znane cykle są łączone bez duplikatów. Możecie też po prostu zbliżyć telefony tyłem do siebie (NFC), aby zsynchronizować bez celowania. Twoje osobiste notatki nigdy nie są dołączane.",
-                    uk = "Цей самий QR-код (або NFC-дотик, чи SMS-код) підходить як для першого разу, так і для оновлення календаря партнера в наступному циклі: відомі цикли об\'єднуються без дублікатів. Ви також можете просто прикласти телефони спинками (NFC) для миттєвої синхронізації без прицілювання. Ваші особисті нотатки ніколи не передаються.",
-                    es = "Este mismo código QR (o contacto NFC, o código SMS) sirve tanto la primera vez como para actualizar el calendario de tu pareja en el siguiente ciclo: los ciclos ya conocidos se combinan sin duplicados. También podéis juntar los teléfonos dorso con dorso (NFC) para sincronizar al instante sin apuntar. Tus notas personales nunca se incluyen.",
-                    de = "Derselbe QR-Code (oder NFC-Kopplung bzw. SMS-Code) funktioniert sowohl beim ersten Mal als auch zur Aktualisierung des Kalenders deines Partners im nächsten Zyklus: Bekannte Zyklen werden ohne Duplikate zusammengeführt. Ihr könnt die Telefone auch Rücken an Rücken halten (NFC), um sofort ohne Zielen zu synchronisieren. Deine persönlichen Notizen werden niemals übertragen.",
+                    "Ce même QR Code (ou code SMS) sert aussi bien la première fois que pour mettre à jour le calendrier de votre partenaire au cycle suivant : les cycles déjà connus sont fusionnés sans doublon. Vos notes personnelles ne sont jamais incluses.",
+                    "This same QR Code (or SMS code) works both the first time and to update your partner's calendar next cycle: already-known cycles are merged without duplicates. Your personal notes are never included.",
+                    pl = "Ten sam kod QR (albo kod SMS) służy zarówno przy pierwszym połączeniu, jak i do aktualizacji kalendarza partnera w kolejnym cyklu: znane cykle są łączone bez duplikatów. Twoje osobiste notatki nigdy nie są dołączane.",
+                    uk = "Цей самий QR-код (або SMS-код) підходить як для першого разу, так і для оновлення календаря партнера в наступному циклі: відомі цикли об\'єднуються без дублікатів. Ваші особисті нотатки ніколи не передаються.",
+                    es = "Este mismo código QR (o código SMS) sirve tanto la primera vez como para actualizar el calendario de tu pareja en el siguiente ciclo: los ciclos ya conocidos se combinan sin duplicados. Tus notas personales nunca se incluyen.",
+                    de = "Derselbe QR-Code (oder SMS-Code) funktioniert sowohl beim ersten Mal als auch zur Aktualisierung des Kalenders deines Partners im nächsten Zyklus: Bekannte Zyklen werden ohne Duplikate zusammengeführt. Deine persönlichen Notizen werden niemals übertragen.",
                 ),
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -315,12 +305,12 @@ private fun QrSyncSection(
                 }
                 Muted(
                     tr(
-                        "Sur le téléphone de votre partenaire : appuyez sur « Mettre à jour (QR / NFC / SMS) » sur l'accueil, ou ouvrez Partager > Scanner un QR Code (ou collez les téléphones dos à dos).",
-                        "On your partner's phone: tap 'Update (QR / NFC / SMS)' on the home screen, or open Share > Scan a QR Code (or tap phones back-to-back).",
-                        pl = "Na telefonie partnera: naciśnij „Aktualizuj (QR / NFC / SMS)” na ekranie głównym lub otwórz Udostępnij > Zeskanuj kod QR (albo zbliżcie telefony tyłem do siebie).",
-                        uk = "На телефоні партнера: натисніть «Оновити (QR / NFC / SMS)» на головному екрані або відкрийте Поділитися > Сканувати QR-код (чи прикладіть телефони спинками).",
-                        es = "En el teléfono de tu pareja: pulsa en «Actualizar (QR / NFC / SMS)» en la pantalla de inicio, o abre Compartir > Escanear código QR (o junta los teléfonos dorso con dorso).",
-                        de = "Auf dem Smartphone deines Partners: Tippe auf der Startseite auf „Aktualisieren (QR / NFC / SMS)“ oder öffne Teilen > QR-Code scannen (oder halte die Geräte Rücken an Rücken).",
+                        "Sur le téléphone de votre partenaire : appuyez sur « Mettre à jour (QR / SMS) » sur l'accueil, ou ouvrez Partager > Scanner un QR Code.",
+                        "On your partner's phone: tap 'Update (QR / SMS)' on the home screen, or open Share > Scan a QR Code.",
+                        pl = "Na telefonie partnera: naciśnij „Aktualizuj (QR / SMS)” na ekranie głównym lub otwórz Udostępnij > Zeskanuj kod QR.",
+                        uk = "На телефоні партнера: натисніть «Оновити (QR / SMS)» на головному екрані або відкрийте Поділитися > Сканувати QR-код.",
+                        es = "En el teléfono de tu pareja: pulsa en «Actualizar (QR / SMS)» en la pantalla de inicio, o abre Compartir > Escanear código QR.",
+                        de = "Auf dem Smartphone deines Partners: Tippe auf der Startseite auf „Aktualisieren (QR / SMS)“ oder öffne Teilen > QR-Code scannen.",
                     ),
                 )
             }
@@ -369,23 +359,23 @@ private fun QrSyncSection(
             )
             Text(
                 tr(
-                    "Scannez le QR Code affiché sur le téléphone de votre partenaire, collez le SMS reçu ou collez les téléphones dos à dos (NFC) pour afficher ses estimations et les conseils de soutien.",
-                    "Scan the QR Code shown on your partner's phone, paste the SMS received, or tap phones back-to-back (NFC) to view their estimates and support tips.",
-                    pl = "Zeskanuj kod QR na telefonie partnera, wklej otrzymany SMS lub zbliż telefony tyłem do siebie (NFC), aby wyświetlić prognozy i wskazówki wsparcia.",
-                    uk = "Відскануйте QR-код на телефоні партнера, вставте отримане SMS або прикладіть телефони спинками (NFC), щоб переглядати оцінки та поради щодо підтримки.",
-                    es = "Escanea el código QR del teléfono de tu pareja, pega el SMS recibido o junta los teléfonos dorso con dorso (NFC) para ver sus previsiones y consejos de apoyo.",
-                    de = "Scanne den QR-Code auf dem Gerät deines Partners, füge die empfangene SMS ein oder halte die Telefone Rücken an Rücken (NFC), um Vorhersagen und Tipps anzuzeigen.",
+                    "Scannez le QR Code affiché sur le téléphone de votre partenaire ou collez le SMS reçu pour afficher ses estimations et les conseils de soutien.",
+                    "Scan the QR Code shown on your partner's phone or paste the SMS received to view their estimates and support tips.",
+                    pl = "Zeskanuj kod QR na telefonie partnera lub wklej otrzymany SMS, aby wyświetlić prognozy i wskazówki wsparcia.",
+                    uk = "Відскануйте QR-код на телефоні партнера або вставте отримане SMS, щоб переглядати оцінки та поради щодо підтримки.",
+                    es = "Escanea el código QR del teléfono de tu pareja o pega el SMS recibido para ver sus previsiones y consejos de apoyo.",
+                    de = "Scanne den QR-Code auf dem Gerät deines Partners oder füge die empfangene SMS ein, um Vorhersagen und Tipps anzuzeigen.",
                 ),
                 style = MaterialTheme.typography.bodySmall,
             )
             LunaButton(
                 tr(
-                    "Scanner un QR Code (ou NFC / SMS)",
-                    "Scan a QR Code (or NFC / SMS)",
-                    pl = "Zeskanuj kod QR (lub NFC / SMS)",
-                    uk = "Сканувати QR-код (або NFC / SMS)",
-                    es = "Escanear un código QR (o NFC / SMS)",
-                    de = "QR-Code scannen (oder NFC / SMS)",
+                    "Scanner un QR Code (ou SMS)",
+                    "Scan a QR Code (or SMS)",
+                    pl = "Zeskanuj kod QR (lub SMS)",
+                    uk = "Сканувати QR-код (або SMS)",
+                    es = "Escanear un código QR (o SMS)",
+                    de = "QR-Code scannen (oder SMS)",
                 ),
                 onClick = { showScanner = true },
                 style = LunaButtonStyle.Outlined,

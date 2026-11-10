@@ -94,19 +94,6 @@ data class PartnerSnapshot(
         return "$PREFIX$b64"
     }
 
-    /**
-     * Comme [encode], mais raccourcit le nom (par caractères entiers) jusqu'à ce que le code tienne dans [maxLength] octets.
-     * Sert à la transmission NFC, dont la réponse est limitée à 256 octets.
-     */
-    fun encodeWithin(maxLength: Int): String {
-        var name = sanitizeName(partnerName)
-        while (true) {
-            val code = copy(partnerName = name).encode()
-            if (code.length <= maxLength || name.isEmpty()) return code
-            name = name.substring(0, name.offsetByCodePoints(name.length, -1))
-        }
-    }
-
     companion object {
         const val PREFIX = "LUNA1:"
         private val TOKEN_REGEX = Regex("""LUNA1:[A-Za-z0-9_-]+""")

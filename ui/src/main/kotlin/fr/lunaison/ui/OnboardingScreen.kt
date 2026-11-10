@@ -145,12 +145,12 @@ fun OnboardingScreen(
                 }
                 LunaButton(
                     tr(
-                        "Je suis partenaire (scanner un QR Code, NFC ou SMS)",
-                        "I am a partner (scan a QR Code, NFC or SMS)",
-                        pl = "Wspieram bliską osobę (kod QR, NFC lub SMS)",
-                        uk = "Підтримую близьку людину (QR-код, NFC або SMS)",
-                        es = "Soy pareja (código QR, NFC o SMS)",
-                        de = "Ich begleite eine nahestehende Person (QR-Code, NFC oder SMS)",
+                        "Je suis partenaire (scanner un QR Code ou SMS)",
+                        "I am a partner (scan a QR Code or SMS)",
+                        pl = "Wspieram bliską osobę (kod QR lub SMS)",
+                        uk = "Підтримую близьку людину (QR-код або SMS)",
+                        es = "Soy pareja (código QR o SMS)",
+                        de = "Ich begleite eine nahestehende Person (QR-Code oder SMS)",
                     ),
                     onClick = { showPartnerScanner = true },
                     style = LunaButtonStyle.Outlined,
