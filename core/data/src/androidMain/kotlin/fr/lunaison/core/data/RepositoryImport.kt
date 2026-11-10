@@ -41,7 +41,7 @@ suspend fun LunaisonRepository.importPeriodCalendarJson(jsonContent: String): Pe
 /**
  * Tente d'importer automatiquement n'importe quel fichier (Zip Calendrier, JSON ou CSV).
  */
-suspend fun LunaisonRepository.importAuto(bytes: ByteArray, password: String? = null): ImportSummary {
+actual suspend fun LunaisonRepository.importAuto(bytes: ByteArray, password: String?): ImportSummary {
     if (PeriodCalendarImporter.isZip(bytes)) {
         val result = importPeriodCalendarZip(bytes, password)
         return ImportSummary(daysCount = result.dayLogs.size, cyclesCount = result.cyclesCount)

@@ -1,13 +1,5 @@
 package fr.lunaison.ui
 
-import android.Manifest
-import android.content.Context
-import android.content.Intent
-import android.os.Build
-import android.provider.Settings
-import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,14 +25,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import androidx.core.app.NotificationManagerCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import fr.lunaison.core.designsystem.LunaButton
 import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
@@ -74,7 +61,6 @@ fun OnboardingScreen(
     actions: Actions? = null,
     onClose: (() -> Unit)? = null,
 ) {
-    val context = LocalContext.current
     var stepIndex by rememberSaveable { mutableIntStateOf(OnboardingStep.WELCOME.ordinal) }
     val step = OnboardingStep.entries[stepIndex]
     var ageGroup by rememberSaveable { mutableStateOf(current?.ageGroup) }
@@ -86,21 +72,8 @@ fun OnboardingScreen(
     var importMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var showPinSetup by rememberSaveable { mutableStateOf(false) }
     var notificationsAsked by rememberSaveable { mutableStateOf(false) }
-    var notificationsOn by remember { mutableStateOf(notificationsAllowed(context)) }
-
-    // Au retour des réglages d'Android, l'état des notifications peut avoir changé.
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) notificationsOn = notificationsAllowed(context)
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
-    val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        notificationsAsked = true
-        notificationsOn = granted || notificationsAllowed(context)
-    }
+    val notifications = rememberNotificationAccess(onAnswered = { notificationsAsked = true })
+    val notificationsOn = notifications.allowed
 
     fun baseline() = OnboardingFlow.finalBaseline(current ?: Baseline(AgeGroup.ADULT), ageGroup, lastStart?.let { LocalDate.parse(it) }, usualLength, periodLength)
     fun goNext() {
@@ -134,7 +107,7 @@ fun OnboardingScreen(
                 }
                 importMessage?.let { Muted(it) }
                 LunaButton(tr("Commencer (suivre mon cycle)", "Get started (track my cycle)", pl = "Zaczynamy (śledzę swój cykl)", uk = "Почати (стежити за своїм циклом)", es = "Empezar (seguir mi ciclo)", de = "Los geht's (meinen Zyklus begleiten)"), onClick = { goNext() })
-                if (actions != null) {
+                if (actions != null && importAvailable) {
                     LunaButton(
                         tr("J'ai déjà des données : importer", "I already have data: import", pl = "Mam już dane: importuj", uk = "Маю дані: імпортувати", es = "Ya tengo datos: importar", de = "Ich habe schon Daten: importieren"),
                         onClick = { showImport = true },
@@ -308,11 +281,11 @@ fun OnboardingScreen(
                     }
                     notificationsAsked -> {
                         LunaCard {
-                            Bullet(tr("Les notifications sont refusées : aucun rappel ne sera envoyé. Vous pouvez les autoriser à tout moment dans les réglages d'Android.", "Notifications are blocked: no reminder will be sent. You can allow them at any time in Android settings.", pl = "Powiadomienia są zablokowane: żadne przypomnienie nie zostanie wysłane. Możesz je włączyć w dowolnej chwili w ustawieniach Androida.", uk = "Сповіщення заблоковано: нагадування не надходитимуть. Ви можете дозволити їх будь-коли в налаштуваннях Android.", es = "Las notificaciones están bloqueadas: no se enviará ningún aviso. Puedes permitirlas en cualquier momento en los ajustes de Android.", de = "Benachrichtigungen sind blockiert: Es wird keine Erinnerung gesendet. Du kannst sie jederzeit in den Android-Einstellungen erlauben."))
+                            Bullet(tr("Les notifications sont refusées : aucun rappel ne sera envoyé. Vous pouvez les autoriser à tout moment dans les réglages d'${platformName}.", "Notifications are blocked: no reminder will be sent. You can allow them at any time in ${platformName} settings.", pl = "Powiadomienia są zablokowane: żadne przypomnienie nie zostanie wysłane. Możesz je włączyć w dowolnej chwili w ustawieniach ${platformName}.", uk = "Сповіщення заблоковано: нагадування не надходитимуть. Ви можете дозволити їх будь-коли в налаштуваннях ${platformName}.", es = "Las notificaciones están bloqueadas: no se enviará ningún aviso. Puedes permitirlas en cualquier momento en los ajustes de ${platformName}.", de = "Benachrichtigungen sind blockiert: Es wird keine Erinnerung gesendet. Du kannst sie jederzeit in den ${platformName}-Einstellungen erlauben."))
                         }
                         LunaButton(
-                            tr("Ouvrir les réglages d'Android", "Open Android settings", pl = "Otwórz ustawienia Androida", uk = "Відкрити налаштування Android", es = "Abrir los ajustes de Android", de = "Android-Einstellungen öffnen"),
-                            onClick = { openNotificationSettings(context) },
+                            tr("Ouvrir les réglages d'${platformName}", "Open ${platformName} settings", pl = "Otwórz ustawienia ${platformName}", uk = "Відкрити налаштування ${platformName}", es = "Abrir los ajustes de ${platformName}", de = "${platformName}-Einstellungen öffnen"),
+                            onClick = notifications.openSettings,
                             style = LunaButtonStyle.Outlined,
                         )
                         finishButtons()
@@ -321,14 +294,7 @@ fun OnboardingScreen(
                         Muted(tr("Android va vous demander une autorisation : vous pouvez refuser, l'appli fonctionne sans.", "Android will ask for permission: you can say no, the app works without it.", pl = "Android poprosi o zgodę: możesz odmówić, aplikacja działa także bez niej.", uk = "Android попросить дозвіл: можна відмовити, застосунок працює й без нього.", es = "Android te pedirá permiso: puedes rechazar, la aplicación funciona sin él.", de = "Android fragt nach der Erlaubnis: Du kannst ablehnen, die App funktioniert auch ohne."))
                         LunaButton(
                             tr("Autoriser les notifications", "Allow notifications", pl = "Zezwól na powiadomienia", uk = "Дозволити сповіщення", es = "Permitir notificaciones", de = "Benachrichtigungen erlauben"),
-                            onClick = {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                    notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                } else {
-                                    notificationsAsked = true
-                                    notificationsOn = notificationsAllowed(context)
-                                }
-                            },
+                            onClick = notifications.request,
                         )
                         LunaButton(later, onClick = { onFinish(baseline()) }, style = LunaButtonStyle.Quiet)
                     }
@@ -336,17 +302,6 @@ fun OnboardingScreen(
             }
         }
     }
-}
-
-/** Les notifications peuvent être envoyées : autorisation accordée (Android 13 et plus) et non coupées dans les réglages d'Android. */
-private fun notificationsAllowed(context: Context): Boolean =
-    runCatching { NotificationManagerCompat.from(context).areNotificationsEnabled() }.getOrDefault(false)
-
-private fun openNotificationSettings(context: Context) {
-    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    runCatching { context.startActivity(intent) }
 }
 
 /** Réglage d'une valeur avec deux gros boutons, sans clavier. [what] précise la valeur pour TalkBack. */

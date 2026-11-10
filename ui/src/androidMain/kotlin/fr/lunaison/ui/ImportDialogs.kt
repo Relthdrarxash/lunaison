@@ -52,7 +52,7 @@ internal fun importSummaryMessage(summary: ImportSummary): String =
  * Tout est traité sur le téléphone ; [onResult] reçoit le message à afficher.
  */
 @Composable
-fun ImportDialogs(
+actual fun ImportDialogs(
     showSource: Boolean,
     onDismiss: () -> Unit,
     actions: Actions,

@@ -30,12 +30,14 @@ kotlin {
         commonMain.dependencies {
             api(project(":core:designsystem"))
             api(project(":core:data"))
+            implementation(libs.jb.navigation.compose)
+            implementation(libs.jb.lifecycle.runtime.compose)
+            implementation(libs.kotlinx.coroutines.core)
         }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.androidx.navigation.compose)
             implementation(libs.androidx.camera.core)
             implementation(libs.androidx.camera.camera2)
             implementation(libs.androidx.camera.lifecycle)

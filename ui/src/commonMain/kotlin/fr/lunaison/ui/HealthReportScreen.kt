@@ -1,10 +1,5 @@
 package fr.lunaison.ui
 
-import android.content.ActivityNotFoundException
-import android.content.ClipData
-import android.content.Context
-import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,9 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import fr.lunaison.core.content.InsightTexts
 import fr.lunaison.core.cycle.CycleInsights
 import fr.lunaison.core.cycle.CycleState
@@ -35,7 +28,6 @@ import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.PillStatus
 import fr.lunaison.core.model.Symptom
 import fr.lunaison.core.model.tr
-import java.io.File
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,7 +73,7 @@ fun HealthReportScreen(
     val report = remember(state.logs, cycle, ageGroup) {
         cycle?.let { CycleInsights.healthReport(state.logs, it, ageGroup) }
     }
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
     val scope = rememberCoroutineScope()
     var exporting by remember { mutableStateOf(false) }
 
@@ -463,52 +455,50 @@ fun HealthReportScreen(
             }
         }
 
-        LunaButton(
-            if (exporting) {
-                tr(
-                    fr = "Création du PDF...",
-                    en = "Creating the PDF...",
-                    pl = "Tworzenie pliku PDF...",
-                    uk = "Створення PDF...",
-                    es = "Creando el PDF...",
-                    de = "PDF wird erstellt...",
-                )
-            } else {
-                tr(fr = "Exporter en PDF", en = "Export as PDF", pl = "Eksportuj do PDF", uk = "Експортувати в PDF", es = "Exportar a PDF", de = "Als PDF exportieren")
-            },
-            onClick = {
-                if (!exporting) {
-                    exporting = true
-                    val sections = selectedSections
-                    val medicationLabel = state.settings.reminders.medicationLabel
-                    scope.launch {
-                        try {
-                            val file = withContext(Dispatchers.IO) {
-                                val document = buildReportDocument(report, medicationLabel, logsLast90Days, sections)
-                                HealthReportPdf.export(context, document)
+        if (pdfReportAvailable) {
+            LunaButton(
+                if (exporting) {
+                    tr(
+                        fr = "Création du PDF...",
+                        en = "Creating the PDF...",
+                        pl = "Tworzenie pliku PDF...",
+                        uk = "Створення PDF...",
+                        es = "Creando el PDF...",
+                        de = "PDF wird erstellt...",
+                    )
+                } else {
+                    tr(fr = "Exporter en PDF", en = "Export as PDF", pl = "Eksportuj do PDF", uk = "Експортувати в PDF", es = "Exportar a PDF", de = "Als PDF exportieren")
+                },
+                onClick = {
+                    if (!exporting) {
+                        exporting = true
+                        val sections = selectedSections
+                        val medicationLabel = state.settings.reminders.medicationLabel
+                        scope.launch {
+                            try {
+                                shareHealthReportPdf(context, report, medicationLabel, logsLast90Days, sections)
+                            } catch (e: CancellationException) {
+                                throw e
+                            } catch (_: Exception) {
+                                val message = tr(
+                                    fr = "Impossible de créer le PDF.",
+                                    en = "Could not create the PDF.",
+                                    pl = "Nie udało się utworzyć pliku PDF.",
+                                    uk = "Не вдалося створити PDF.",
+                                    es = "No se pudo crear el PDF.",
+                                    de = "Das PDF konnte nicht erstellt werden.",
+                                )
+                                showToast(context, message)
+                            } finally {
+                                exporting = false
                             }
-                            sharePdf(context, file)
-                        } catch (e: CancellationException) {
-                            throw e
-                        } catch (_: Exception) {
-                            val message = tr(
-                                fr = "Impossible de créer le PDF.",
-                                en = "Could not create the PDF.",
-                                pl = "Nie udało się utworzyć pliku PDF.",
-                                uk = "Не вдалося створити PDF.",
-                                es = "No se pudo crear el PDF.",
-                                de = "Das PDF konnte nicht erstellt werden.",
-                            )
-                            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                        } finally {
-                            exporting = false
                         }
                     }
-                }
-            },
-            icon = Icons.Filled.Share,
-            enabled = !exporting,
-        )
+                },
+                icon = Icons.Filled.Share,
+                enabled = !exporting,
+            )
+        }
         Muted(
             tr(
                 fr = "Ce résumé est généré sur votre téléphone pour faciliter l'échange avec un professionnel de santé. Il ne constitue pas un diagnostic médical.",
@@ -519,37 +509,5 @@ fun HealthReportScreen(
                 de = "Diese Zusammenfassung wird auf deinem Smartphone erstellt und erleichtert das Gespräch mit medizinischem Fachpersonal. Sie ist keine medizinische Diagnose.",
             ),
         )
-    }
-}
-
-/** Ouvre le sélecteur de partage pour le PDF, lu par les autres applis via le FileProvider de Lunaison. */
-private fun sharePdf(context: Context, file: File) {
-    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fichiers", file)
-    val subject = tr(
-        fr = "Bilan de cycle Lunaison",
-        en = "Lunaison cycle health report",
-        pl = "Raport o cyklu z Lunaison",
-        uk = "Звіт про цикл із Lunaison",
-        es = "Informe del ciclo de Lunaison",
-        de = "Zyklusbericht von Lunaison",
-    )
-    val send = Intent(Intent.ACTION_SEND)
-        .setType("application/pdf")
-        .putExtra(Intent.EXTRA_SUBJECT, subject)
-        .putExtra(Intent.EXTRA_STREAM, uri)
-        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    send.clipData = ClipData.newRawUri(file.name, uri)
-    try {
-        context.startActivity(Intent.createChooser(send, null).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION))
-    } catch (_: ActivityNotFoundException) {
-        val message = tr(
-            fr = "Aucune appli pour partager ce PDF.",
-            en = "No app available to share this PDF.",
-            pl = "Brak aplikacji do udostępnienia tego pliku PDF.",
-            uk = "Немає застосунку, щоб поділитися цим PDF.",
-            es = "No hay ninguna aplicación para compartir este PDF.",
-            de = "Keine App zum Teilen dieses PDFs verfügbar.",
-        )
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 }

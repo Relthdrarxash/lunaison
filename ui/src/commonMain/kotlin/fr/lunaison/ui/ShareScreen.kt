@@ -1,13 +1,5 @@
 package fr.lunaison.ui
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.provider.ContactsContract
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -29,7 +21,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
@@ -101,41 +92,26 @@ fun ShareScreen(state: AppState, actions: Actions, onBack: () -> Unit, onArticle
 
 @Composable
 private fun PartnerForm(initial: Partner?, onSave: (Partner) -> Unit, onCancel: (() -> Unit)?) {
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
     var name by rememberSaveable { mutableStateOf(initial?.name.orEmpty()) }
     var phone by rememberSaveable { mutableStateOf(initial?.phone.orEmpty()) }
     var channel by rememberSaveable { mutableStateOf(initial?.channel ?: PartnerChannel.SMS) }
 
     // Le sélecteur de contacts du système ne donne accès qu'au contact choisi : aucune autorisation n'est nécessaire.
-    val picker = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val uri = result.data?.data ?: return@rememberLauncherForActivityResult
-        context.contentResolver.query(
-            uri,
-            arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER),
-            null,
-            null,
-            null,
-        )?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                name = cursor.getString(0).orEmpty().substringBefore(" ")
-                phone = cursor.getString(1).orEmpty()
-            }
-        }
+    val pickContact = rememberContactPicker { pickedName, pickedPhone ->
+        name = pickedName
+        phone = pickedPhone
     }
 
     SectionTitle(tr("À qui écrire ?", "Who to write to?", pl = "Do kogo napisać?", uk = "Кому написати?", es = "¿A quién escribir?", de = "An wen schreiben?"))
-    LunaButton(
-        tr("Choisir dans mes contacts", "Choose from my contacts", pl = "Wybierz z kontaktów", uk = "Вибрати з контактів", es = "Elegir de mis contactos", de = "Aus meinen Kontakten wählen"),
-        onClick = {
-            try {
-                picker.launch(Intent(Intent.ACTION_PICK).setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE))
-            } catch (_: ActivityNotFoundException) {
-                // Pas de carnet d'adresses : la saisie manuelle reste possible.
-            }
-        },
-        style = LunaButtonStyle.Outlined,
-        icon = Icons.Filled.Person,
-    )
+    if (pickContact != null) {
+        LunaButton(
+            tr("Choisir dans mes contacts", "Choose from my contacts", pl = "Wybierz z kontaktów", uk = "Вибрати з контактів", es = "Elegir de mis contactos", de = "Aus meinen Kontakten wählen"),
+            onClick = pickContact,
+            style = LunaButtonStyle.Outlined,
+            icon = Icons.Filled.Person,
+        )
+    }
     OutlinedTextField(name, { name = it.take(40) }, label = { Text(tr("Prénom", "First name", pl = "Imię", uk = "Ім'я", es = "Nombre", de = "Vorname")) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
     OutlinedTextField(
         phone,
@@ -170,7 +146,7 @@ private fun PartnerForm(initial: Partner?, onSave: (Partner) -> Unit, onCancel: 
 
 @Composable
 private fun Composer(state: AppState, partner: Partner, onEdit: () -> Unit, onRemove: () -> Unit) {
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
     val suggestions = remember(state.cycle) { ShareMessages.suggestions(state.cycle) }
     var kind by rememberSaveable { mutableStateOf(suggestions.first()) }
     var text by rememberSaveable(kind) { mutableStateOf(ShareMessages.text(kind, state.cycle)) }
@@ -221,7 +197,7 @@ private fun QrSyncSection(
     actions: Actions,
     partner: Partner?,
 ) {
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
     val known = state.cycle as? CycleState.Known
     var showQr by rememberSaveable { mutableStateOf(false) }
     var showScanner by rememberSaveable { mutableStateOf(false) }
@@ -260,14 +236,7 @@ private fun QrSyncSection(
         }
         val encoded = remember(snapshot) { snapshot.encode() }
 
-        DisposableEffect(encoded) {
-            LunaisonHceService.currentPayload = encoded
-            onDispose {
-                if (LunaisonHceService.currentPayload == encoded) {
-                    LunaisonHceService.currentPayload = null
-                }
-            }
-        }
+        NfcShareEffect(encoded)
 
         LunaCard {
             Text(
@@ -403,46 +372,5 @@ private fun QrSyncSection(
             },
             onDismiss = { showScanner = false },
         )
-    }
-}
-
-/** Prépare le message et ouvre la messagerie. Aucune autorisation : c'est la messagerie qui envoie. */
-object ShareLauncher {
-    private const val WHATSAPP = "com.whatsapp"
-    private const val WHATSAPP_BUSINESS = "com.whatsapp.w4b"
-    private const val SIGNAL = "org.thoughtcrime.securesms"
-
-    fun send(context: Context, partner: Partner, text: String) {
-        val intent = when (partner.channel) {
-            PartnerChannel.SMS -> partner.phone?.let {
-                Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + Uri.encode(it))).putExtra("sms_body", text)
-            }
-            PartnerChannel.WHATSAPP -> installed(context, WHATSAPP, WHATSAPP_BUSINESS)?.let { pkg ->
-                val digits = partner.phone.orEmpty().filter { it.isDigit() }
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$digits?text=" + Uri.encode(text))).setPackage(pkg)
-            }
-            PartnerChannel.SIGNAL -> installed(context, SIGNAL)?.let { pkg -> plainText(text).setPackage(pkg) }
-            PartnerChannel.OTHER -> null
-        }
-        try {
-            context.startActivity(intent ?: Intent.createChooser(plainText(text), null))
-        } catch (_: ActivityNotFoundException) {
-            context.startActivity(Intent.createChooser(plainText(text), null))
-        }
-    }
-
-    fun shareAny(context: Context, text: String) {
-        context.startActivity(Intent.createChooser(plainText(text), null))
-    }
-
-    private fun plainText(text: String) = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
-
-    private fun installed(context: Context, vararg packages: String): String? = packages.firstOrNull {
-        try {
-            context.packageManager.getPackageInfo(it, 0)
-            true
-        } catch (_: PackageManager.NameNotFoundException) {
-            false
-        }
     }
 }

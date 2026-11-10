@@ -1,10 +1,5 @@
 package fr.lunaison.ui
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -46,13 +41,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import fr.lunaison.core.cycle.LogReminderMode
 import fr.lunaison.core.data.AppSettings
 import fr.lunaison.core.designsystem.ChoiceChips
@@ -84,7 +77,7 @@ fun SettingsScreen(
     onHealthReport: () -> Unit = {},
     onReplayWelcome: () -> Unit = {},
 ) {
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
     val scope = rememberCoroutineScope()
     val settings = state.settings
     val reminders = settings.reminders
@@ -93,23 +86,12 @@ fun SettingsScreen(
     var showImportSourceDialog by rememberSaveable { mutableStateOf(false) }
     var importResultMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
-    val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    val notifications = rememberNotificationAccess()
     fun ensureNotifications() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-        ) {
-            notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
+        if (!notifications.allowed) notifications.request()
     }
 
-    val exporter = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
-        if (uri != null) {
-            scope.launch {
-                val csv = actions.exportCsv()
-                context.contentResolver.openOutputStream(uri)?.use { it.write(csv.toByteArray()) }
-            }
-        }
-    }
+    val exportCsv = rememberFileExporter("text/csv") { actions.exportCsv() }
 
     Page {
         PageTitle(tr("Réglages", "Settings", pl = "Ustawienia", uk = "Налаштування", es = "Ajustes", de = "Einstellungen"))
@@ -306,21 +288,43 @@ fun SettingsScreen(
 
         SectionTitle(tr("Mes données", "My data", pl = "Moje dane", uk = "Мої дані", es = "Mis datos", de = "Meine Daten"))
         LunaCard {
-            Text(tr("Tout est enregistré sur ce téléphone, nulle part ailleurs. Lunaison n'a pas accès à Internet et ne fait pas de sauvegarde dans le nuage.", "Everything is saved on this phone, nowhere else. Lunaison has no Internet access and makes no cloud backup.", pl = "Wszystko jest zapisane na tym telefonie i nigdzie indziej. Lunaison nie ma dostępu do internetu i nie tworzy kopii zapasowych w chmurze.", uk = "Усе зберігається на цьому телефоні й ніде більше. Lunaison не має доступу до інтернету й не створює резервних копій у хмарі.", es = "Todo se guarda en este teléfono, en ningún otro sitio. Lunaison no tiene acceso a Internet y no hace copias de seguridad en la nube.", de = "Alles wird auf diesem Telefon gespeichert, nirgendwo sonst. Lunaison hat keinen Internetzugriff und erstellt keine Cloud-Sicherung."), style = MaterialTheme.typography.bodyMedium)
+            if (cloudBackupControllable) {
+                var backupOn by remember { mutableStateOf(isCloudBackupEnabled()) }
+                Text(
+                    tr(
+                    fr = "Tout est enregistré sur cet iPhone. Lunaison n'a pas accès à Internet et n'envoie rien. Si la sauvegarde iCloud de votre iPhone est activée, vos données en font partie, sous le contrôle de votre compte Apple. Vous pouvez les en exclure ci-dessous.",
+                    en = "Everything is saved on this iPhone. Lunaison has no Internet access and sends nothing. If your iPhone's iCloud backup is on, your data is part of it, under the control of your Apple account. You can exclude it below.",
+                    pl = "Wszystko jest zapisane na tym iPhonie. Lunaison nie ma dostępu do internetu i niczego nie wysyła. Jeśli kopia zapasowa iCloud na Twoim iPhonie jest włączona, Twoje dane są w niej zawarte, pod kontrolą Twojego konta Apple. Możesz je z niej wyłączyć poniżej.",
+                    uk = "Усе зберігається на цьому iPhone. Lunaison не має доступу до інтернету й нічого не надсилає. Якщо резервне копіювання iCloud на вашому iPhone увімкнено, ваші дані входять до нього під контролем вашого облікового запису Apple. Нижче можна виключити їх із копії.",
+                    es = "Todo se guarda en este iPhone. Lunaison no tiene acceso a Internet y no envía nada. Si la copia de seguridad de iCloud de tu iPhone está activada, tus datos forman parte de ella, bajo el control de tu cuenta de Apple. Puedes excluirlos abajo.",
+                    de = "Alles wird auf diesem iPhone gespeichert. Lunaison hat keinen Internetzugriff und sendet nichts. Ist die iCloud-Sicherung deines iPhones aktiviert, sind deine Daten darin enthalten, unter der Kontrolle deines Apple-Kontos. Unten kannst du sie ausschließen.",
+                ),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                SwitchRow(
+                    tr("Inclure dans la sauvegarde iCloud", "Include in iCloud backup", pl = "Uwzględnij w kopii zapasowej iCloud", uk = "Включити в резервну копію iCloud", es = "Incluir en la copia de seguridad de iCloud", de = "In die iCloud-Sicherung aufnehmen"),
+                    checked = backupOn,
+                    onChange = { backupOn = it; setCloudBackupEnabled(it) },
+                )
+            } else {
+                Text(tr("Tout est enregistré sur ce téléphone, nulle part ailleurs. Lunaison n'a pas accès à Internet et ne fait pas de sauvegarde dans le nuage.", "Everything is saved on this phone, nowhere else. Lunaison has no Internet access and makes no cloud backup.", pl = "Wszystko jest zapisane na tym telefonie i nigdzie indziej. Lunaison nie ma dostępu do internetu i nie tworzy kopii zapasowych w chmurze.", uk = "Усе зберігається на цьому телефоні й ніде більше. Lunaison не має доступу до інтернету й не створює резервних копій у хмарі.", es = "Todo se guarda en este teléfono, en ningún otro sitio. Lunaison no tiene acceso a Internet y no hace copias de seguridad en la nube.", de = "Alles wird auf diesem Telefon gespeichert, nirgendwo sonst. Lunaison hat keinen Internetzugriff und erstellt keine Cloud-Sicherung."), style = MaterialTheme.typography.bodyMedium)
+            }
             LunaButton(tr("Bilan de santé pour un soignant", "Health report for a clinician", pl = "Raport medyczny dla personelu medycznego", uk = "Медичний звіт для медичного працівника", es = "Informe médico para el profesional sanitario", de = "Arztbericht für medizinisches Fachpersonal"), onClick = onHealthReport, style = LunaButtonStyle.Outlined)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 LunaButton(
                     tr("Exporter (CSV)", "Export (CSV)", pl = "Eksportuj (CSV)", uk = "Експортувати (CSV)", es = "Exportar (CSV)", de = "Exportieren (CSV)"),
-                    onClick = { exporter.launch("lunaison.csv") },
+                    onClick = { exportCsv("lunaison.csv") },
                     style = LunaButtonStyle.Outlined,
                     modifier = Modifier.weight(1f),
                 )
-                LunaButton(
-                    tr("Importer", "Import", pl = "Importuj", uk = "Імпортувати", es = "Importar", de = "Importieren"),
-                    onClick = { showImportSourceDialog = true },
-                    style = LunaButtonStyle.Outlined,
-                    modifier = Modifier.weight(1f),
-                )
+                if (importAvailable) {
+                    LunaButton(
+                        tr("Importer", "Import", pl = "Importuj", uk = "Імпортувати", es = "Importar", de = "Importieren"),
+                        onClick = { showImportSourceDialog = true },
+                        style = LunaButtonStyle.Outlined,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
             importResultMessage?.let { msg ->
                 Muted(msg)
@@ -426,18 +430,20 @@ fun SettingsScreen(
             TextButton(onClick = onReplayWelcome, modifier = Modifier.fillMaxWidth()) {
                 Text(tr("Revoir l'accueil de bienvenue", "Replay the welcome tour", pl = "Zobacz ponownie ekran powitalny", uk = "Переглянути вітання ще раз", es = "Volver a ver la bienvenida", de = "Willkommen erneut ansehen"), style = MaterialTheme.typography.labelMedium)
             }
-            TextButton(onClick = { openStore(context) }, modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    tr(
-                        "Laisser un avis sur le Play Store",
-                        "Leave a review on Google Play",
-                        pl = "Wystaw opinię w Google Play",
-                        uk = "Залишити відгук у Google Play",
-                        es = "Dejar una opinión en Google Play",
-                        de = "Bewertung im Play Store abgeben",
-                    ),
-                    style = MaterialTheme.typography.labelMedium,
-                )
+            if (storePageAvailable) {
+                TextButton(onClick = { openStore(context) }, modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        tr(
+                            "Laisser un avis sur le Play Store",
+                            "Leave a review on Google Play",
+                            pl = "Wystaw opinię w Google Play",
+                            uk = "Залишити відгук у Google Play",
+                            es = "Dejar una opinión en Google Play",
+                            de = "Bewertung im Play Store abgeben",
+                        ),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
             }
         }
     }
