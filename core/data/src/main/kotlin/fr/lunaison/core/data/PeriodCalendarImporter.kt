@@ -24,6 +24,8 @@ import fr.lunaison.core.model.plusDays
 
 class PasswordRequiredException(message: String = "Cette archive est protégée par un mot de passe") : Exception(message)
 class InvalidPasswordException(message: String = "Mot de passe de sauvegarde incorrect") : Exception(message)
+class ImportTooLargeException(message: String = "Archive trop volumineuse pour être importée") : Exception(message)
+class CorruptArchiveException(message: String = "Archive illisible ou endommagée") : Exception(message)
 
 data class ImportSummary(val daysCount: Int, val cyclesCount: Int)
 
@@ -66,8 +68,21 @@ object PeriodCalendarImporter {
     /**
      * Décompresse et déchiffre (si nécessaire avec ZipCrypto) les fichiers texte d'une archive zip.
      */
-    fun extractZip(bytes: ByteArray, password: String? = null): Map<String, String> {
+    /** Taille maximale du fichier importé. Un export Period Calendar pèse quelques centaines de Ko. */
+    const val MAX_FILE_BYTES: Long = 20L * 1024 * 1024
+
+    /** Volume décompressé maximal, toutes entrées confondues, contre les archives piégées. */
+    const val MAX_UNCOMPRESSED_BYTES: Long = 64L * 1024 * 1024
+
+    fun extractZip(
+        bytes: ByteArray,
+        password: String? = null,
+        maxFileBytes: Long = MAX_FILE_BYTES,
+        maxUncompressedBytes: Long = MAX_UNCOMPRESSED_BYTES,
+    ): Map<String, String> {
+        if (bytes.size.toLong() > maxFileBytes) throw ImportTooLargeException()
         val files = mutableMapOf<String, String>()
+        var remaining = maxUncompressedBytes
         val buf = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
         var pos = 0
         val total = bytes.size
@@ -93,8 +108,8 @@ object PeriodCalendarImporter {
             buf.position(buf.position() + exlen)
 
             val dataStart = buf.position()
+            if (csize > (total - dataStart).toLong()) break
             val dataLen = csize.toInt()
-            if (dataStart + dataLen > total) break
 
             val entryData = ByteArray(dataLen)
             buf.get(entryData)
@@ -117,42 +132,58 @@ object PeriodCalendarImporter {
                 }
 
                 val payload = decrypted.copyOfRange(12, decrypted.size)
-                decompress(payload, method)
+                try {
+                    decompress(payload, method, remaining)
+                } catch (e: CorruptArchiveException) {
+                    // L'octet de contrôle ne filtre qu'une erreur sur 256 : un flux illisible après
+                    // déchiffrement signale le plus souvent un mauvais mot de passe.
+                    throw InvalidPasswordException()
+                }
             } else {
-                decompress(entryData, method)
+                decompress(entryData, method, remaining)
             }
 
+            remaining -= decompressedBytes.size
+            if (remaining < 0) throw ImportTooLargeException()
             files[fileName] = String(decompressedBytes, Charsets.UTF_8)
         }
 
         return files
     }
 
-    private fun decompress(data: ByteArray, method: Int): ByteArray {
+    private fun decompress(data: ByteArray, method: Int, budget: Long): ByteArray {
         return when (method) {
-            0 -> data // Stored
+            0 -> { // Stored
+                if (data.size.toLong() > budget) throw ImportTooLargeException()
+                data
+            }
             8 -> { // Deflated
                 val inflater = Inflater(true) // nowrap = true pour flux brut sans zlib header
                 inflater.setInput(data)
                 val out = ByteArrayOutputStream()
                 val tmp = ByteArray(4096)
+                var written = 0L
                 try {
                     while (!inflater.finished()) {
                         val count = inflater.inflate(tmp)
                         if (count == 0) {
                             if (inflater.needsInput() || inflater.needsDictionary()) break
                         } else {
+                            written += count
+                            if (written > budget) throw ImportTooLargeException()
                             out.write(tmp, 0, count)
                         }
                     }
+                } catch (e: ImportTooLargeException) {
+                    throw e
                 } catch (e: Exception) {
-                    throw InvalidPasswordException("Données compressées invalides ou mot de passe erroné")
+                    throw CorruptArchiveException()
                 } finally {
                     inflater.end()
                 }
                 out.toByteArray()
             }
-            else -> data
+            else -> throw CorruptArchiveException("Méthode de compression non prise en charge")
         }
     }
 
