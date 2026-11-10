@@ -71,3 +71,11 @@ fun LocalDateTime.isAfter(other: LocalDateTime): Boolean = this > other
 /** Date-heure actuelle dans le fuseau du téléphone. */
 fun LocalDateTime.Companion.now(): LocalDateTime =
     Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+
+/** Décale l'heure de [hours] en revenant à minuit après 23 h (comme `java.time.LocalTime.plusHours`). */
+fun LocalTime.plusHours(hours: Long): LocalTime {
+    val seconds = (((toSecondOfDay() + hours * 3600) % 86_400) + 86_400) % 86_400
+    return LocalTime((seconds / 3600).toInt(), ((seconds % 3600) / 60).toInt(), (seconds % 60).toInt(), nanosecond)
+}
+
+fun LocalTime.minusHours(hours: Long): LocalTime = plusHours(-hours)

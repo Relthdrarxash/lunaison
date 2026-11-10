@@ -33,7 +33,7 @@ jobs:
       - name: Tests unitaires (moteur du cycle et contenus)
         run: |
           set -o pipefail
-          ./gradlew test jvmTest 2>&1 | tee -a gradle.log
+          ./gradlew test jvmTest --continue 2>&1 | tee -a gradle.log
 
       - name: Analyse Android (lint)
         run: |
@@ -73,7 +73,7 @@ jobs:
   # Compile le socle partagé (modèle, moteur du cycle, contenus) pour iOS : seul un Mac sait le faire.
   ios:
     name: Socle partagé pour iOS (compilation)
-    runs-on: macos-14
+    runs-on: macos-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4

@@ -105,7 +105,7 @@ fun CalendarScreen(
             IconButton(onClick = { monthText = month.minusMonths(1).toString() }) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = tr("Mois précédent", "Previous month", pl = "Poprzedni miesiąc", uk = "Попередній місяць", es = "Mes anterior", de = "Vorheriger Monat"))
             }
-            Text(Format.monthYear(month.atDay(1)), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+            Text(Format.monthYear(month.atDay(1).toKotlin()), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
             IconButton(onClick = { monthText = month.plusMonths(1).toString() }) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = tr("Mois suivant", "Next month", pl = "Następny miesiąc", uk = "Наступний місяць", es = "Mes siguiente", de = "Nächster Monat"))
             }
