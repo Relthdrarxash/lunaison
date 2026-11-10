@@ -41,6 +41,7 @@ import androidx.navigation.compose.rememberNavController
 import fr.lunaison.core.data.AppSettings
 import fr.lunaison.core.data.ImportSummary
 import fr.lunaison.core.data.LunaisonRepository
+import fr.lunaison.core.model.Baseline
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.Flow
 import fr.lunaison.core.model.tr
@@ -88,6 +89,8 @@ fun LunaisonApp(
     var unlocked by rememberSaveable { mutableStateOf(false) }
     // Fin d'onboarding avec « Noter ma journée maintenant » : même chemin qu'un lien de notification.
     var localLink by rememberSaveable { mutableStateOf<String?>(null) }
+    // Accueil rouvert depuis les réglages : il se ferme sans rien effacer.
+    var replayWelcome by rememberSaveable { mutableStateOf(false) }
 
     val currentLogs = logs
     val currentSettings = settings
@@ -105,21 +108,22 @@ fun LunaisonApp(
         return
     }
 
-    if (!currentSettings.onboarded) {
+    if (OnboardingFlow.shouldShow(currentSettings.onboarded) || replayWelcome) {
+        val firstLaunch = !currentSettings.onboarded
+        val onboardingActions = remember(repository) { RepositoryActions(repository, scope) }
+        fun finish(baseline: Baseline, log: Boolean) {
+            if (log) localLink = LINK_LOG
+            replayWelcome = false
+            scope.launch {
+                repository.updateSettings { it.copy(onboarded = true, baseline = baseline) }
+            }
+        }
         OnboardingScreen(
             today = today,
-            onFinish = { baseline ->
-                scope.launch {
-                    repository.updateSettings { it.copy(onboarded = true, baseline = baseline) }
-                }
-            },
-            onFinishAndLog = { baseline ->
-                localLink = LINK_LOG
-                scope.launch {
-                    repository.updateSettings { it.copy(onboarded = true, baseline = baseline) }
-                }
-            },
+            onFinish = { baseline -> finish(baseline, log = false) },
+            onFinishAndLog = { baseline -> finish(baseline, log = true) },
             onFinishAsPartner = { snapshot ->
+                replayWelcome = false
                 scope.launch {
                     repository.updateSettings {
                         it.copy(
@@ -129,6 +133,16 @@ fun LunaisonApp(
                     }
                 }
             },
+            current = if (firstLaunch) null else currentSettings.baseline,
+            hasHistory = currentLogs.isNotEmpty(),
+            pinEnabled = currentSettings.pinHash != null,
+            // Le code choisi pendant l'accueil ne doit pas redemander le déverrouillage tout de suite.
+            onPinChosen = { pin ->
+                unlocked = true
+                scope.launch { repository.updateSettings { it.copy(pinHash = AppSettings.hashPin(pin)) } }
+            },
+            actions = onboardingActions,
+            onClose = if (firstLaunch) null else ({ replayWelcome = false }),
         )
         return
     }
@@ -139,6 +153,7 @@ fun LunaisonApp(
         state,
         actions,
         versionName,
+        onReplayWelcome = { replayWelcome = true },
         link = link ?: localLink,
         onLinkHandled = {
             localLink = null
@@ -190,6 +205,7 @@ private fun MainScaffold(
     state: AppState,
     actions: Actions,
     versionName: String,
+    onReplayWelcome: () -> Unit,
     link: String? = null,
     onLinkHandled: () -> Unit = {},
 ) {
@@ -268,6 +284,7 @@ private fun MainScaffold(
                     versionName = versionName,
                     onArticle = { navController.navigate("fiche/$it") },
                     onHealthReport = { navController.navigate("bilan") },
+                    onReplayWelcome = onReplayWelcome,
                 )
             }
             composable(
