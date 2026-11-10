@@ -36,11 +36,13 @@ jobs:
           ./gradlew test jvmTest --continue 2>&1 | tee -a gradle.log
 
       - name: Analyse Android (lint)
+        if: ${{ !cancelled() }}
         run: |
           set -o pipefail
           ./gradlew :app:lintDebug 2>&1 | tee -a gradle.log
 
       - name: APK de développement
+        if: ${{ !cancelled() }}
         run: |
           set -o pipefail
           ./gradlew :app:assembleDebug 2>&1 | tee -a gradle.log
