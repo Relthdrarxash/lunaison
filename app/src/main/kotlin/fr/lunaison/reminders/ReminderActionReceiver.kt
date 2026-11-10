@@ -10,7 +10,8 @@ import fr.lunaison.core.model.Flow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import fr.lunaison.core.model.now
 
 /**
  * Actions en un geste depuis une notification : « Mes règles ont commencé » et « C'est pris ».

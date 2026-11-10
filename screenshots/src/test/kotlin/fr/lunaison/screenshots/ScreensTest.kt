@@ -44,8 +44,12 @@ import fr.lunaison.ui.SettingsScreen
 import fr.lunaison.ui.ShareScreen
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import java.util.Locale
+import fr.lunaison.core.model.isAfter
+import fr.lunaison.core.model.minusDays
+import fr.lunaison.core.model.of
+import fr.lunaison.core.model.plusDays
 
 /** Données d'exemple : quatre cycles notés, avec des symptômes qui reviennent avant les règles. */
 object Sample {

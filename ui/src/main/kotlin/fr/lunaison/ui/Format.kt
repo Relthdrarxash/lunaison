@@ -5,9 +5,10 @@ import fr.lunaison.core.cycle.CycleState
 import fr.lunaison.core.cycle.Phase
 import fr.lunaison.core.model.Language
 import fr.lunaison.core.model.tr
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import fr.lunaison.core.model.minusDays
 
 /** Mise en forme des dates et des phrases de prévision, dans la langue de l'appli. */
 object Format {
@@ -43,15 +44,15 @@ object Format {
             Language.DE -> german
         }
 
-    fun narrowWeekday(date: LocalDate): String = date.format(current.narrowDay).uppercase()
+    fun narrowWeekday(date: LocalDate): String = date.toJava().format(current.narrowDay).uppercase()
 
-    fun dayMonth(date: LocalDate): String = date.format(current.dayMonth)
+    fun dayMonth(date: LocalDate): String = date.toJava().format(current.dayMonth)
 
-    fun dayOfWeek(date: LocalDate): String = date.format(current.dayOfWeek).replaceFirstChar { it.uppercase() }
+    fun dayOfWeek(date: LocalDate): String = date.toJava().format(current.dayOfWeek).replaceFirstChar { it.uppercase() }
 
-    fun weekday(date: LocalDate): String = date.format(current.weekday).replaceFirstChar { it.uppercase() }
+    fun weekday(date: LocalDate): String = date.toJava().format(current.weekday).replaceFirstChar { it.uppercase() }
 
-    fun monthYear(date: LocalDate): String = date.format(current.monthYear).replaceFirstChar { it.uppercase() }
+    fun monthYear(date: LocalDate): String = date.toJava().format(current.monthYear).replaceFirstChar { it.uppercase() }
 
     fun days(count: Int): String = if (count <= 1) {
         tr(

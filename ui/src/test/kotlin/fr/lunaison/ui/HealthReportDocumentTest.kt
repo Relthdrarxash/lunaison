@@ -12,7 +12,7 @@ import fr.lunaison.core.model.MedicationKind
 import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.PillStatus
 import fr.lunaison.core.model.Symptom
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import java.util.Locale
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -22,6 +22,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import fr.lunaison.core.model.minusDays
+import fr.lunaison.core.model.of
 
 class HealthReportDocumentTest {
 

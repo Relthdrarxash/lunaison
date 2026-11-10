@@ -59,7 +59,7 @@ jobs:
           bash scripts/version-from-tag.sh "$tag" | tee -a "$GITHUB_ENV"
 
       - name: Tests unitaires
-        run: ./gradlew test
+        run: ./gradlew test jvmTest
 
       - name: Restaurer la clé de signature
         env:
