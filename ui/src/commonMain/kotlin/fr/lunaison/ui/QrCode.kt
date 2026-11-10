@@ -102,47 +102,6 @@ fun QrScannerDialog(
         }
     }
 
-    DisposableEffect(activity, nfcAdapter) {
-        val currentActivity = activity
-        val currentAdapter = nfcAdapter
-        if (currentActivity != null && currentAdapter != null && currentAdapter.isEnabled) {
-            val callback = NfcAdapter.ReaderCallback { tag ->
-                val isoDep = IsoDep.get(tag) ?: return@ReaderCallback
-                try {
-                    isoDep.connect()
-                    isoDep.timeout = 2500
-                    val command = LunaisonHceService.buildSelectAidApdu()
-                    val response = isoDep.transceive(command)
-                    if (response != null && response.size >= 2) {
-                        val sw1 = response[response.size - 2].toInt() and 0xFF
-                        val sw2 = response[response.size - 1].toInt() and 0xFF
-                        if (sw1 == 0x90 && sw2 == 0x00) {
-                            val payloadBytes = response.copyOfRange(0, response.size - 2)
-                            val text = String(payloadBytes, java.nio.charset.StandardCharsets.UTF_8)
-                            val decoded = PartnerSnapshot.decode(text)
-                            if (decoded != null) {
-                                currentActivity.runOnUiThread {
-                                    deliver(decoded)
-                                }
-                            }
-                        }
-                    }
-                } catch (_: Exception) {
-                    // Tag déconnecté prématurément ou non reconnu
-                } finally {
-                    runCatching { isoDep.close() }
-                }
-            }
-            val flags = NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
-            currentAdapter.enableReaderMode(currentActivity, callback, flags, null)
-        }
-        onDispose {
-            if (currentActivity != null && currentAdapter != null && currentAdapter.isEnabled) {
-                runCatching { currentAdapter.disableReaderMode(currentActivity) }
-            }
-        }
-    }
-
     val scanner = rememberScanner(deliver)
     val hasCameraPermission = scanner.hasCamera
     val hasNfc = scanner.hasNfc
