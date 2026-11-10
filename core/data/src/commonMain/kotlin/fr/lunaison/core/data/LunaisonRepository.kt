@@ -1,6 +1,5 @@
 package fr.lunaison.core.data
 
-import android.content.Context
 import fr.lunaison.core.cycle.AlertKind
 import fr.lunaison.core.cycle.LogReminderMode
 import fr.lunaison.core.cycle.ReminderSettings
@@ -20,7 +19,6 @@ import fr.lunaison.core.model.Symptom
 import fr.lunaison.core.model.ThemePalette
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import java.security.MessageDigest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import fr.lunaison.core.model.of
@@ -90,9 +88,8 @@ data class AppSettings(
         const val ALERT_SNOOZE_DAYS = 60L
 
         fun hashPin(pin: String): String =
-            MessageDigest.getInstance("SHA-256")
-                .digest(pin.toByteArray())
-                .joinToString("") { "%02x".format(it) }
+            Sha256.digest(pin.encodeToByteArray())
+                .joinToString("") { (it.toInt() and 0xFF).toString(16).padStart(2, '0') }
     }
 }
 
@@ -142,10 +139,10 @@ class LunaisonRepository(private val dao: LunaisonDao) {
                     log.moods.joinToString(", ") { it.label },
                     if (log.medicationTaken || log.pillStatus == PillStatus.TAKEN) tr(fr = "oui", en = "yes", pl = "tak", uk = "так", es = "sí", de = "ja") else "",
                     log.mucus?.label.orEmpty(),
-                    log.basalTemperature?.let { "%.1f".format(java.util.Locale.ROOT, it) }.orEmpty(),
+                    log.basalTemperature?.let { it.toOneDecimal() }.orEmpty(),
                     log.pillStatus?.label.orEmpty(),
                     log.medications.joinToString(", ") { it.label },
-                    log.weight?.let { "%.1f".format(java.util.Locale.ROOT, it) }.orEmpty(),
+                    log.weight?.let { it.toOneDecimal() }.orEmpty(),
                     log.intimacy.joinToString(", ") { it.label },
                     log.libido?.label.orEmpty(),
                     log.note.replace(";", ",").replace("\n", " "),
@@ -211,59 +208,7 @@ class LunaisonRepository(private val dao: LunaisonDao) {
         return imported
     }
 
-    /**
-     * Importe des données depuis une archive Zip (Period Calendar / Calendrier) avec mot de passe optionnel.
-     */
-    suspend fun importPeriodCalendarZip(bytes: ByteArray, password: String? = null): PeriodCalendarImportResult {
-        val result = PeriodCalendarImporter.importFromZip(bytes, password)
-        for (log in result.dayLogs) {
-            save(log)
-        }
-        if (result.baseline != null) {
-            updateSettings { current ->
-                current.copy(
-                    baseline = current.baseline.copy(
-                        lastPeriodStart = current.baseline.lastPeriodStart ?: result.baseline.lastPeriodStart,
-                        usualCycleLength = current.baseline.usualCycleLength ?: result.baseline.usualCycleLength,
-                        usualPeriodLength = current.baseline.usualPeriodLength ?: result.baseline.usualPeriodLength,
-                    ),
-                )
-            }
-        }
-        return result
-    }
-
-    /**
-     * Importe des données depuis du JSON brut (Period Calendar / Calendrier).
-     */
-    suspend fun importPeriodCalendarJson(jsonContent: String): PeriodCalendarImportResult {
-        val result = PeriodCalendarImporter.importFromTexts(dayEntriesJson = jsonContent)
-        for (log in result.dayLogs) {
-            save(log)
-        }
-        return result
-    }
-
-    /**
-     * Tente d'importer automatiquement n'importe quel fichier (Zip Calendrier, JSON ou CSV).
-     */
-    suspend fun importAuto(bytes: ByteArray, password: String? = null): ImportSummary {
-        if (PeriodCalendarImporter.isZip(bytes)) {
-            val result = importPeriodCalendarZip(bytes, password)
-            return ImportSummary(daysCount = result.dayLogs.size, cyclesCount = result.cyclesCount)
-        }
-        val text = String(bytes, Charsets.UTF_8).trim()
-        if (text.startsWith("{") || text.startsWith("[")) {
-            val result = importPeriodCalendarJson(text)
-            return ImportSummary(daysCount = result.dayLogs.size, cyclesCount = result.cyclesCount)
-        }
-        val count = importCsv(text)
-        return ImportSummary(daysCount = count, cyclesCount = 0)
-    }
-
-    companion object {
-        fun create(context: Context) = LunaisonRepository(LunaisonDatabase.create(context).dao())
-    }
+    companion object
 }
 
 interface LunaisonRepositoryProvider {

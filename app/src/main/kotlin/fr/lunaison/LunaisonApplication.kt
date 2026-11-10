@@ -11,6 +11,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import fr.lunaison.core.data.create
 
 /** Assemblage des dépendances, sans framework d'injection : une seule source de données. */
 class LunaisonApplication : Application(), LunaisonRepositoryProvider {

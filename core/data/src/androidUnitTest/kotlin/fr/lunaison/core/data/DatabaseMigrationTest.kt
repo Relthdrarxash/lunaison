@@ -21,7 +21,10 @@ import kotlin.test.assertTrue
  */
 class DatabaseMigrationTest {
 
-    private val latestSchema = File("schemas/fr.lunaison.core.data.LunaisonDatabase/7.json")
+    // Le plugin Room range le schéma exporté dans un sous-dossier qui dépend de la cible : on cherche la version 7.
+    private val latestSchema: File by lazy {
+        File("schemas").walkTopDown().first { it.isFile && it.name == "7.json" }
+    }
 
     @Test
     fun `migration de v1 a v7 sans perte de donnees`() = withDatabase { conn, db ->
@@ -81,14 +84,11 @@ class DatabaseMigrationTest {
     }
 
     private fun migrateToLatest(db: SupportSQLiteDatabase) {
-        listOf(
-            LunaisonDatabase.MIGRATION_1_2,
-            LunaisonDatabase.MIGRATION_2_3,
-            LunaisonDatabase.MIGRATION_3_4,
-            LunaisonDatabase.MIGRATION_4_5,
-            LunaisonDatabase.MIGRATION_5_6,
-            LunaisonDatabase.MIGRATION_6_7,
-        ).forEach { it.migrate(db) }
+        val steps = LunaisonDatabase.MIGRATIONS
+        // La chaîne couvre toutes les versions, sans trou ni doublon, jusqu'à la version courante.
+        assertEquals((1..6).toList(), steps.map { it.startVersion })
+        assertEquals((2..7).toList(), steps.map { it.endVersion })
+        steps.forEach { step -> step.statements.forEach(db::execSQL) }
     }
 
     /** Schéma de la toute première version publiée. */

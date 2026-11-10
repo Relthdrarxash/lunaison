@@ -49,6 +49,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import fr.lunaison.core.model.now
+import fr.lunaison.core.data.importAuto
 
 private enum class Tab(
     val route: String,
