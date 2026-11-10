@@ -7,7 +7,7 @@ import fr.lunaison.core.model.Symptom
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import java.util.zip.CRC32
 import java.util.zip.Deflater
 import kotlin.test.Test
@@ -17,6 +17,9 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import fr.lunaison.core.model.of
+import fr.lunaison.core.model.plusDays
+import fr.lunaison.core.model.toEpochDay
 
 /**
  * Teste l'import d'une sauvegarde « Calendrier des règles » avec des données entièrement fabriquées.

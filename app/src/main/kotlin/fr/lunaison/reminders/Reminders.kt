@@ -25,9 +25,13 @@ import fr.lunaison.core.cycle.ReminderPlanner
 import fr.lunaison.core.data.LunaisonRepository
 import fr.lunaison.core.data.LunaisonRepositoryProvider
 import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import fr.lunaison.core.model.tr
+import fr.lunaison.core.model.now
+import fr.lunaison.core.model.toLocalDate
 
 enum class ReminderKind { PERIOD, LOG, MEDICATION }
 
@@ -60,7 +64,7 @@ object ReminderScheduler {
             return
         }
         val request = OneTimeWorkRequestBuilder<ReminderWorker>()
-            .setInitialDelay(Duration.between(now, at))
+            .setInitialDelay(Duration.ofMillis(at.toInstant(TimeZone.UTC).toEpochMilliseconds() - now.toInstant(TimeZone.UTC).toEpochMilliseconds()))
             .setInputData(workDataOf(ReminderWorker.KIND to kind.name))
             .build()
         manager.enqueueUniqueWork(workName(kind), ExistingWorkPolicy.REPLACE, request)

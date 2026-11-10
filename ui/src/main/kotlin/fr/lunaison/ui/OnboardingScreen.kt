@@ -36,10 +36,10 @@ import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.model.AgeGroup
 import fr.lunaison.core.model.Baseline
 import fr.lunaison.core.model.PartnerSnapshot
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneOffset
+import kotlinx.datetime.LocalDate
 import fr.lunaison.core.model.tr
+import fr.lunaison.core.model.isAfter
+import fr.lunaison.core.model.minusDays
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +61,7 @@ fun OnboardingScreen(
         step = 5
     }
 
-    fun baseline() = Baseline(ageGroup ?: AgeGroup.ADULT, lastStart?.let(LocalDate::parse), usualLength)
+    fun baseline() = Baseline(ageGroup ?: AgeGroup.ADULT, lastStart?.let { LocalDate.parse(it) }, usualLength)
     fun finish() = onFinish(baseline())
 
     Page(Modifier.safeDrawingPadding()) {
@@ -113,18 +113,18 @@ fun OnboardingScreen(
                 PageTitle(tr("Vos dernières règles", "Your last period", pl = "Twoja ostatnia miesiączka", uk = "Ваші останні місячні", es = "Tu última regla", de = "Deine letzte Periode"), onBack = { step = 1 })
                 Text(tr("Quel jour ont-elles commencé ? Une date approximative suffit.", "What day did it start? An approximate date is enough.", pl = "Którego dnia się zaczęła? Wystarczy przybliżona data.", uk = "Якого дня вони почалися? Достатньо приблизної дати.", es = "¿Qué día empezó? Basta con una fecha aproximada.", de = "An welchem Tag hat sie begonnen? Ein ungefähres Datum reicht."), style = MaterialTheme.typography.bodyLarge)
                 val pickerState = rememberDatePickerState(
-                    initialSelectedDateMillis = lastStart?.let { LocalDate.parse(it).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli() },
+                    initialSelectedDateMillis = lastStart?.let { LocalDate.parse(it).toUtcMillis() },
                     selectableDates = remember(today) {
                         object : SelectableDates {
                             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                                val date = Instant.ofEpochMilli(utcTimeMillis).atZone(ZoneOffset.UTC).toLocalDate()
+                                val date = localDateFromUtcMillis(utcTimeMillis)
                                 return !date.isAfter(today) && date.isAfter(today.minusDays(120))
                             }
                         }
                     },
                 )
                 DatePicker(state = pickerState, title = null, headline = null, showModeToggle = false)
-                val selected = pickerState.selectedDateMillis?.let { Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate() }
+                val selected = pickerState.selectedDateMillis?.let { localDateFromUtcMillis(it) }
                 LunaButton(
                     if (selected != null) tr("Le ${Format.dayMonth(selected)}", "${Format.dayMonth(selected)}", pl = "${Format.dayMonth(selected)}", uk = "${Format.dayMonth(selected)}", es = "El ${Format.dayMonth(selected)}", de = "Am ${Format.dayMonth(selected)}") else tr("Choisissez une date", "Choose a date", pl = "Wybierz datę", uk = "Оберіть дату", es = "Elige una fecha", de = "Datum wählen"),
                     onClick = { lastStart = selected?.toString(); step = 3 },

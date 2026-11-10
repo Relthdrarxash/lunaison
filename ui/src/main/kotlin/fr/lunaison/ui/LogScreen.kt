@@ -45,10 +45,13 @@ import fr.lunaison.core.model.Mood
 import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.PillStatus
 import fr.lunaison.core.model.Symptom
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import java.util.Locale
 import kotlin.math.roundToInt
 import fr.lunaison.core.model.tr
+import fr.lunaison.core.model.isBefore
+import fr.lunaison.core.model.minusDays
+import fr.lunaison.core.model.plusDays
 
 /**
  * Saisie d'une journée : tout est facultatif et se fait sans clavier, sauf la note.

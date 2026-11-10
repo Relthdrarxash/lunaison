@@ -49,10 +49,14 @@ import fr.lunaison.core.designsystem.LunaButton
 import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
-import java.time.DayOfWeek
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import java.time.YearMonth
 import fr.lunaison.core.model.tr
+import fr.lunaison.core.model.isAfter
+import fr.lunaison.core.model.minusMonths
+import fr.lunaison.core.model.plusDays
+import fr.lunaison.core.model.plusMonths
+import kotlinx.datetime.isoDayNumber
 
 private enum class DayMark { PERIOD, SPOTTING, PREDICTED, NONE }
 
@@ -63,7 +67,7 @@ fun CalendarScreen(
     onInsights: () -> Unit = {},
     onHealthReport: () -> Unit = {},
 ) {
-    var monthText by rememberSaveable { mutableStateOf(YearMonth.from(state.today).toString()) }
+    var monthText by rememberSaveable { mutableStateOf(YearMonth.from(state.today.toJava()).toString()) }
     val month = YearMonth.parse(monthText)
     val known = state.cycle as? CycleState.Known
     val predicted = remember(known) {
@@ -157,8 +161,8 @@ private fun MonthGrid(
                 )
             }
         }
-        val first = month.atDay(1)
-        val offset = first.dayOfWeek.value - DayOfWeek.MONDAY.value
+        val first = month.atDay(1).toKotlin()
+        val offset = first.dayOfWeek.isoDayNumber - 1
         val cells = offset + month.lengthOfMonth()
         val rows = (cells + 6) / 7
         for (row in 0 until rows) {
