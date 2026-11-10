@@ -1,5 +1,6 @@
 package fr.lunaison.ui
 
+import kotlin.math.PI
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -51,7 +52,6 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -234,7 +234,7 @@ fun ArticleScreen(id: String, onBack: () -> Unit) {
         return
     }
     val article = Articles.byId(id)
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
     Page {
         if (article == null) {
             PageTitle(tr("Fiche introuvable", "Guide not found", pl = "Nie znaleziono artykułu", uk = "Статтю не знайдено", es = "Ficha no encontrada", de = "Artikel nicht gefunden"), onBack = onBack)
@@ -287,7 +287,7 @@ enum class ContraceptiveMethod {
 @Composable
 fun ContraceptionGuideScreen(onBack: () -> Unit) {
     var selectedMethod by rememberSaveable { mutableStateOf(ContraceptiveMethod.COMBINED_PILL) }
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
 
     Page {
         PageTitle(
@@ -1740,7 +1740,7 @@ fun InteractiveUterusDiagram(
                             val cjR = 8.5.dp.toPx()
                             val lobes = 8
                             for (lb in 0 until lobes) {
-                                val a = (lb.toFloat() / lobes) * 2f * Math.PI.toFloat()
+                                val a = (lb.toFloat() / lobes) * 2f * PI.toFloat()
                                 val rad = cjR * (if (lb % 2 == 0) 1.0f else 0.82f)
                                 val lx = cjCenter.x + kotlin.math.cos(a) * rad
                                 val ly = cjCenter.y + kotlin.math.sin(a) * rad
@@ -1944,7 +1944,7 @@ fun InteractiveUterusDiagram(
 
 @Composable
 fun EndometriosisGuideScreen(onBack: () -> Unit) {
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
 
     Page {
         PageTitle(
@@ -2111,7 +2111,7 @@ fun EndometriosisGuideScreen(onBack: () -> Unit) {
 
 @Composable
 fun PcosGuideScreen(onBack: () -> Unit) {
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
 
     Page {
         PageTitle(
@@ -2252,7 +2252,7 @@ fun PcosGuideScreen(onBack: () -> Unit) {
 
 @Composable
 fun AdenomyosisGuideScreen(onBack: () -> Unit) {
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
 
     Page {
         PageTitle(
@@ -2394,7 +2394,7 @@ fun AdenomyosisGuideScreen(onBack: () -> Unit) {
 
 @Composable
 fun PerimenopauseGuideScreen(onBack: () -> Unit) {
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
 
     Page {
         PageTitle(

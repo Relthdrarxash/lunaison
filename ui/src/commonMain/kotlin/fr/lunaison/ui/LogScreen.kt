@@ -1,6 +1,5 @@
 package fr.lunaison.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,7 +45,6 @@ import fr.lunaison.core.model.Pain
 import fr.lunaison.core.model.PillStatus
 import fr.lunaison.core.model.Symptom
 import kotlinx.datetime.LocalDate
-import java.util.Locale
 import kotlin.math.roundToInt
 import fr.lunaison.core.model.tr
 import fr.lunaison.core.model.isBefore
@@ -242,7 +240,7 @@ fun LogScreen(
                     )
                 } else {
                     Stepper(
-                        label = tr("Poids : ${"%.1f".format(Locale.FRENCH, w)} kg", "Weight: ${"%.1f".format(Locale.ENGLISH, w)} kg", pl = "Waga: ${ReportText.decimal(w.toDouble())} kg", uk = "Вага: ${ReportText.decimal(w.toDouble())} кг", es = "Peso: ${ReportText.decimal(w.toDouble())} kg", de = "Gewicht: ${ReportText.decimal(w.toDouble())} kg"),
+                        label = tr("Poids : ${ReportText.decimal(w.toDouble())} kg", "Weight: ${ReportText.decimal(w.toDouble())} kg", pl = "Waga: ${ReportText.decimal(w.toDouble())} kg", uk = "Вага: ${ReportText.decimal(w.toDouble())} кг", es = "Peso: ${ReportText.decimal(w.toDouble())} kg", de = "Gewicht: ${ReportText.decimal(w.toDouble())} kg"),
                         onMinus = {
                             val next = ((w * 10).roundToInt() - 5).coerceAtLeast(300) / 10f
                             draft = draft.copy(weight = next)
@@ -277,7 +275,7 @@ fun LogScreen(
                     )
                 } else {
                     Stepper(
-                        label = tr("Température : ${"%.1f".format(Locale.FRENCH, temp)} °C", "Temperature: ${"%.1f".format(Locale.ENGLISH, temp)} °C", pl = "Temperatura: ${ReportText.decimal(temp.toDouble())} °C", uk = "Температура: ${ReportText.decimal(temp.toDouble())} °C", es = "Temperatura: ${ReportText.decimal(temp.toDouble())} °C", de = "Temperatur: ${ReportText.decimal(temp.toDouble())} °C"),
+                        label = tr("Température : ${ReportText.decimal(temp.toDouble())} °C", "Temperature: ${ReportText.decimal(temp.toDouble())} °C", pl = "Temperatura: ${ReportText.decimal(temp.toDouble())} °C", uk = "Температура: ${ReportText.decimal(temp.toDouble())} °C", es = "Temperatura: ${ReportText.decimal(temp.toDouble())} °C", de = "Temperatur: ${ReportText.decimal(temp.toDouble())} °C"),
                         onMinus = {
                             val next = ((temp * 10).roundToInt() - 1).coerceAtLeast(355) / 10f
                             draft = draft.copy(basalTemperature = next)

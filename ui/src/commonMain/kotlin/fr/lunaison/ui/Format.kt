@@ -4,37 +4,76 @@ import fr.lunaison.core.cycle.Confidence
 import fr.lunaison.core.cycle.CycleState
 import fr.lunaison.core.cycle.Phase
 import fr.lunaison.core.model.Language
+import fr.lunaison.core.model.minusDays
 import fr.lunaison.core.model.tr
 import kotlinx.datetime.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
-import fr.lunaison.core.model.minusDays
 
 /** Mise en forme des dates et des phrases de prévision, dans la langue de l'appli. */
 object Format {
-    private val french = Formatters(Locale.FRENCH, "d MMMM", "EEEE d MMMM", "MMMM yyyy")
-    private val english = Formatters(Locale.ENGLISH, "MMMM d", "EEEE, MMMM d", "MMMM yyyy")
-    private val polish = Formatters(Locale.forLanguageTag("pl"), "d MMMM", "EEEE, d MMMM", "LLLL yyyy")
-    private val ukrainian = Formatters(Locale.forLanguageTag("uk"), "d MMMM", "EEEE, d MMMM", "LLLL yyyy")
-    private val spanish = Formatters(Locale.forLanguageTag("es"), "d 'de' MMMM", "EEEE, d 'de' MMMM", "MMMM yyyy")
-    private val german = Formatters(Locale.GERMAN, "d. MMMM", "EEEE, d. MMMM", "MMMM yyyy")
+    /** Noms de mois et de jours d'une langue (données CLDR), identiques sur Android et iOS. */
+    private class Names(
+        val monthsNominative: List<String>,
+        val monthsGenitive: List<String>,
+        val weekdays: List<String>,
+        /** Initiales autonomes, du lundi au dimanche. */
+        val narrowWeekdays: String,
+        val dayMonth: (day: Int, month: Int, names: Names) -> String,
+        val weekday: (weekday: String, dayMonth: String) -> String,
+    )
 
-    private class Formatters(
-        locale: Locale,
-        dayMonth: String,
-        weekday: String,
-        monthYear: String,
-        dayOfWeek: String = "EEEE",
-    ) {
-        val dayMonth: DateTimeFormatter = DateTimeFormatter.ofPattern(dayMonth, locale)
-        val weekday: DateTimeFormatter = DateTimeFormatter.ofPattern(weekday, locale)
-        val monthYear: DateTimeFormatter = DateTimeFormatter.ofPattern(monthYear, locale)
-        val dayOfWeek: DateTimeFormatter = DateTimeFormatter.ofPattern(dayOfWeek, locale)
-        /** Initiale autonome du jour (L, M, M… / M, T, W…), données CLDR de la langue. */
-        val narrowDay: DateTimeFormatter = DateTimeFormatter.ofPattern("ccccc", locale)
-    }
+    private val frenchMonths = listOf("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre")
+    private val spanishMonths = listOf("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre")
+    private val polishNominative = listOf("styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec", "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień")
+    private val polishGenitive = listOf("stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia")
+    private val ukrainianNominative = listOf("січень", "лютий", "березень", "квітень", "травень", "червень", "липень", "серпень", "вересень", "жовтень", "листопад", "грудень")
+    private val ukrainianGenitive = listOf("січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня")
+    private val germanMonths = listOf("Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember")
+    private val englishMonths = listOf("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
 
-    private val current: Formatters
+    private val french = Names(
+        frenchMonths, frenchMonths,
+        listOf("lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"),
+        "LMMJVSD",
+        { day, month, n -> "$day ${n.monthsGenitive[month - 1]}" },
+        { weekday, dayMonth -> "$weekday $dayMonth" },
+    )
+    private val english = Names(
+        englishMonths, englishMonths,
+        listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+        "MTWTFSS",
+        { day, month, n -> "${n.monthsGenitive[month - 1]} $day" },
+        { weekday, dayMonth -> "$weekday, $dayMonth" },
+    )
+    private val polish = Names(
+        polishNominative, polishGenitive,
+        listOf("poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"),
+        "PWŚCPSN",
+        { day, month, n -> "$day ${n.monthsGenitive[month - 1]}" },
+        { weekday, dayMonth -> "$weekday, $dayMonth" },
+    )
+    private val ukrainian = Names(
+        ukrainianNominative, ukrainianGenitive,
+        listOf("понеділок", "вівторок", "середа", "четвер", "пʼятниця", "субота", "неділя"),
+        "ПВСЧПСН",
+        { day, month, n -> "$day ${n.monthsGenitive[month - 1]}" },
+        { weekday, dayMonth -> "$weekday, $dayMonth" },
+    )
+    private val spanish = Names(
+        spanishMonths, spanishMonths,
+        listOf("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"),
+        "LMXJVSD",
+        { day, month, n -> "$day de ${n.monthsGenitive[month - 1]}" },
+        { weekday, dayMonth -> "$weekday, $dayMonth" },
+    )
+    private val german = Names(
+        germanMonths, germanMonths,
+        listOf("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"),
+        "MDMDFSS",
+        { day, month, n -> "$day. ${n.monthsGenitive[month - 1]}" },
+        { weekday, dayMonth -> "$weekday, $dayMonth" },
+    )
+
+    private val current: Names
         get() = when (Language.current()) {
             Language.FR -> french
             Language.EN -> english
@@ -44,15 +83,24 @@ object Format {
             Language.DE -> german
         }
 
-    fun narrowWeekday(date: LocalDate): String = date.toJava().format(current.narrowDay).uppercase()
+    private fun String.capitalized(): String = replaceFirstChar { it.uppercase() }
 
-    fun dayMonth(date: LocalDate): String = date.toJava().format(current.dayMonth)
+    private fun rawDayMonth(date: LocalDate, names: Names) = names.dayMonth(date.dayOfMonth, date.monthNumber, names)
 
-    fun dayOfWeek(date: LocalDate): String = date.toJava().format(current.dayOfWeek).replaceFirstChar { it.uppercase() }
+    private fun rawDayOfWeek(date: LocalDate, names: Names) = names.weekdays[date.dayOfWeek.ordinal]
 
-    fun weekday(date: LocalDate): String = date.toJava().format(current.weekday).replaceFirstChar { it.uppercase() }
+    fun narrowWeekday(date: LocalDate): String = current.narrowWeekdays[date.dayOfWeek.ordinal].toString().uppercase()
 
-    fun monthYear(date: LocalDate): String = date.toJava().format(current.monthYear).replaceFirstChar { it.uppercase() }
+    fun dayMonth(date: LocalDate): String = rawDayMonth(date, current)
+
+    fun dayOfWeek(date: LocalDate): String = rawDayOfWeek(date, current).capitalized()
+
+    fun weekday(date: LocalDate): String {
+        val names = current
+        return names.weekday(rawDayOfWeek(date, names), rawDayMonth(date, names)).capitalized()
+    }
+
+    fun monthYear(date: LocalDate): String = "${current.monthsNominative[date.monthNumber - 1]} ${date.year}".capitalized()
 
     fun days(count: Int): String = if (count <= 1) {
         tr(

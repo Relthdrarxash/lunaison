@@ -2,7 +2,8 @@ package fr.lunaison.ui
 
 import fr.lunaison.core.model.Language
 import fr.lunaison.core.model.tr
-import java.util.Locale
+import kotlin.math.abs
+import kotlin.math.roundToLong
 
 /**
  * Textes communs à l'écran du bilan soignant et à son PDF, dans les six langues de l'appli.
@@ -15,11 +16,14 @@ import java.util.Locale
  */
 internal object ReportText {
 
-    /** Locale des dates et des nombres du bilan : celle de la langue de l'appli, comme [Format]. */
-    fun locale(): Locale = Locale.forLanguageTag(Language.current().code)
-
     /** Un nombre décimal à une décimale, avec la virgule ou le point de la langue courante. */
-    fun decimal(value: Double): String = "%.1f".format(locale(), value)
+    fun decimal(value: Double): String {
+        if (value.isNaN() || value.isInfinite()) return value.toString()
+        val tenths = (value * 10).roundToLong()
+        val magnitude = abs(tenths)
+        val separator = if (Language.current() == Language.EN) "." else ","
+        return (if (tenths < 0) "-" else "") + "${magnitude / 10}$separator${magnitude % 10}"
+    }
 
     /** Met un libellé en minuscules dans une phrase ; l'allemand garde la majuscule de ses noms. */
     fun inline(label: String): String = if (Language.current() == Language.DE) label else label.lowercase()

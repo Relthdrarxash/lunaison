@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
@@ -46,7 +45,7 @@ fun InsightsScreen(
     val onsets = remember(state.logs, cycle) { cycle?.let { CycleInsights.onsets(state.logs, it) }.orEmpty() }
     val duringPeriod = remember(state.logs, cycle) { cycle?.let { PhasePatterns.compute(state.logs, it, Phase.MENSTRUAL) } }
     val phasePatterns = remember(state.logs, cycle) { cycle?.let { CycleInsights.allPhasePatterns(state.logs, it) }.orEmpty() }
-    val context = LocalContext.current
+    val context = rememberPlatformContext()
 
     Page {
         PageTitle(tr("Mes cycles", "My cycles", pl = "Moje cykle", uk = "Мої цикли", es = "Mis ciclos", de = "Meine Zyklen"), onBack = onBack)

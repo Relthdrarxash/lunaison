@@ -1,9 +1,5 @@
 package fr.lunaison.ui
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -82,30 +78,6 @@ fun Bullet(text: String) {
 @Composable
 fun Muted(text: String, modifier: Modifier = Modifier) {
     Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = modifier)
-}
-
-/** Ouvre un lien dans le navigateur de la personne. L'appli elle-même n'a pas accès à Internet. */
-fun openLink(context: Context, url: String) {
-    try {
-        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-    } catch (_: ActivityNotFoundException) {
-        // Aucun navigateur : rien à faire.
-    }
-}
-
-/** Ouvre la fiche de l'application sur le magasin d'applications (ou dans le navigateur). */
-fun openStore(context: Context, packageName: String = "fr.lunaison") {
-    val marketUri = Uri.parse("market://details?id=$packageName")
-    val webUri = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
-    try {
-        context.startActivity(Intent(Intent.ACTION_VIEW, marketUri))
-    } catch (_: ActivityNotFoundException) {
-        try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, webUri))
-        } catch (_: ActivityNotFoundException) {
-            // Aucun magasin ni navigateur disponible
-        }
-    }
 }
 
 object Links {

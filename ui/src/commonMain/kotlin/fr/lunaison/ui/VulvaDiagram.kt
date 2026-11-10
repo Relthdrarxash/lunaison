@@ -1,5 +1,6 @@
 package fr.lunaison.ui
 
+import kotlin.math.PI
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -447,7 +448,7 @@ fun VulvaDiagram() {
                 val carunclesPath = Path().apply {
                     val count = 12
                     for (i in 0 until count) {
-                        val angle = (i.toFloat() / count) * 2f * Math.PI.toFloat()
+                        val angle = (i.toFloat() / count) * 2f * PI.toFloat()
                         val rx = (introW / 2f) * (0.92f + if (i % 2 == 0) 0.10f else -0.06f)
                         val ry = (introH / 2f) * (0.92f + if (i % 2 == 0) 0.08f else -0.05f)
                         val x = cx + kotlin.math.cos(angle) * rx
@@ -491,7 +492,7 @@ fun VulvaDiagram() {
                 // Plis radiés de la marge anale (sillons radiés)
                 val radialCount = 10
                 for (r in 0 until radialCount) {
-                    val angle = (r.toFloat() / radialCount) * 2f * Math.PI.toFloat()
+                    val angle = (r.toFloat() / radialCount) * 2f * PI.toFloat()
                     val cosA = kotlin.math.cos(angle)
                     val sinA = kotlin.math.sin(angle)
                     val startR = anusRadius * 0.35f

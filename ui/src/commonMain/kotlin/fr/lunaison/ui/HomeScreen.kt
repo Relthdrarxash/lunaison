@@ -46,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -303,8 +302,8 @@ fun HomeScreen(
         }
 
         val completedCycles = (cycle as? CycleState.Known)?.stats?.completedCycles ?: 0
-        if (!state.settings.reviewPromptDismissed && completedCycles >= 2) {
-            val context = LocalContext.current
+        if (storePageAvailable && !state.settings.reviewPromptDismissed && completedCycles >= 2) {
+            val context = rememberPlatformContext()
             ReviewPromptCard(
                 onReview = {
                     actions.updateSettings { it.copy(reviewPromptDismissed = true) }
@@ -565,11 +564,11 @@ private fun TodaySummary(log: DayLog, medicationLabel: String = "") {
             add(tr("Pris aujourd'hui : $label", "Taken today: $label", pl = "Przyjęte dziś: $label", uk = "Прийнято сьогодні: $label", es = "Tomado hoy: $label", de = "Heute genommen: $label"))
         }
         if (log.medications.isNotEmpty()) add(tr("Médicaments : ", "Medications: ", pl = "Leki: ", uk = "Ліки: ", es = "Medicamentos: ", de = "Medikamente: ") + log.medications.joinToString(", ") { it.label.lowercase() })
-        log.weight?.let { add(tr("Poids : ${"%.1f".format(java.util.Locale.FRENCH, it)} kg", "Weight: ${"%.1f".format(java.util.Locale.ENGLISH, it)} kg", pl = "Waga: ${ReportText.decimal(it.toDouble())} kg", uk = "Вага: ${ReportText.decimal(it.toDouble())} кг", es = "Peso: ${ReportText.decimal(it.toDouble())} kg", de = "Gewicht: ${ReportText.decimal(it.toDouble())} kg")) }
+        log.weight?.let { add(tr("Poids : ${ReportText.decimal(it.toDouble())} kg", "Weight: ${ReportText.decimal(it.toDouble())} kg", pl = "Waga: ${ReportText.decimal(it.toDouble())} kg", uk = "Вага: ${ReportText.decimal(it.toDouble())} кг", es = "Peso: ${ReportText.decimal(it.toDouble())} kg", de = "Gewicht: ${ReportText.decimal(it.toDouble())} kg")) }
         if (log.intimacy.isNotEmpty()) add(tr("Intimité : ", "Intimacy: ", pl = "Intymność: ", uk = "Інтимність: ", es = "Intimidad: ", de = "Intimität: ") + log.intimacy.joinToString(", ") { it.label.lowercase() })
         log.libido?.let { add(tr("Désir : ${it.label.lowercase()}", "Desire: ${it.label.lowercase()}", pl = "Pożądanie: ${it.label.lowercase()}", uk = "Бажання: ${it.label.lowercase()}", es = "Deseo: ${it.label.lowercase()}", de = "Lust: ${it.label.lowercase()}")) }
         log.mucus?.let { add(tr("Glaire : ${it.label.lowercase()}", "Mucus: ${it.label.lowercase()}", pl = "Śluz: ${it.label.lowercase()}", uk = "Слиз: ${it.label.lowercase()}", es = "Flujo cervical: ${it.label.lowercase()}", de = "Zervixschleim: ${it.label.lowercase()}")) }
-        log.basalTemperature?.let { add(tr("Température : ${"%.1f".format(java.util.Locale.FRENCH, it)} °C", "Temperature: ${"%.1f".format(java.util.Locale.ENGLISH, it)} °C", pl = "Temperatura: ${ReportText.decimal(it.toDouble())} °C", uk = "Температура: ${ReportText.decimal(it.toDouble())} °C", es = "Temperatura: ${ReportText.decimal(it.toDouble())} °C", de = "Temperatur: ${ReportText.decimal(it.toDouble())} °C")) }
+        log.basalTemperature?.let { add(tr("Température : ${ReportText.decimal(it.toDouble())} °C", "Temperature: ${ReportText.decimal(it.toDouble())} °C", pl = "Temperatura: ${ReportText.decimal(it.toDouble())} °C", uk = "Температура: ${ReportText.decimal(it.toDouble())} °C", es = "Temperatura: ${ReportText.decimal(it.toDouble())} °C", de = "Temperatur: ${ReportText.decimal(it.toDouble())} °C")) }
     }
     LunaCard {
         Text(tr("Noté aujourd'hui", "Logged today", pl = "Zanotowane dziś", uk = "Записано сьогодні", es = "Anotado hoy", de = "Heute eingetragen"), style = MaterialTheme.typography.titleMedium)

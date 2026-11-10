@@ -50,13 +50,43 @@ import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import kotlinx.datetime.LocalDate
-import java.time.YearMonth
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.daysUntil
+import kotlinx.datetime.plus
 import fr.lunaison.core.model.tr
 import fr.lunaison.core.model.isAfter
 import fr.lunaison.core.model.minusMonths
 import fr.lunaison.core.model.plusDays
 import fr.lunaison.core.model.plusMonths
 import kotlinx.datetime.isoDayNumber
+
+/** Un mois du calendrier, sérialisable en « 2026-11 » pour survivre à la rotation de l'écran. */
+private data class YearMonth(val year: Int, val month: Int) {
+    fun atDay(day: Int): LocalDate = LocalDate(year, month, day)
+
+    fun lengthOfMonth(): Int {
+        val first = atDay(1)
+        return first.daysUntil(first.plus(1, DateTimeUnit.MONTH))
+    }
+
+    fun plusMonths(count: Int): YearMonth {
+        val total = year * 12 + (month - 1) + count
+        return YearMonth(total.floorDiv(12), total.mod(12) + 1)
+    }
+
+    fun minusMonths(count: Int): YearMonth = plusMonths(-count)
+
+    override fun toString(): String = "${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}"
+
+    companion object {
+        fun from(date: LocalDate) = YearMonth(date.year, date.monthNumber)
+
+        fun parse(text: String): YearMonth {
+            val (year, month) = text.split('-')
+            return YearMonth(year.toInt(), month.toInt())
+        }
+    }
+}
 
 private enum class DayMark { PERIOD, SPOTTING, PREDICTED, NONE }
 
@@ -67,7 +97,7 @@ fun CalendarScreen(
     onInsights: () -> Unit = {},
     onHealthReport: () -> Unit = {},
 ) {
-    var monthText by rememberSaveable { mutableStateOf(YearMonth.from(state.today.toJava()).toString()) }
+    var monthText by rememberSaveable { mutableStateOf(YearMonth.from(state.today).toString()) }
     val month = YearMonth.parse(monthText)
     val known = state.cycle as? CycleState.Known
     val predicted = remember(known) {
@@ -105,7 +135,7 @@ fun CalendarScreen(
             IconButton(onClick = { monthText = month.minusMonths(1).toString() }) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = tr("Mois précédent", "Previous month", pl = "Poprzedni miesiąc", uk = "Попередній місяць", es = "Mes anterior", de = "Vorheriger Monat"))
             }
-            Text(Format.monthYear(month.atDay(1).toKotlin()), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+            Text(Format.monthYear(month.atDay(1)), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
             IconButton(onClick = { monthText = month.plusMonths(1).toString() }) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = tr("Mois suivant", "Next month", pl = "Następny miesiąc", uk = "Наступний місяць", es = "Mes siguiente", de = "Nächster Monat"))
             }
@@ -161,7 +191,7 @@ private fun MonthGrid(
                 )
             }
         }
-        val first = month.atDay(1).toKotlin()
+        val first = month.atDay(1)
         val offset = first.dayOfWeek.isoDayNumber - 1
         val cells = offset + month.lengthOfMonth()
         val rows = (cells + 6) / 7
