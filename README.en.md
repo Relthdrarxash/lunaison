@@ -10,6 +10,8 @@ Lunaison is a free Android app, open source (MPL-2.0), with no ads, no trackers 
 
 **[Lunaison website](https://relthdrarxash.github.io/lunaison/en/)** · **[Google Play](https://play.google.com/store/apps/details?id=fr.lunaison)** · **[Download APK](https://github.com/Relthdrarxash/lunaison/releases/latest)** · [For health professionals](https://relthdrarxash.github.io/lunaison/en/professionals.html) · [Medical evidence](https://relthdrarxash.github.io/lunaison/en/evidence.html) · [Privacy](https://relthdrarxash.github.io/lunaison/en/privacy.html)
 
+**Before the Google Play release:** [join the internal test](https://play.google.com/apps/internaltest/4699280816823618019) (only for people already on the tester list: [how to become a tester](https://relthdrarxash.github.io/lunaison/en/tester.html)).
+
 ## What the app does
 
 - **Log your days in a few seconds**: flow, pain (described by its effect), symptoms (8 common symptoms shown by default, plus clinical symptoms for pelvic pain, endometriosis and perimenopause), moods, contraception or medication taken, optional ovulation signs (cervical mucus and keypad-free basal temperature), and a personal note. **Recent 7-day strip on home screen** to quickly view recent logs and fill in a forgotten day in one tap.
