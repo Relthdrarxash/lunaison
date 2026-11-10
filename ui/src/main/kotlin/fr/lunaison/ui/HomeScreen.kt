@@ -68,10 +68,10 @@ import fr.lunaison.core.designsystem.LunaButtonStyle
 import fr.lunaison.core.designsystem.LunaCard
 import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.DayLog
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneOffset
+import kotlinx.datetime.LocalDate
 import fr.lunaison.core.model.tr
+import fr.lunaison.core.model.isAfter
+import fr.lunaison.core.model.minusDays
 
 @Composable
 fun HomeScreen(
@@ -728,11 +728,11 @@ private fun SetupOwnCycleDialog(
 
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli(),
+            initialSelectedDateMillis = selectedDate.toUtcMillis(),
             selectableDates = remember(today) {
                 object : SelectableDates {
                     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                        val date = Instant.ofEpochMilli(utcTimeMillis).atZone(ZoneOffset.UTC).toLocalDate()
+                        val date = localDateFromUtcMillis(utcTimeMillis)
                         return !date.isAfter(today) && date.isAfter(today.minusDays(120))
                     }
                 }
@@ -744,7 +744,7 @@ private fun SetupOwnCycleDialog(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            selectedDate = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
+                            selectedDate = localDateFromUtcMillis(millis)
                         }
                         showDatePicker = false
                     },

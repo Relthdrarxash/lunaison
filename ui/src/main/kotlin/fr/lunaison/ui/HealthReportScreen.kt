@@ -40,6 +40,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import fr.lunaison.core.model.isBefore
+import fr.lunaison.core.model.minusDays
 
 /** Rubriques personnalisables pouvant être incluses ou masquées lors du bilan médical. */
 enum class ReportSection(

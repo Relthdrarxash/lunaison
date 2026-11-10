@@ -47,6 +47,7 @@ import fr.lunaison.core.designsystem.SectionTitle
 import fr.lunaison.core.model.PartnerPeriod
 import fr.lunaison.core.model.PartnerSnapshot
 import fr.lunaison.core.model.tr
+import fr.lunaison.core.model.toEpochDay
 
 /**
  * Partage avec un ou une partenaire. L'appli prépare un message et ouvre la messagerie choisie ;

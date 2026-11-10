@@ -1,10 +1,11 @@
 package fr.lunaison.ui
 
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import java.util.Locale
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import fr.lunaison.core.model.of
 
 class FormatTest {
 

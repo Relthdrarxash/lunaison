@@ -21,9 +21,12 @@ import fr.lunaison.core.model.ThemePalette
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.security.MessageDigest
-import java.time.LocalDate
-import java.time.LocalTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import fr.lunaison.core.model.of
 import fr.lunaison.core.model.tr
+import fr.lunaison.core.model.isAfter
+import fr.lunaison.core.model.plusDays
 
 /** Messagerie utilisée pour le partage. L'appli ne fait que préparer le message. */
 enum class PartnerChannel {
@@ -311,7 +314,7 @@ internal fun SettingsEntity.toModel() = AppSettings(
     onboarded = onboarded,
     baseline = Baseline(
         ageGroup = ageGroup.toEnumOrNull<AgeGroup>() ?: AgeGroup.ADULT,
-        lastPeriodStart = lastPeriodStart?.let(LocalDate::parse),
+        lastPeriodStart = lastPeriodStart?.let { LocalDate.parse(it) },
         usualCycleLength = usualCycleLength,
         usualPeriodLength = usualPeriodLength,
     ),

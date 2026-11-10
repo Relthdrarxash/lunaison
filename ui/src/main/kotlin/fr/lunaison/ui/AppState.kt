@@ -9,7 +9,10 @@ import fr.lunaison.core.cycle.CycleRecap
 import fr.lunaison.core.cycle.CycleState
 import fr.lunaison.core.data.AppSettings
 import fr.lunaison.core.model.DayLog
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import fr.lunaison.core.model.isAfter
+import fr.lunaison.core.model.isBefore
+import fr.lunaison.core.model.minusYears
 
 /** Ce que les écrans affichent, calculé à partir des données enregistrées. */
 data class AppState(

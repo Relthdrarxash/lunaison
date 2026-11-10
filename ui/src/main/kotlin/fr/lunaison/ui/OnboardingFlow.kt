@@ -3,7 +3,9 @@ package fr.lunaison.ui
 import fr.lunaison.core.cycle.CycleConfig
 import fr.lunaison.core.model.AgeGroup
 import fr.lunaison.core.model.Baseline
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import fr.lunaison.core.model.isAfter
+import fr.lunaison.core.model.minusDays
 
 /** Les cinq écrans de l'accueil, dans l'ordre. */
 enum class OnboardingStep { WELCOME, AGE, CYCLE, LOCK, REMINDERS }

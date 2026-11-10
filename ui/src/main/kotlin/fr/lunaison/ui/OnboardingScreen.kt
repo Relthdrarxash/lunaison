@@ -49,9 +49,7 @@ import fr.lunaison.core.model.AgeGroup
 import fr.lunaison.core.model.Baseline
 import fr.lunaison.core.model.PartnerSnapshot
 import fr.lunaison.core.model.tr
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneOffset
+import kotlinx.datetime.LocalDate
 
 /**
  * Accueil du premier lancement, en cinq écrans courts (voir [OnboardingFlow]) :
@@ -104,7 +102,7 @@ fun OnboardingScreen(
         notificationsOn = granted || notificationsAllowed(context)
     }
 
-    fun baseline() = OnboardingFlow.finalBaseline(current ?: Baseline(AgeGroup.ADULT), ageGroup, lastStart?.let(LocalDate::parse), usualLength, periodLength)
+    fun baseline() = OnboardingFlow.finalBaseline(current ?: Baseline(AgeGroup.ADULT), ageGroup, lastStart?.let { LocalDate.parse(it) }, usualLength, periodLength)
     fun goNext() {
         OnboardingFlow.next(step, hasHistory)?.let { stepIndex = it.ordinal }
     }
@@ -193,16 +191,16 @@ fun OnboardingScreen(
                 )
                 SectionTitle(tr("Début de vos dernières règles", "Start of your last period", pl = "Początek ostatniej miesiączki", uk = "Початок останніх місячних", es = "Inicio de tu última regla", de = "Beginn deiner letzten Periode"))
                 val pickerState = rememberDatePickerState(
-                    initialSelectedDateMillis = lastStart?.let { LocalDate.parse(it).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli() },
+                    initialSelectedDateMillis = lastStart?.let { LocalDate.parse(it).toUtcMillis() },
                     selectableDates = remember(today) {
                         object : SelectableDates {
                             override fun isSelectableDate(utcTimeMillis: Long): Boolean =
-                                OnboardingFlow.isSelectableLastPeriod(Instant.ofEpochMilli(utcTimeMillis).atZone(ZoneOffset.UTC).toLocalDate(), today)
+                                OnboardingFlow.isSelectableLastPeriod(localDateFromUtcMillis(utcTimeMillis), today)
                         }
                     },
                 )
                 DatePicker(state = pickerState, title = null, headline = null, showModeToggle = false)
-                val selected = pickerState.selectedDateMillis?.let { Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate() }
+                val selected = pickerState.selectedDateMillis?.let { localDateFromUtcMillis(it) }
                 if (selected != null) {
                     Text(tr("Le ${Format.dayMonth(selected)}", "${Format.dayMonth(selected)}", pl = "${Format.dayMonth(selected)}", uk = "${Format.dayMonth(selected)}", es = "El ${Format.dayMonth(selected)}", de = "Am ${Format.dayMonth(selected)}"), style = MaterialTheme.typography.titleMedium)
                     LunaButton(tr("Je ne sais plus", "I don't remember", pl = "Nie pamiętam", uk = "Не пам’ятаю", es = "No me acuerdo", de = "Weiß ich nicht mehr"), onClick = { pickerState.selectedDateMillis = null }, style = LunaButtonStyle.Quiet)

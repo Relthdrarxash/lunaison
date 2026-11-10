@@ -18,7 +18,8 @@ import fr.lunaison.ui.Format
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import fr.lunaison.core.model.now
 
 /**
  * Widget d'accueil sobre et discret : affiche le jour du cycle et une estimation courte,

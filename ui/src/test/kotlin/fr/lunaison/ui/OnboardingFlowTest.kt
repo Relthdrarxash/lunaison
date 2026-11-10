@@ -3,12 +3,15 @@ package fr.lunaison.ui
 import fr.lunaison.core.cycle.CycleConfig
 import fr.lunaison.core.model.AgeGroup
 import fr.lunaison.core.model.Baseline
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import fr.lunaison.core.model.minusDays
+import fr.lunaison.core.model.plusDays
+import fr.lunaison.core.model.of
 
 class OnboardingFlowTest {
 

@@ -15,9 +15,12 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import java.util.zip.Inflater
 import kotlin.math.roundToInt
+import fr.lunaison.core.model.isAfter
+import fr.lunaison.core.model.of
+import fr.lunaison.core.model.plusDays
 
 class PasswordRequiredException(message: String = "Cette archive est protégée par un mot de passe") : Exception(message)
 class InvalidPasswordException(message: String = "Mot de passe de sauvegarde incorrect") : Exception(message)

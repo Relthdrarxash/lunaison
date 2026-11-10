@@ -28,7 +28,7 @@ import fr.lunaison.core.model.Symptom
 import fr.lunaison.core.model.tr
 import java.io.File
 import java.io.FileOutputStream
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -88,10 +88,10 @@ data class ReportDocument(
 }
 
 private fun fullDate(date: LocalDate): String =
-    date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(ReportText.locale()))
+    date.toJava().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(ReportText.locale()))
 
 private fun shortDate(date: LocalDate): String =
-    date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(ReportText.locale()))
+    date.toJava().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(ReportText.locale()))
 
 private const val MAX_NOTE_LENGTH = 600
 
