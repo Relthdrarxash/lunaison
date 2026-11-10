@@ -4,4 +4,4 @@ Initial release of Lunaison:
 • Interactive reproductive anatomy diagram with cycle slider (D1 to D28)
 • Objective symptom correlation engine
 • Evidence-based educational guides and endometriosis awareness
-• 100% offline, zero network permissions, GPL-3.0
+• 100% offline, zero network permissions, MPL-2.0
