@@ -9,9 +9,9 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -196,37 +196,33 @@ private val TerracottaDarkColors: ColorScheme = darkColorScheme(
 )
 
 /** Atkinson Hyperlegible Next (Braille Institute, licence SIL OFL 1.1, voir FONT-LICENSE.txt). */
-val Atkinson = FontFamily(
-    Font(R.font.atkinson_regular, FontWeight.Normal),
-    Font(R.font.atkinson_semibold, FontWeight.SemiBold),
-    Font(R.font.atkinson_bold, FontWeight.Bold),
-    Font(R.font.atkinson_extrabold, FontWeight.ExtraBold),
-)
+@Composable
+internal expect fun atkinsonFamily(): FontFamily
 
-private fun style(size: Int, weight: FontWeight, lineHeight: Int = (size * 1.3).toInt()) = TextStyle(
-    fontFamily = Atkinson,
+private fun style(family: FontFamily, size: Int, weight: FontWeight, lineHeight: Int = (size * 1.3).toInt()) = TextStyle(
+    fontFamily = family,
     fontWeight = weight,
     fontSize = size.sp,
     lineHeight = lineHeight.sp,
 )
 
 /** Corps de texte à 17 sp, jamais sous 14 sp ; la taille suit le réglage du téléphone. */
-private val LunaTypography = Typography(
-    displayLarge = style(56, FontWeight.ExtraBold, 62),
-    displayMedium = style(44, FontWeight.ExtraBold),
-    displaySmall = style(34, FontWeight.ExtraBold),
-    headlineLarge = style(30, FontWeight.ExtraBold),
-    headlineMedium = style(26, FontWeight.Bold),
-    headlineSmall = style(22, FontWeight.Bold),
-    titleLarge = style(20, FontWeight.Bold),
-    titleMedium = style(18, FontWeight.Bold),
-    titleSmall = style(16, FontWeight.Bold),
-    bodyLarge = style(18, FontWeight.Normal, 26),
-    bodyMedium = style(17, FontWeight.Normal, 24),
-    bodySmall = style(15, FontWeight.Normal, 21),
-    labelLarge = style(18, FontWeight.Bold),
-    labelMedium = style(15, FontWeight.SemiBold),
-    labelSmall = style(14, FontWeight.SemiBold),
+private fun lunaTypography(family: FontFamily) = Typography(
+    displayLarge = style(family, 56, FontWeight.ExtraBold, 62),
+    displayMedium = style(family, 44, FontWeight.ExtraBold),
+    displaySmall = style(family, 34, FontWeight.ExtraBold),
+    headlineLarge = style(family, 30, FontWeight.ExtraBold),
+    headlineMedium = style(family, 26, FontWeight.Bold),
+    headlineSmall = style(family, 22, FontWeight.Bold),
+    titleLarge = style(family, 20, FontWeight.Bold),
+    titleMedium = style(family, 18, FontWeight.Bold),
+    titleSmall = style(family, 16, FontWeight.Bold),
+    bodyLarge = style(family, 18, FontWeight.Normal, 26),
+    bodyMedium = style(family, 17, FontWeight.Normal, 24),
+    bodySmall = style(family, 15, FontWeight.Normal, 21),
+    labelLarge = style(family, 18, FontWeight.Bold),
+    labelMedium = style(family, 15, FontWeight.SemiBold),
+    labelSmall = style(family, 14, FontWeight.SemiBold),
 )
 
 private val LunaShapes = Shapes(
@@ -249,9 +245,11 @@ fun LunaisonTheme(
         "TERRACOTTA" -> if (dark) TerracottaDarkColors else TerracottaLightColors
         else -> if (dark) DarkColors else LightColors
     }
+    val family = atkinsonFamily()
+    val typography = remember(family) { lunaTypography(family) }
     MaterialTheme(
         colorScheme = scheme,
-        typography = LunaTypography,
+        typography = typography,
         shapes = LunaShapes,
         content = content,
     )

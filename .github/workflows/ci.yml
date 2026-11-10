@@ -93,4 +93,4 @@ jobs:
           key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
 
       - name: Compiler le socle pour le simulateur iOS
-        run: ./gradlew :core:model:compileKotlinIosSimulatorArm64 :core:cycle:compileKotlinIosSimulatorArm64 :core:content:compileKotlinIosSimulatorArm64 :core:data:compileKotlinIosSimulatorArm64
+        run: ./gradlew :core:model:compileKotlinIosSimulatorArm64 :core:cycle:compileKotlinIosSimulatorArm64 :core:content:compileKotlinIosSimulatorArm64 :core:data:compileKotlinIosSimulatorArm64 :core:designsystem:compileKotlinIosSimulatorArm64 :ui:compileKotlinIosSimulatorArm64
