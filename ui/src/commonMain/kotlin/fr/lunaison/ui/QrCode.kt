@@ -1,0 +1,372 @@
+package fr.lunaison.ui
+
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
+import fr.lunaison.core.content.ShareMessages
+import fr.lunaison.core.cycle.CycleState
+import fr.lunaison.core.designsystem.LunaCard
+import fr.lunaison.core.model.PartnerSnapshot
+import fr.lunaison.core.model.tr
+
+/** Affiche un QR Code net et contrasté directement dans l'application, lisible même en thème sombre. */
+@Composable
+fun QrCodeBox(
+    content: String,
+    modifier: Modifier = Modifier,
+) {
+    val matrix = remember(content) { encodeQr(content) }
+    if (matrix == null) return
+
+    val qrDescription = tr("QR Code de partage Lunaison", "Lunaison sharing QR Code", pl = "Kod QR do udostępniania Lunaison", uk = "QR-код для обміну Lunaison", es = "Código QR para compartir de Lunaison", de = "Lunaison-QR-Code zum Teilen")
+    Surface(
+        color = Color(0xFFFBF5F2),
+        shape = RoundedCornerShape(16.dp),
+        modifier = modifier
+            .size(220.dp)
+            .semantics { contentDescription = qrDescription },
+    ) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+        ) {
+            val cols = matrix.width
+            val rows = matrix.height
+            val cellWidth = size.width / cols
+            val cellHeight = size.height / rows
+            val ink = Color(0xFF241426)
+            for (y in 0 until rows) {
+                for (x in 0 until cols) {
+                    if (matrix[x, y]) {
+                        drawRect(
+                            color = ink,
+                            topLeft = Offset(x * cellWidth, y * cellHeight),
+                            size = Size(cellWidth + 0.5f, cellHeight + 0.5f),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Fenêtre de scan QR Code intégrée à l'application (avec CameraX + ZXing local)
+ * et champ de saisie pour coller un code reçu par SMS.
+ */
+@Composable
+fun QrScannerDialog(
+    onScanned: (PartnerSnapshot) -> Unit,
+    onDismiss: () -> Unit,
+    existingPartner: PartnerSnapshot? = null,
+) {
+    var pastedCode by rememberSaveable { mutableStateOf("") }
+    var pasteError by rememberSaveable { mutableStateOf(false) }
+    var scannedDelivered by remember { mutableStateOf(false) }
+
+    val deliver: (PartnerSnapshot) -> Unit = { decoded ->
+        if (!scannedDelivered) {
+            scannedDelivered = true
+            onScanned(existingPartner?.mergeWith(decoded) ?: decoded)
+        }
+    }
+
+    val scanner = rememberScanner(deliver)
+    val hasCameraPermission = scanner.hasCamera
+    val hasNfc = scanner.hasNfc
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                if (existingPartner != null) {
+                    tr("Mettre à jour le cycle de ${existingPartner.partnerName}", "Update ${existingPartner.partnerName}'s cycle", pl = "Zaktualizuj cykl: ${existingPartner.partnerName}", uk = "Оновити цикл: ${existingPartner.partnerName}", es = "Actualizar el ciclo de ${existingPartner.partnerName}", de = "Zyklus von ${existingPartner.partnerName} aktualisieren")
+                } else {
+                    tr("Scanner ou coller un code", "Scan or paste a code", pl = "Zeskanuj lub wklej kod", uk = "Відскануйте або вставте код", es = "Escanear o pegar un código", de = "Code scannen oder einfügen")
+                },
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (hasCameraPermission) {
+                    Text(
+                        if (hasNfc) {
+                            if (existingPartner != null) {
+                                tr(
+                                    "Scannez le QR Code de mise à jour ou collez les téléphones dos à dos (NFC) :",
+                                    "Scan the update QR Code or tap phones back-to-back (NFC):",
+                                    pl = "Zeskanuj kod QR aktualizacji lub zbliż telefony tyłem do siebie (NFC):",
+                                    uk = "Відскануйте QR-код оновлення або прикладіть телефони спинками (NFC):",
+                                    es = "Escanea el código QR de actualización o junta los teléfonos dorso con dorso (NFC):",
+                                    de = "Scanne den Aktualisierungs-QR-Code oder halte die Telefone Rücken an Rücken (NFC):",
+                                )
+                            } else {
+                                tr(
+                                    "Visez le QR Code ou collez les téléphones dos à dos (NFC) :",
+                                    "Point at the QR Code or tap phones back-to-back (NFC):",
+                                    pl = "Skieruj aparat na kod QR lub zbliż telefony tyłem do siebie (NFC):",
+                                    uk = "Наведіть камеру на QR-код або прикладіть телефони спинками (NFC):",
+                                    es = "Apunta al código QR o junta los teléfonos dorso con dorso (NFC):",
+                                    de = "Ziele auf den QR-Code oder halte die Telefone Rücken an Rücken (NFC):",
+                                )
+                            }
+                        } else {
+                            if (existingPartner != null) {
+                                tr(
+                                    "Scannez le QR Code de mise à jour affiché sur le téléphone de ${existingPartner.partnerName} :",
+                                    "Scan the update QR Code shown on ${existingPartner.partnerName}'s phone:",
+                                    pl = "Zeskanuj kod QR aktualizacji na telefonie partnera (${existingPartner.partnerName}):",
+                                    uk = "Відскануйте QR-код оновлення на телефоні партнера (${existingPartner.partnerName}):",
+                                    es = "Escanea el código QR de actualización que aparece en el teléfono de ${existingPartner.partnerName}:",
+                                    de = "Scanne den Aktualisierungs-QR-Code auf dem Smartphone von ${existingPartner.partnerName}:",
+                                )
+                            } else {
+                                tr(
+                                    "Visez le QR Code affiché dans Lunaison sur le téléphone de votre partenaire :",
+                                    "Point at the QR Code shown in Lunaison on your partner's phone:",
+                                    pl = "Skieruj aparat na kod QR w aplikacji Lunaison na telefonie partnera:",
+                                    uk = "Наведіть камеру на QR-код у застосунку Lunaison на телефоні партнера:",
+                                    es = "Apunta al código QR mostrado en Lunaison en el teléfono de tu pareja:",
+                                    de = "Ziele auf den QR-Code in Lunaison auf dem Smartphone deines Partners:",
+                                )
+                            }
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    scanner.preview()
+                } else {
+                    Text(
+                        if (hasNfc) {
+                            tr(
+                                "Sans caméra, collez les téléphones dos à dos (NFC) ou collez ci-dessous le code LUNA1:... reçu par SMS :",
+                                "Without camera, tap phones back-to-back (NFC) or paste below the LUNA1:... code received by SMS:",
+                                pl = "Bez aparatu: zbliż telefony tyłem do siebie (NFC) lub wklej poniżej kod LUNA1:... otrzymany SMS-em:",
+                                uk = "Без камери: прикладіть телефони спинками (NFC) або вставте нижче код LUNA1:..., отриманий в SMS:",
+                                es = "Sin cámara, junta los teléfonos dorso con dorso (NFC) o pega abajo el código LUNA1:... recibido por SMS:",
+                                de = "Ohne Kamera: halte die Telefone Rücken an Rücken (NFC) oder füge unten den per SMS empfangenen LUNA1:...-Code ein:",
+                            )
+                        } else {
+                            tr(
+                                "Sans accès à la caméra, vous pouvez coller ci-dessous le message ou le code LUNA1:... envoyé par SMS :",
+                                "Without camera access, you can paste below the message or LUNA1:... code sent by SMS:",
+                                pl = "Bez dostępu do aparatu możesz wkleić poniżej wiadomość lub kod LUNA1:... z SMS-a:",
+                                uk = "Без доступу до камери ви можете вставити нижче повідомлення або код LUNA1:..., отриманий в SMS:",
+                                es = "Sin acceso a la cámara, puedes pegar a continuación el mensaje o código LUNA1:... enviado por SMS:",
+                                de = "Ohne Kamerazugriff kannst du unten die per SMS gesendete Nachricht oder den LUNA1:...-Code einfügen:",
+                            )
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+                OutlinedTextField(
+                    value = pastedCode,
+                    onValueChange = {
+                        pastedCode = it
+                        pasteError = false
+                        PartnerSnapshot.decode(it)?.let(deliver)
+                    },
+                    label = { Text(tr("Ou coller le SMS / code LUNA1:...", "Or paste SMS / LUNA1:... code", pl = "Lub wklej SMS / kod LUNA1:...", uk = "Або вставте SMS / код LUNA1:...", es = "O pega el SMS / código LUNA1:...", de = "Oder SMS / LUNA1:...-Code einfügen")) },
+                    isError = pasteError,
+                    supportingText = if (pasteError) {
+                        { Text(tr("Aucun code Lunaison valide trouvé dans ce texte.", "No valid Lunaison code found in this text.", pl = "Nie znaleziono prawidłowego kodu Lunaison w tym tekście.", uk = "У цьому тексті не знайдено дійсного коду Lunaison.", es = "No se ha encontrado ningún código Lunaison válido en este texto.", de = "In diesem Text wurde kein gültiger Lunaison-Code gefunden.")) }
+                    } else {
+                        null
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        },
+        confirmButton = {
+            if (pastedCode.isNotBlank()) {
+                TextButton(
+                    onClick = {
+                        val decoded = PartnerSnapshot.decode(pastedCode)
+                        if (decoded != null) deliver(decoded) else pasteError = true
+                    },
+                ) {
+                    Text(if (existingPartner != null) tr("Mettre à jour", "Update", pl = "Aktualizuj", uk = "Оновити", es = "Actualizar", de = "Aktualisieren") else tr("Importer", "Import", pl = "Importuj", uk = "Імпортувати", es = "Importar", de = "Importieren"))
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(tr("Fermer", "Close", pl = "Zamknij", uk = "Закрити", es = "Cerrar", de = "Schließen"))
+            }
+        },
+    )
+}
+
+/** Carte affichant les estimations du cycle d'un ou d'une partenaire suivi(e) par QR Code ou SMS. */
+@Composable
+fun PartnerSnapshotCard(
+    snapshot: PartnerSnapshot,
+    cycle: CycleState.Known,
+    onRescan: (() -> Unit)? = null,
+    onRemove: (() -> Unit)? = null,
+) {
+    var confirmRemove by rememberSaveable { mutableStateOf(false) }
+    val guide = remember(cycle.phase) { ShareMessages.partnerGuide(cycle.phase) }
+    LunaCard(container = MaterialTheme.colorScheme.secondaryContainer) {
+        Text(
+            tr("Cycle de ${snapshot.partnerName} · Jour ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", "${snapshot.partnerName}'s cycle · Day ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", pl = "Cykl: ${snapshot.partnerName} · Dzień ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", uk = "Цикл: ${snapshot.partnerName} · День ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", es = "Ciclo de ${snapshot.partnerName} · Día ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})", de = "Zyklus von ${snapshot.partnerName} · Tag ${cycle.dayOfCycle} (${Format.phaseName(cycle.phase)})"),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+        )
+        Text(
+            Format.nextPeriod(cycle),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+        )
+        if (!cycle.inPeriod && cycle.daysLate == 0) {
+            Text(
+                Format.range(cycle),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+            if (snapshot.showFertility) {
+                Text(
+                    Format.fertileWindow(cycle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+            }
+        }
+        Text(
+            tr("Comment soutenir aujourd'hui :", "How to support today:", pl = "Jak wspierać dzisiaj:", uk = "Як підтримати сьогодні:", es = "Cómo apoyar hoy:", de = "So kann man heute unterstützen:"),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+        )
+        guide.supportTips.take(2).forEach { tip ->
+            Bullet(tip)
+        }
+        Text(
+            tr("Partagé le ${Format.dayMonth(snapshot.sharedAt)}. Rescannez ou demandez un SMS au prochain cycle pour garder des estimations à jour.", "Shared on ${Format.dayMonth(snapshot.sharedAt)}. Rescan or request an SMS next cycle to keep estimates up to date.", pl = "Udostępniono ${Format.dayMonth(snapshot.sharedAt)}. Zeskanuj ponownie lub poproś o SMS w następnym cyklu, aby prognozy były aktualne.", uk = "Передано ${Format.dayMonth(snapshot.sharedAt)}. Скануйте знову або попросіть SMS наступного циклу, щоб прогнози залишалися актуальними.", es = "Compartido el ${Format.dayMonth(snapshot.sharedAt)}. Vuelve a escanear o pide un SMS el próximo ciclo para mantener las estimaciones al día.", de = "Geteilt am ${Format.dayMonth(snapshot.sharedAt)}. Scanne erneut oder fordere im nächsten Zyklus eine SMS an, damit die Schätzungen aktuell bleiben."),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+        )
+        if (onRescan != null || onRemove != null) {
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                if (onRemove != null) {
+                    TextButton(onClick = { confirmRemove = true }) {
+                        Text(
+                            tr(
+                                "Arrêter ce suivi",
+                                "Stop following",
+                                pl = "Zatrzymaj śledzenie",
+                                uk = "Припинити стеження",
+                                es = "Dejar de seguir",
+                                de = "Begleitung beenden",
+                            ),
+                        )
+                    }
+                }
+                if (onRescan != null) {
+                    TextButton(onClick = onRescan) {
+                        Text(
+                            tr(
+                                "Mettre à jour (QR / NFC / SMS)",
+                                "Update (QR / NFC / SMS)",
+                                pl = "Aktualizuj (QR / NFC / SMS)",
+                                uk = "Оновити (QR / NFC / SMS)",
+                                es = "Actualizar (QR / NFC / SMS)",
+                                de = "Aktualisieren (QR / NFC / SMS)",
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    if (confirmRemove) {
+        AlertDialog(
+            onDismissRequest = { confirmRemove = false },
+            title = {
+                Text(
+                    tr(
+                        "Arrêter de suivre le cycle de ${snapshot.partnerName} ?",
+                        "Stop following ${snapshot.partnerName}'s cycle?",
+                        pl = "Przestać śledzić cykl: ${snapshot.partnerName}?",
+                        uk = "Припинити стежити за циклом ${snapshot.partnerName}?",
+                        es = "¿Dejar de seguir el ciclo de ${snapshot.partnerName}?",
+                        de = "Zyklus von ${snapshot.partnerName} nicht mehr begleiten?",
+                    ),
+                )
+            },
+            text = {
+                Text(
+                    tr(
+                        "Les prévisions et repères de ${snapshot.partnerName} seront retirés de votre écran. Vous pourrez reprendre ce suivi à tout moment en scannant à nouveau son QR Code, par NFC ou par SMS.",
+                        "${snapshot.partnerName}'s forecasts and notes will be removed from your screen. You can resume this tracking at any time by scanning their QR Code again, via NFC, or by SMS.",
+                        pl = "Prognozy i wskazówki dla: ${snapshot.partnerName} zostaną usunięte z Twojego ekranu. Możesz wznowić to śledzenie w dowolnym momencie, skanując ponownie kod QR, przez NFC lub SMS.",
+                        uk = "Прогнози та орієнтири для ${snapshot.partnerName} буде видалено з вашого екрана. Ви зможете відновити відстеження в будь-який час, повторно відсканувавши QR-код, через NFC або SMS.",
+                        es = "Las previsiones y referencias de ${snapshot.partnerName} se eliminarán de tu pantalla. Podrás reanudar el seguimiento en cualquier momento volviendo a escanear su código QR, por NFC o por SMS.",
+                        de = "Die Vorhersagen und Notizen für ${snapshot.partnerName} werden von deinem Bildschirm entfernt. Du kannst die Begleitung jederzeit wieder aufnehmen, indem du den QR-Code erneut scannst, per NFC oder per SMS.",
+                    ),
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmRemove = false
+                        onRemove?.invoke()
+                    },
+                ) {
+                    Text(
+                        tr(
+                            "Arrêter ce suivi",
+                            "Stop following",
+                            pl = "Zatrzymaj śledzenie",
+                            uk = "Припинити стеження",
+                            es = "Dejar de seguir",
+                            de = "Begleitung beenden",
+                        ),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmRemove = false }) {
+                    Text(
+                        tr("Annuler", "Cancel", pl = "Anuluj", uk = "Скасувати", es = "Cancelar", de = "Abbrechen"),
+                    )
+                }
+            },
+        )
+    }
+}

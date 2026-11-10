@@ -27,8 +27,6 @@ class InvalidPasswordException(message: String = "Mot de passe de sauvegarde inc
 class ImportTooLargeException(message: String = "Archive trop volumineuse pour être importée") : Exception(message)
 class CorruptArchiveException(message: String = "Archive illisible ou endommagée") : Exception(message)
 
-data class ImportSummary(val daysCount: Int, val cyclesCount: Int)
-
 data class PeriodCalendarImportResult(
     val dayLogs: List<DayLog>,
     val cyclesCount: Int,
