@@ -1,7 +1,6 @@
 package fr.lunaison.ui
 
 import android.Manifest
-import android.app.Activity
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
