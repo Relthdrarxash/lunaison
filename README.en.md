@@ -66,7 +66,7 @@ The app sticks to what is necessary. What it does not say itself, where its refe
 ## Privacy
 
 - No Internet permission, no third-party SDK, no account.
-- Cloud backup turned off: health data never passes through any server. Direct device-to-device transfer (Android 12+) is supported, along with spreadsheet CSV export and **direct backup import (Lunaison CSV or password-protected Period Calendar archives)**, processed 100% locally.
+- Cloud copy off by default: health data never passes through any server. On Android 12+, the person can turn on a copy to their Google account, end-to-end encrypted with the screen lock (neither Google nor Lunaison can read it). Direct device-to-device transfer (Android 12+) is supported, along with spreadsheet CSV export and **direct backup import (Lunaison CSV or password-protected Period Calendar archives)**, processed 100% locally.
 - The system contact picker gives access only to the chosen contact, with no permission on the address book.
 - Complete erasure in one tap.
 

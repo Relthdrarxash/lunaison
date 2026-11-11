@@ -22,10 +22,12 @@
         </intent>
     </queries>
 
-    <!-- Pas de sauvegarde dans le nuage. Seul le transfert direct vers un nouveau téléphone est permis (voir data_extraction_rules). -->
+    <!-- Copie dans le compte Google désactivée par défaut, à la demande et chiffrée de bout en bout (voir LunaisonBackupAgent). Le transfert direct reste permis. -->
     <application
         android:name=".LunaisonApplication"
         android:allowBackup="true"
+        android:backupAgent=".LunaisonBackupAgent"
+        android:fullBackupOnly="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"

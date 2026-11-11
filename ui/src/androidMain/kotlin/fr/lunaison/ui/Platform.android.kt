@@ -27,6 +27,8 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import fr.lunaison.core.cycle.HealthReport
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.tr
+import fr.lunaison.ui.backup.BackupPolicy
+import fr.lunaison.ui.backup.CloudBackupConsent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -205,9 +207,16 @@ private fun sharePdf(context: Context, file: File) {
 
 actual val importAvailable: Boolean = true
 
-// Android : la sauvegarde automatique est désactivée dans le manifeste, rien à régler.
-actual val cloudBackupControllable: Boolean = false
+// Android : copie dans le compte Google désactivée par défaut, activable à partir d'Android 12 (voir LunaisonBackupAgent).
+actual val cloudBackupControllable: Boolean = BackupPolicy.settingAvailable(Build.VERSION.SDK_INT)
 
-actual fun isCloudBackupEnabled(): Boolean = false
+actual val cloudBackupOptIn: Boolean = true
 
-actual fun setCloudBackupEnabled(enabled: Boolean) = Unit
+actual fun isCloudBackupEnabled(context: PlatformContext): Boolean = CloudBackupConsent(context.noBackupFilesDir).enabled
+
+actual fun cloudBackupReady(context: PlatformContext): Boolean =
+    (context.getSystemService(Context.KEYGUARD_SERVICE) as? android.app.KeyguardManager)?.isDeviceSecure == true
+
+actual fun setCloudBackupEnabled(context: PlatformContext, enabled: Boolean) {
+    CloudBackupConsent(context.noBackupFilesDir).enabled = enabled
+}

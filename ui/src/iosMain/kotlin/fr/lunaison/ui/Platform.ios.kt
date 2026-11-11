@@ -197,9 +197,13 @@ actual fun ImportDialogs(showSource: Boolean, onDismiss: () -> Unit, actions: Ac
 
 actual val cloudBackupControllable: Boolean = true
 
-actual fun isCloudBackupEnabled(): Boolean = !isBackupExcluded()
+actual val cloudBackupOptIn: Boolean = false
 
-actual fun setCloudBackupEnabled(enabled: Boolean) = setBackupExcluded(!enabled)
+actual fun isCloudBackupEnabled(context: PlatformContext): Boolean = !isBackupExcluded()
+
+actual fun cloudBackupReady(context: PlatformContext): Boolean = true
+
+actual fun setCloudBackupEnabled(context: PlatformContext, enabled: Boolean) = setBackupExcluded(!enabled)
 
 // L'encodeur de QR Code pour iOS reste à écrire : en attendant, le code se partage par message.
 actual fun encodeQr(content: String): QrMatrix? = null
