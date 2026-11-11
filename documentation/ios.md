@@ -27,7 +27,7 @@ Tout le code de l'appli, hors entrée système, est en Kotlin Multiplatform et c
 - **QR Code** : pas encore d'encodeur ni de lecteur (`encodeQr` renvoie `null`, `rememberScanner` n'a pas de caméra). Le code se partage par message. À faire : encodeur en Kotlin commun (testé contre ZXing sur Android) ou CoreImage, lecteur AVFoundation.
 - **Rappels** : l'autorisation de notifications est demandée, mais rien n'est encore planifié (Android passe par WorkManager). À faire : notifications locales `UNCalendarNotificationTrigger`.
 - **PDF du bilan** : dessiné avec les API graphiques d'Android, bouton masqué sur iOS. À faire : rendu PDF avec UIKit.
-- **Import d'autres applis** (Period Calendar), **NFC** et **sélecteur de contacts** : masqués ou absents.
+- **Import d'autres applis** (Period Calendar) et **sélecteur de contacts** : masqués ou absents.
 - **Verrou par code** : écran commun, mais pas de déverrouillage biométrique.
 - **Fiche App Store** : le bouton « Laisser un avis » est masqué tant que l'appli n'a pas d'identifiant App Store.
 

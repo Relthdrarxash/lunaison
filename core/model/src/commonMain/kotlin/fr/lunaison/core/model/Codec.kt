@@ -1,7 +1,7 @@
 package fr.lunaison.core.model
 
 /*
- * Briques d'encodage du partage hors ligne (QR Code, SMS, NFC), écrites en Kotlin commun pour que
+ * Briques d'encodage du partage hors ligne (QR Code, SMS), écrites en Kotlin commun pour que
  * Android et iOS produisent et acceptent exactement les mêmes codes `LUNA1:...`.
  */
 
