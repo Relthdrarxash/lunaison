@@ -33,14 +33,16 @@ jobs:
       - name: Tests unitaires (moteur du cycle et contenus)
         run: |
           set -o pipefail
-          ./gradlew test 2>&1 | tee -a gradle.log
+          ./gradlew test jvmTest --continue 2>&1 | tee -a gradle.log
 
       - name: Analyse Android (lint)
+        if: ${{ !cancelled() }}
         run: |
           set -o pipefail
           ./gradlew :app:lintDebug 2>&1 | tee -a gradle.log
 
       - name: APK de développement
+        if: ${{ !cancelled() }}
         run: |
           set -o pipefail
           ./gradlew :app:assembleDebug 2>&1 | tee -a gradle.log
@@ -69,3 +71,26 @@ jobs:
           name: lunaison-debug
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 14
+
+  # Compile le socle partagé (modèle, moteur du cycle, contenus) pour iOS : seul un Mac sait le faire.
+  ios:
+    name: Socle partagé pour iOS (compilation)
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
+
+      - name: Compiler le socle pour le simulateur iOS
+        run: ./gradlew :core:model:compileKotlinIosSimulatorArm64 :core:cycle:compileKotlinIosSimulatorArm64 :core:content:compileKotlinIosSimulatorArm64 :core:data:compileKotlinIosSimulatorArm64 :core:designsystem:compileKotlinIosSimulatorArm64 :ui:compileKotlinIosSimulatorArm64

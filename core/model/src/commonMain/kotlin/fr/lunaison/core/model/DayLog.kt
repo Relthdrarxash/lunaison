@@ -1,0 +1,307 @@
+package fr.lunaison.core.model
+
+import kotlinx.datetime.LocalDate
+
+/** Flux du jour. Les traces seules ne marquent pas le début des règles. */
+enum class Flow(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    SPOTTING("Traces", "Spotting", "Plamienie", "Мажучі виділення", "Manchado", "Schmierblutung"),
+    LIGHT("Léger", "Light", "Skąpe", "Легкі", "Ligero", "Leicht"),
+    MEDIUM("Moyen", "Medium", "Umiarkowane", "Помірні", "Medio", "Mittel"),
+    HEAVY("Abondant", "Heavy", "Obfite", "Рясні", "Abundante", "Stark"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+
+    /** Un vrai saignement, par opposition à de simples traces. */
+    val isBleeding: Boolean get() = this != SPOTTING
+}
+
+/** Douleur ressentie, décrite par son effet plutôt que par un chiffre. */
+enum class Pain(
+    private val fr: String,
+    private val en: String,
+    private val frDescription: String,
+    private val enDescription: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+    private val plDescription: String,
+    private val ukDescription: String,
+    private val esDescription: String,
+    private val deDescription: String,
+) {
+    NONE(
+        "Aucune", "None",
+        "Pas de douleur", "No pain",
+        "Brak", "Немає", "Ninguno", "Keine",
+        "Brak bólu", "Без болю", "Sin dolor", "Keine Schmerzen",
+    ),
+    MILD(
+        "Légère", "Mild",
+        "Je la sens, sans que ça me gêne", "I can feel it, but it doesn't bother me",
+        "Łagodny", "Легкий", "Leve", "Leicht",
+        "Odczuwalny, ale nie przeszkadza", "Відчувається, але не заважає", "Lo noto, pero no me impide nada", "Spürbar, aber nicht störend",
+    ),
+    MODERATE(
+        "Gênante", "Bothersome",
+        "Elle me gêne, mais je fais ce que j'avais prévu", "It bothers me, but I still do what I had planned",
+        "Dokuczliwy", "Помірний", "Molesto", "Mäßig",
+        "Przeszkadza, ale robię swoje", "Заважає, але я роблю заплановане", "Molesta, pero sigo con mis planes", "Störend, aber Alltag möglich",
+    ),
+    SEVERE(
+        "Forte", "Severe",
+        "Elle m'empêche de faire mes activités", "It stops me from doing my usual activities",
+        "Silny", "Сильний", "Fuerte", "Stark",
+        "Uniemożliwia codzienne zajęcia", "Заважає звичайним справам", "Me impide hacer mis actividades", "Verhindert normale Aktivitäten",
+    ),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+    val description: String get() = tr(frDescription, enDescription, plDescription, ukDescription, esDescription, deDescription)
+}
+
+enum class Symptom(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    HEADACHE("Maux de tête", "Headache", "Ból głowy", "Головний біль", "Dolor de cabeza", "Kopfschmerzen"),
+    BACK_PAIN("Mal de dos", "Back pain", "Ból pleców", "Біль у спині", "Dolor de espalda", "Rückenschmerzen"),
+    BLOATING("Ventre gonflé", "Bloating", "Wzdęcia", "Здуття живота", "Hinchazón", "Blähbauch"),
+    BREAST_TENDERNESS("Seins sensibles", "Tender breasts", "Tkliwość piersi", "Чутливість грудей", "Sensibilidad mamaria", "Brustspannen"),
+    DIGESTIVE("Troubles digestifs", "Digestive issues", "Problemy trawienne", "Травний дискомфорт", "Molestias digestivas", "Verdauungsbeschwerden"),
+    NAUSEA("Nausées", "Nausea", "Nudności", "Нудота", "Náuseas", "Übelkeit"),
+    FATIGUE("Fatigue", "Fatigue", "Zmęczenie", "Втома", "Fatiga", "Müdigkeit"),
+    SLEEP("Sommeil perturbé", "Poor sleep", "Zaburzenia snu", "Порушений сон", "Sueño alterado", "Schlafstörungen"),
+    CRAVINGS("Fringales", "Cravings", "Zachcianki", "Підвищений апетит", "Antojos", "Heißhunger"),
+    ACNE("Boutons", "Acne", "Trądzik", "Висипання", "Acné", "Hautunreinheiten"),
+    PELVIC_PAIN("Douleur pelvienne", "Pelvic pain", "Ból miednicy", "Тазовий біль", "Dolor pélvico", "Unterleibsschmerzen"),
+    HOT_FLASHES("Bouffées de chaleur", "Hot flashes", "Uderzenia gorąca", "Припливи жару", "Sofocos", "Hitzewallungen"),
+    NIGHT_SWEATS("Sueurs nocturnes", "Night sweats", "Nocne poty", "Нічна пітливість", "Sudores nocturnos", "Nachtschweiß"),
+    BRAIN_FOG("Brouillard mental", "Brain fog", "Mgła mózgowa", "Туман у голові", "Niebla mental", "Konzentrationsprobleme"),
+    CRAMPS("Crampes", "Cramps", "Skurcze", "Спазми", "Cólicos", "Krämpfe"),
+    DIZZINESS("Vertiges", "Dizziness", "Zawroty głowy", "Запаморочення", "Mareos", "Schwindel"),
+    DYSPAREUNIA("Douleurs aux rapports", "Pain during sex", "Ból przy stosunku", "Біль під час сексу", "Dolor en las relaciones", "Schmerzen beim Sex"),
+    DIGESTIVE_PAIN("Douleur défécation / transit", "Painful bowel movement", "Ból przy wypróżnianiu", "Біль під час дефекації", "Dolor al defecar", "Schmerzen beim Stuhlgang"),
+    URINARY_PAIN("Douleur en urinant", "Painful urination", "Ból przy mikcji", "Біль при сечовипусканні", "Dolor al orinar", "Schmerzen beim Wasserlassen"),
+    RADIATING_PAIN("Douleurs irradiantes (dos/jambes)", "Radiating pain (back/legs)", "Ból promieniujący", "Біль, що віддає у ноги/спину", "Dolor irradiado", "Ausstrahlende Schmerzen"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
+/** Observation facultative de la glaire cervicale (suivi symptothermique / signes d'ovulation). */
+enum class CervicalMucus(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    DRY("Sec ou absent", "Dry or none", "Suchy lub brak", "Сухо або немає", "Seco o ausente", "Trocken oder kein"),
+    STICKY("Collant ou épais", "Sticky or thick", "Lepki lub gęsty", "Липкий або густий", "Pegajoso o espeso", "Klebrig oder dicklich"),
+    CREAMY("Crémeux ou laiteux", "Creamy or lotion-like", "Kremowy lub mleczny", "Кремоподібний", "Cremoso o lechoso", "Cremig oder milchig"),
+    EGG_WHITE("Fluide, transparent (très fertile)", "Clear, stretchy (very fertile)", "Przejrzysty, rozciągliwy (płodny)", "Прозорий, тягучий (плідний)", "Transparente y elástico (fértil)", "Klar, spinnbar (fruchtbar)"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
+/** Humeurs du jour, plusieurs possibles, notées à part des symptômes physiques. Libellés non genrés. */
+enum class Mood(
+    private val fr: String,
+    private val en: String,
+    val positive: Boolean,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    CALM("Calme", "Calm", true, "Spokój", "Спокій", "Calma", "Ruhig"),
+    HAPPY("De bonne humeur", "In a good mood", true, "Dobry nastrój", "Гарний настрій", "Buen humor", "Gute Laune"),
+    ENERGETIC("Énergie haute", "High energy", true, "Dużo energii", "Висока енергія", "Mucha energía", "Viel Energie"),
+    MOTIVATED("Motivation", "Motivated", true, "Motywacja", "Мотивація", "Motivación", "Motiviert"),
+    SENSITIVE("À fleur de peau", "Sensitive", false, "Wrażliwość", "Чутливість", "Sensible", "Empfindlich"),
+    IRRITABLE("Irritable", "Irritable", false, "Drażliwość", "Дратівливість", "Irritable", "Gereizt"),
+    ANXIOUS("Anxiété", "Anxious", false, "Niepokój", "Тривожність", "Ansiedad", "Ängstlich"),
+    STRESSED("Stress", "Stressed", false, "Stres", "Стрес", "Estrés", "Gestresst"),
+    SAD("Triste", "Sad", false, "Smutek", "Смуток", "Tristeza", "Traurig"),
+    LOW_ENERGY("Énergie basse", "Low energy", false, "Mało energii", "Низька енергія", "Poca energía", "Wenig Energie"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
+/** Statut précis de la pilule ou contraception orale pour la journée. */
+enum class PillStatus(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    TAKEN("Prise", "Taken", "Przyjęta", "Прийнято", "Tomada", "Eingenommen"),
+    MISSED("Oubliée", "Missed", "Pominięta", "Пропущено", "Olvidada", "Vergessen"),
+    LATE("En retard", "Late", "Spóźniona", "З запізненням", "Con retraso", "Verspätet"),
+    PLACEBO("Placebo / Pause", "Placebo / Break", "Placebo / Przerwa", "Плацебо / Перерва", "Placebo / Pausa", "Placebo / Pause"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
+/** Catégories de médicaments ou traitements courants pris dans la journée. */
+enum class MedicationKind(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    PAINKILLER("Antidouleur (paracétamol)", "Painkiller (paracetamol)", "Przeciwbólowy", "Знеболювальне", "Analgésico", "Schmerzmittel"),
+    ANTI_INFLAMMATORY("Anti-inflammatoire (ibuprofène)", "Anti-inflammatory (ibuprofen)", "Przeciwzapalny", "Протизапальне", "Antiinflamatorio", "Entzündungshemmer"),
+    ANTISPASMODIC("Antispasmodique (Spasfon)", "Antispasmodic", "Rozkurczowy", "Спазмолітик", "Antiespasmódico", "Krampflöser"),
+    ANTIBIOTIC("Antibiotique", "Antibiotic", "Antybiotyk", "Антибіотик", "Antibiótico", "Antibiotikum"),
+    SUPPLEMENT("Vitamines / Compléments", "Vitamins / Supplements", "Witaminy / Suplementy", "Вітаміни / Добавки", "Vitaminas / Suplementos", "Vitamine / Nahrungsergänzung"),
+    OTHER("Autre traitement", "Other medication", "Inny lek", "Інші ліки", "Otro tratamiento", "Anderes Medikament"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
+/** Activité sexuelle notée dans l'intimité, sans aucun jugement ni transmission cloud. */
+enum class IntimacyKind(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    PROTECTED("Rapport protégé", "Protected sex", "Stosunek zabezpieczony", "Захищений секс", "Relación protegida", "Geschützter Verkehr"),
+    UNPROTECTED("Rapport non protégé", "Unprotected sex", "Stosunek niezabezpieczony", "Незахищений секс", "Relación sin protección", "Ungeschützter Verkehr"),
+    NON_PENETRATIVE("Sans pénétration / solo", "Non-penetrative / solo", "Bez penetracji / solo", "Без проникнення / соло", "Sin penetración / a solas", "Ohne Penetration / Solo"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
+/** Niveau de désir ressenti au cours du cycle. */
+enum class Libido(
+    private val fr: String,
+    private val en: String,
+    private val pl: String,
+    private val uk: String,
+    private val es: String,
+    private val de: String,
+) {
+    LOW("Désir doux / bas", "Low desire", "Niskie pożądanie", "Знижене лібідо", "Deseo suave", "Geringe Libido"),
+    NORMAL("Désir modéré", "Moderate desire", "Umiarkowane pożądanie", "Помірне лібідо", "Deseo moderado", "Mäßige Libido"),
+    HIGH("Désir vif / élevé", "High desire", "Wysokie pożądanie", "Високе лібідо", "Deseo intenso", "Hohe Libido"),
+    ;
+
+    val label: String get() = tr(fr, en, pl, uk, es, de)
+}
+
+/** Ce que la personne a noté pour une journée. Tout est facultatif. */
+data class DayLog(
+    val date: LocalDate,
+    val flow: Flow? = null,
+    val pain: Pain? = null,
+    val symptoms: Set<Symptom> = emptySet(),
+    val moods: Set<Mood> = emptySet(),
+    val note: String = "",
+    /** Prise de contraception, traitement ou complément notée ce jour-là. */
+    val medicationTaken: Boolean = false,
+    /** Statut précis de la pilule/contraception si renseigné. */
+    val pillStatus: PillStatus? = null,
+    /** Médicaments ou traitements pris le jour même. */
+    val medications: Set<MedicationKind> = emptySet(),
+    /** Poids du jour en kg (ex. 58.4f). */
+    val weight: Float? = null,
+    /** Activité sexuelle notée ce jour-là. */
+    val intimacy: Set<IntimacyKind> = emptySet(),
+    /** Niveau de désir / libido du jour. */
+    val libido: Libido? = null,
+    /** Aspect de la glaire cervicale, si le suivi des signes d'ovulation est activé. */
+    val mucus: CervicalMucus? = null,
+    /** Température basale au réveil en °C (ex. 36.6f), si le suivi des signes d'ovulation est activé. */
+    val basalTemperature: Float? = null,
+) {
+    val isEmpty: Boolean
+        get() = flow == null && pain == null && symptoms.isEmpty() && moods.isEmpty() &&
+            note.isBlank() && !medicationTaken && pillStatus == null && medications.isEmpty() &&
+            weight == null && intimacy.isEmpty() && libido == null && mucus == null && basalTemperature == null
+}
+
+/** Palette de couleurs de l'interface, toutes conformes au contraste WCAG AA. */
+enum class ThemePalette {
+    PLUM,
+    SAGE,
+    OCEAN,
+    TERRACOTTA,
+    ;
+
+    val label: String get() = when (this) {
+        PLUM -> tr(
+            fr = "Nuit de lune (Prune)",
+            en = "Moonlight (Plum)",
+            pl = "Noc księżycowa (Śliwka)",
+            uk = "Місячна ніч (Слива)",
+            es = "Noche de luna (Ciruela)",
+            de = "Mondnacht (Pflaume)",
+        )
+        SAGE -> tr(
+            fr = "Forêt calme (Sauge)",
+            en = "Calm forest (Sage)",
+            pl = "Spokojny las (Szałwia)",
+            uk = "Тихий ліс (Шавлія)",
+            es = "Bosque en calma (Salvia)",
+            de = "Ruhiger Wald (Salbei)",
+        )
+        OCEAN -> tr(
+            fr = "Marée (Océan)",
+            en = "Tide (Ocean)",
+            pl = "Przypływ (Ocean)",
+            uk = "Приплив (Океан)",
+            es = "Marea (Océano)",
+            de = "Gezeiten (Ozean)",
+        )
+        TERRACOTTA -> tr(
+            fr = "Terre chaude (Terracotta)",
+            en = "Warm earth (Terracotta)",
+            pl = "Ciepła ziemia (Terakota)",
+            uk = "Тепла земля (Теракота)",
+            es = "Tierra cálida (Terracota)",
+            de = "Warme Erde (Terrakotta)",
+        )
+    }
+}
+
+/** Tranche d'âge déclarée : elle règle les repères de cycle et l'accès au partage. */
+enum class AgeGroup {
+    /** Moins de 18 ans : repères adaptés aux premières années de cycle, partage désactivé. */
+    UNDER_18,
+    ADULT,
+}
+
+/** Ce que la personne a indiqué au démarrage, avant d'avoir un historique. */
+data class Baseline(
+    val ageGroup: AgeGroup,
+    val lastPeriodStart: LocalDate? = null,
+    val usualCycleLength: Int? = null,
+    val usualPeriodLength: Int? = null,
+)

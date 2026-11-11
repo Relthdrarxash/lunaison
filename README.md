@@ -10,6 +10,8 @@ Lunaison est une appli Android gratuite, libre (MPL-2.0), sans publicité, sans 
 
 **[Site de Lunaison](https://relthdrarxash.github.io/lunaison/)** · **[Google Play](https://play.google.com/store/apps/details?id=fr.lunaison)** · **[Télécharger l'APK](https://github.com/Relthdrarxash/lunaison/releases/latest)** · [Pour les professionnels de santé](https://relthdrarxash.github.io/lunaison/professionnels.html) · [Sources médicales](https://relthdrarxash.github.io/lunaison/sources.html) · [Confidentialité](https://relthdrarxash.github.io/lunaison/confidentialite.html)
 
+**Avant la sortie sur Google Play :** [rejoindre le test interne](https://play.google.com/apps/internaltest/4699280816823618019) (réservé aux personnes déjà ajoutées à la liste de testeurs : [comment devenir testeur ou testeuse](https://relthdrarxash.github.io/lunaison/testeur.html)).
+
 ## Ce que fait l'appli
 
 - **Noter ses journées en quelques secondes** : flux, douleur (décrite par son effet), symptômes (8 symptômes courants affichés par défaut, plus symptômes cliniques dédiés aux douleurs pelviennes, à l'endométriose et à la périménopause), humeurs, prise de contraception ou de traitement, signes d'ovulation facultatifs (glaire cervicale et température basale sans clavier), note personnelle. **Ruban des 7 derniers jours sur l'accueil** pour visualiser ses journées récentes et compléter un jour oublié en un tap.
