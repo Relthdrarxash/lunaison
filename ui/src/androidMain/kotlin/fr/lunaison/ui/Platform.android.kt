@@ -156,18 +156,6 @@ actual fun rememberContactPicker(onPicked: (name: String, phone: String) -> Unit
     }
 }
 
-@Composable
-actual fun NfcShareEffect(payload: String) {
-    DisposableEffect(payload) {
-        LunaisonHceService.currentPayload = payload
-        onDispose {
-            if (LunaisonHceService.currentPayload == payload) {
-                LunaisonHceService.currentPayload = null
-            }
-        }
-    }
-}
-
 actual val pdfReportAvailable: Boolean = true
 
 actual suspend fun shareHealthReportPdf(

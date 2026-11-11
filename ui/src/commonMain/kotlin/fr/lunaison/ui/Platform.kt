@@ -66,10 +66,6 @@ expect object ShareLauncher {
     fun shareAny(context: PlatformContext, text: String)
 }
 
-/** Diffuse le code de partage par NFC tant que l'écran est affiché (Android seulement). */
-@Composable
-expect fun NfcShareEffect(payload: String)
-
 /** Le bilan de santé peut être exporté en PDF. */
 expect val pdfReportAvailable: Boolean
 
@@ -103,10 +99,9 @@ class QrMatrix(val width: Int, val height: Int, private val modules: BooleanArra
 /** Encode [content] en QR Code ; `null` si c'est impossible ou si la plateforme ne sait pas encore le faire. */
 expect fun encodeQr(content: String): QrMatrix?
 
-/** Lecture d'un code partenaire par la caméra et le NFC, fournie par la plateforme. */
+/** Lecture d'un code partenaire par la caméra, fournie par la plateforme. */
 class ScannerState(
     val hasCamera: Boolean,
-    val hasNfc: Boolean,
     val preview: @Composable () -> Unit,
 )
 

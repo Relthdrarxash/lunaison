@@ -2,10 +2,7 @@ package fr.lunaison.ui
 
 import android.Manifest
 import android.app.Activity
-import android.content.ContextWrapper
 import android.content.pm.PackageManager
-import android.nfc.NfcAdapter
-import android.nfc.tech.IsoDep
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -66,61 +63,10 @@ actual fun encodeQr(content: String): QrMatrix? = runCatching {
 actual fun rememberScanner(onSnapshot: (PartnerSnapshot) -> Unit): ScannerState {
     val context = LocalContext.current
     val deliver by rememberUpdatedState(onSnapshot)
-    val activity = remember(context) {
-        generateSequence(context) { (it as? ContextWrapper)?.baseContext }
-            .filterIsInstance<Activity>()
-            .firstOrNull()
-    }
-    val nfcAdapter = remember(activity) {
-        activity?.let { runCatching { NfcAdapter.getDefaultAdapter(it) }.getOrNull() }
-    }
-    val hasNfc = nfcAdapter != null && nfcAdapter.isEnabled
-
     var hasCameraPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED,
         )
-    }
-
-    DisposableEffect(activity, nfcAdapter) {
-        val currentActivity = activity
-        val currentAdapter = nfcAdapter
-        if (currentActivity != null && currentAdapter != null && currentAdapter.isEnabled) {
-            val callback = NfcAdapter.ReaderCallback { tag ->
-                val isoDep = IsoDep.get(tag) ?: return@ReaderCallback
-                try {
-                    isoDep.connect()
-                    isoDep.timeout = 2500
-                    val command = LunaisonHceService.buildSelectAidApdu()
-                    val response = isoDep.transceive(command)
-                    if (response != null && response.size >= 2) {
-                        val sw1 = response[response.size - 2].toInt() and 0xFF
-                        val sw2 = response[response.size - 1].toInt() and 0xFF
-                        if (sw1 == 0x90 && sw2 == 0x00) {
-                            val payloadBytes = response.copyOfRange(0, response.size - 2)
-                            val text = String(payloadBytes, java.nio.charset.StandardCharsets.UTF_8)
-                            val decoded = PartnerSnapshot.decode(text)
-                            if (decoded != null) {
-                                currentActivity.runOnUiThread {
-                                    deliver(decoded)
-                                }
-                            }
-                        }
-                    }
-                } catch (_: Exception) {
-                    // Tag déconnecté prématurément ou non reconnu
-                } finally {
-                    runCatching { isoDep.close() }
-                }
-            }
-            val flags = NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
-            currentAdapter.enableReaderMode(currentActivity, callback, flags, null)
-        }
-        onDispose {
-            if (currentActivity != null && currentAdapter != null && currentAdapter.isEnabled) {
-                runCatching { currentAdapter.disableReaderMode(currentActivity) }
-            }
-        }
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -135,7 +81,6 @@ actual fun rememberScanner(onSnapshot: (PartnerSnapshot) -> Unit): ScannerState 
 
     return ScannerState(
         hasCamera = hasCameraPermission,
-        hasNfc = hasNfc,
         preview = { CameraQrPreview(onCodeDetected = { raw -> PartnerSnapshot.decode(raw)?.let { deliver(it) } }) },
     )
 }

@@ -179,10 +179,6 @@ actual object ShareLauncher {
     }
 }
 
-// Pas de NFC pour échanger le code sur iPhone : QR Code ou message.
-@Composable
-actual fun NfcShareEffect(payload: String) = Unit
-
 // Le PDF du bilan dessine avec les API graphiques d'Android : à refaire pour iOS.
 actual val pdfReportAvailable: Boolean = false
 
@@ -210,4 +206,4 @@ actual fun encodeQr(content: String): QrMatrix? = null
 
 @Composable
 actual fun rememberScanner(onSnapshot: (PartnerSnapshot) -> Unit): ScannerState =
-    ScannerState(hasCamera = false, hasNfc = false, preview = { })
+    ScannerState(hasCamera = false, preview = { })

@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 // Écrans et navigation, partagés entre Android et iOS (Compose Multiplatform).
-// Les parties qui dépendent du système (appareil photo, NFC, PDF, rappels) restent dans androidMain.
+// Les parties qui dépendent du système (appareil photo, PDF, rappels) restent dans androidMain.
 // Bibliothèque à part pour que les captures d'écran puissent afficher les écrans sans téléphone.
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
