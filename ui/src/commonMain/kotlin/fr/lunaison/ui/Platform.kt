@@ -84,12 +84,22 @@ expect val importAvailable: Boolean
 @Composable
 expect fun ImportDialogs(showSource: Boolean, onDismiss: () -> Unit, actions: Actions, onResult: (String) -> Unit)
 
-/** La sauvegarde iCloud de l'iPhone inclut les données ; la personne peut l'exclure (iOS seulement). */
+/**
+ * Réglage de la copie dans le nuage de la plateforme.
+ * iOS : la sauvegarde iCloud inclut les données par défaut, la personne peut les exclure.
+ * Android : la copie dans le compte Google est désactivée par défaut, la personne peut l'activer (Android 12 et plus).
+ */
 expect val cloudBackupControllable: Boolean
 
-expect fun isCloudBackupEnabled(): Boolean
+/** Vrai quand la copie n'existe que sur choix explicite de la personne (Android). */
+expect val cloudBackupOptIn: Boolean
 
-expect fun setCloudBackupEnabled(enabled: Boolean)
+expect fun isCloudBackupEnabled(context: PlatformContext): Boolean
+
+/** Vrai quand le réglage peut être activé maintenant (Android : le téléphone a un verrouillage d'écran). */
+expect fun cloudBackupReady(context: PlatformContext): Boolean
+
+expect fun setCloudBackupEnabled(context: PlatformContext, enabled: Boolean)
 
 /** Matrice de modules d'un QR Code (vrai = module sombre). */
 class QrMatrix(val width: Int, val height: Int, private val modules: BooleanArray) {

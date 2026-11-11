@@ -289,23 +289,57 @@ fun SettingsScreen(
         SectionTitle(tr("Mes données", "My data", pl = "Moje dane", uk = "Мої дані", es = "Mis datos", de = "Meine Daten"))
         LunaCard {
             if (cloudBackupControllable) {
-                var backupOn by remember { mutableStateOf(isCloudBackupEnabled()) }
-                Text(
-                    tr(
-                    fr = "Tout est enregistré sur cet iPhone. Lunaison n'a pas accès à Internet et n'envoie rien. Si la sauvegarde iCloud de votre iPhone est activée, vos données en font partie, sous le contrôle de votre compte Apple. Vous pouvez les en exclure ci-dessous.",
-                    en = "Everything is saved on this iPhone. Lunaison has no Internet access and sends nothing. If your iPhone's iCloud backup is on, your data is part of it, under the control of your Apple account. You can exclude it below.",
-                    pl = "Wszystko jest zapisane na tym iPhonie. Lunaison nie ma dostępu do internetu i niczego nie wysyła. Jeśli kopia zapasowa iCloud na Twoim iPhonie jest włączona, Twoje dane są w niej zawarte, pod kontrolą Twojego konta Apple. Możesz je z niej wyłączyć poniżej.",
-                    uk = "Усе зберігається на цьому iPhone. Lunaison не має доступу до інтернету й нічого не надсилає. Якщо резервне копіювання iCloud на вашому iPhone увімкнено, ваші дані входять до нього під контролем вашого облікового запису Apple. Нижче можна виключити їх із копії.",
-                    es = "Todo se guarda en este iPhone. Lunaison no tiene acceso a Internet y no envía nada. Si la copia de seguridad de iCloud de tu iPhone está activada, tus datos forman parte de ella, bajo el control de tu cuenta de Apple. Puedes excluirlos abajo.",
-                    de = "Alles wird auf diesem iPhone gespeichert. Lunaison hat keinen Internetzugriff und sendet nichts. Ist die iCloud-Sicherung deines iPhones aktiviert, sind deine Daten darin enthalten, unter der Kontrolle deines Apple-Kontos. Unten kannst du sie ausschließen.",
-                ),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                SwitchRow(
-                    tr("Inclure dans la sauvegarde iCloud", "Include in iCloud backup", pl = "Uwzględnij w kopii zapasowej iCloud", uk = "Включити в резервну копію iCloud", es = "Incluir en la copia de seguridad de iCloud", de = "In die iCloud-Sicherung aufnehmen"),
-                    checked = backupOn,
-                    onChange = { backupOn = it; setCloudBackupEnabled(it) },
-                )
+                val platformContext = rememberPlatformContext()
+                var backupOn by remember { mutableStateOf(isCloudBackupEnabled(platformContext)) }
+                if (cloudBackupOptIn) {
+                    val backupReady = cloudBackupReady(platformContext)
+                    Text(
+                        tr(
+                            fr = "Tout est enregistré sur ce téléphone. Lunaison n'a pas accès à Internet et n'envoie rien. La copie dans votre compte Google est désactivée par défaut. Si vous l'activez, c'est Android qui copie vos données, chiffrées avec le code de verrouillage de votre téléphone : ni Google ni Lunaison ne peuvent les lire. Il faudra le code de l'ancien téléphone pour les retrouver, et désactiver le réglage n'efface pas une copie déjà envoyée.",
+                            en = "Everything is saved on this phone. Lunaison has no Internet access and sends nothing. Copying to your Google account is off by default. If you turn it on, Android copies your data, encrypted with your phone's lock code: neither Google nor Lunaison can read it. The old phone's code is needed to get it back, and turning the setting off does not delete a copy already sent.",
+                            pl = "Wszystko jest zapisane na tym telefonie. Lunaison nie ma dostępu do internetu i niczego nie wysyła. Kopia na koncie Google jest domyślnie wyłączona. Jeśli ją włączysz, Android kopiuje Twoje dane, zaszyfrowane kodem blokady telefonu: ani Google, ani Lunaison nie mogą ich odczytać. Do przywrócenia potrzebny będzie kod starego telefonu, a wyłączenie ustawienia nie usuwa kopii już wysłanej.",
+                            uk = "Усе зберігається на цьому телефоні. Lunaison не має доступу до інтернету й нічого не надсилає. Копіювання в акаунт Google вимкнено за замовчуванням. Якщо ви його ввімкнете, Android копіює ваші дані, зашифровані кодом блокування телефону: ні Google, ні Lunaison не можуть їх прочитати. Для відновлення знадобиться код старого телефону, а вимкнення налаштування не видаляє копію, яку вже надіслано.",
+                            es = "Todo se guarda en este teléfono. Lunaison no tiene acceso a Internet y no envía nada. La copia en tu cuenta de Google está desactivada por defecto. Si la activas, Android copia tus datos, cifrados con el código de bloqueo de tu teléfono: ni Google ni Lunaison pueden leerlos. Para recuperarlos hará falta el código del teléfono anterior, y desactivar el ajuste no borra una copia ya enviada.",
+                            de = "Alles wird auf diesem Handy gespeichert. Lunaison hat keinen Internetzugriff und sendet nichts. Die Kopie in dein Google-Konto ist standardmäßig aus. Wenn du sie einschaltest, kopiert Android deine Daten, verschlüsselt mit dem Sperrcode deines Handys: Weder Google noch Lunaison können sie lesen. Zum Wiederherstellen brauchst du den Code des alten Handys, und das Ausschalten löscht keine bereits gesendete Kopie.",
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    if (!backupReady) {
+                        Muted(
+                            tr(
+                                fr = "Indisponible tant que votre téléphone n'a pas de verrouillage d'écran : sans lui, Android ne chiffre pas la copie.",
+                                en = "Unavailable until your phone has a screen lock: without it, Android does not encrypt the copy.",
+                                pl = "Niedostępne, dopóki telefon nie ma blokady ekranu: bez niej Android nie szyfruje kopii.",
+                                uk = "Недоступно, доки на телефоні немає блокування екрана: без нього Android не шифрує копію.",
+                                es = "No disponible hasta que tu teléfono tenga bloqueo de pantalla: sin él, Android no cifra la copia.",
+                                de = "Nicht verfügbar, solange dein Handy keine Displaysperre hat: Ohne sie verschlüsselt Android die Kopie nicht.",
+                            ),
+                        )
+                    }
+                    SwitchRow(
+                        tr("Copier dans mon compte Google", "Copy to my Google account", pl = "Kopiuj na moje konto Google", uk = "Копіювати в мій акаунт Google", es = "Copiar en mi cuenta de Google", de = "In mein Google-Konto kopieren"),
+                        checked = backupOn && backupReady,
+                        enabled = backupReady,
+                        onChange = { backupOn = it; setCloudBackupEnabled(platformContext, it) },
+                    )
+                } else {
+                    Text(
+                        tr(
+                        fr = "Tout est enregistré sur cet iPhone. Lunaison n'a pas accès à Internet et n'envoie rien. Si la sauvegarde iCloud de votre iPhone est activée, vos données en font partie, sous le contrôle de votre compte Apple. Vous pouvez les en exclure ci-dessous.",
+                        en = "Everything is saved on this iPhone. Lunaison has no Internet access and sends nothing. If your iPhone's iCloud backup is on, your data is part of it, under the control of your Apple account. You can exclude it below.",
+                        pl = "Wszystko jest zapisane na tym iPhonie. Lunaison nie ma dostępu do internetu i niczego nie wysyła. Jeśli kopia zapasowa iCloud na Twoim iPhonie jest włączona, Twoje dane są w niej zawarte, pod kontrolą Twojego konta Apple. Możesz je z niej wyłączyć poniżej.",
+                        uk = "Усе зберігається на цьому iPhone. Lunaison не має доступу до інтернету й нічого не надсилає. Якщо резервне копіювання iCloud на вашому iPhone увімкнено, ваші дані входять до нього під контролем вашого облікового запису Apple. Нижче можна виключити їх із копії.",
+                        es = "Todo se guarda en este iPhone. Lunaison no tiene acceso a Internet y no envía nada. Si la copia de seguridad de iCloud de tu iPhone está activada, tus datos forman parte de ella, bajo el control de tu cuenta de Apple. Puedes excluirlos abajo.",
+                        de = "Alles wird auf diesem iPhone gespeichert. Lunaison hat keinen Internetzugriff und sendet nichts. Ist die iCloud-Sicherung deines iPhones aktiviert, sind deine Daten darin enthalten, unter der Kontrolle deines Apple-Kontos. Unten kannst du sie ausschließen.",
+                    ),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    SwitchRow(
+                        tr("Inclure dans la sauvegarde iCloud", "Include in iCloud backup", pl = "Uwzględnij w kopii zapasowej iCloud", uk = "Включити в резервну копію iCloud", es = "Incluir en la copia de seguridad de iCloud", de = "In die iCloud-Sicherung aufnehmen"),
+                        checked = backupOn,
+                        onChange = { backupOn = it; setCloudBackupEnabled(platformContext, it) },
+                    )
+                }
             } else {
                 Text(tr("Tout est enregistré sur ce téléphone, nulle part ailleurs. Lunaison n'a pas accès à Internet et ne fait pas de sauvegarde dans le nuage.", "Everything is saved on this phone, nowhere else. Lunaison has no Internet access and makes no cloud backup.", pl = "Wszystko jest zapisane na tym telefonie i nigdzie indziej. Lunaison nie ma dostępu do internetu i nie tworzy kopii zapasowych w chmurze.", uk = "Усе зберігається на цьому телефоні й ніде більше. Lunaison не має доступу до інтернету й не створює резервних копій у хмарі.", es = "Todo se guarda en este teléfono, en ningún otro sitio. Lunaison no tiene acceso a Internet y no hace copias de seguridad en la nube.", de = "Alles wird auf diesem Telefon gespeichert, nirgendwo sonst. Lunaison hat keinen Internetzugriff und erstellt keine Cloud-Sicherung."), style = MaterialTheme.typography.bodyMedium)
             }
@@ -482,14 +516,14 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SwitchRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+private fun SwitchRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit, enabled: Boolean = true) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        Switch(checked = checked, onCheckedChange = onChange, modifier = Modifier.semantics { contentDescription = label })
+        Switch(checked = checked, onCheckedChange = onChange, enabled = enabled, modifier = Modifier.semantics { contentDescription = label })
     }
 }
 

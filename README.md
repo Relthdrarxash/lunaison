@@ -66,7 +66,7 @@ L'appli reste au strict nécessaire. Ce qu'elle ne dit pas elle-même, d'où vie
 ## Vie privée
 
 - Aucune permission Internet, aucun SDK tiers, aucun compte.
-- Sauvegarde dans le nuage désactivée : les données de santé ne passent par aucun serveur. Le transfert direct vers un nouveau téléphone (Android 12 et plus) reste possible, ainsi que l'export et l'**import direct de sauvegardes (fichiers CSV Lunaison ou archives chiffrées de l'application Calendrier des règles)**, traité 100 % localement.
+- Copie dans le nuage désactivée par défaut : les données de santé ne passent par aucun serveur. Sur Android 12 ou plus, la personne peut activer une copie dans son compte Google, chiffrée de bout en bout avec le verrouillage d'écran (ni Google ni Lunaison ne peuvent la lire). Le transfert direct vers un nouveau téléphone (Android 12 et plus) reste possible, ainsi que l'export et l'**import direct de sauvegardes (fichiers CSV Lunaison ou archives chiffrées de l'application Calendrier des règles)**, traité 100 % localement.
 - Le sélecteur de contacts du système donne accès au seul contact choisi, sans autorisation sur le carnet d'adresses.
 - Effacement complet en un geste.
 
