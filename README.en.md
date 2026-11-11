@@ -94,6 +94,8 @@ Tests: `./gradlew test`. Build: `./gradlew :app:assembleDebug`.
 
 - **[Sommelle](https://github.com/Relthdrarxash/sommelle)**: 6-to-8-week CBT-I insomnia support app, free, open source and offline.
 - **[Respire](https://github.com/Relthdrarxash/respire)**: a short breathing pause before the apps you open on autopilot, with a Reels & Shorts filter.
+- **[Sauve](https://github.com/Relthdrarxash/sauve)**: anti-panic first aid guide, free, open source and offline, with hands-free voice and haptic guidance.
+- **[Sillon](https://github.com/Relthdrarxash/sillon)**: living vegetable garden planner and agronomic calendar based on the last frost date, free, open source and offline.
 
 ## Ideas being considered
 

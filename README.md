@@ -94,6 +94,8 @@ Tests : `./gradlew test`. Construction : `./gradlew :app:assembleDebug`.
 
 - **[Sommelle](https://github.com/Relthdrarxash/sommelle)** : accompagnement de l'insomnie chronique par la TCC-I en 6 à 8 semaines, gratuit, libre et sans accès à Internet.
 - **[Respire](https://github.com/Relthdrarxash/respire)** : une courte pause de respiration avant les applications que l'on ouvre par réflexe, avec filtre des Reels et Shorts.
+- **[Sauve](https://github.com/Relthdrarxash/sauve)** : premiers secours « anti-panique », gratuit, libre et sans accès à Internet, avec guidage vocal et haptique mains libres.
+- **[Sillon](https://github.com/Relthdrarxash/sillon)** : potager vivant et calendrier agronomique indexé sur la date des dernières gelées, gratuit, libre et sans accès à Internet.
 
 ## Pistes envisagées
 

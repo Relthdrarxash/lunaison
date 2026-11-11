@@ -4,5 +4,4 @@
     <string name="reminders_channel">Reminders</string>
     <string name="reminders_channel_description">Notice of your next period and a reminder to log your day</string>
     <string name="widget_description">Discreet cycle day and phase indicator</string>
-    <string name="nfc_sync_description">Lunaison cycle synchronization</string>
 </resources>

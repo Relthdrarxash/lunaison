@@ -3,7 +3,8 @@
     Rien n'est sauvegardé dans le nuage : les données de santé ne passent jamais par un serveur.
     Le transfert direct vers un nouveau téléphone (câble ou sans fil, au moment de sa configuration)
     est autorisé : les données vont d'un appareil à l'autre sans quitter les mains de la personne.
-    Ces règles s'appliquent à partir d'Android 12. Avant, android:allowBackup="false" bloque tout.
+    Ces règles s'appliquent à partir d'Android 12. Avant, android:fullBackupContent="false" coupe toute sauvegarde.
+    allowBackup reste actif : avec false, le transfert direct peut être bloqué selon les constructeurs.
 -->
 <data-extraction-rules>
     <cloud-backup>
@@ -12,6 +13,10 @@
         <exclude domain="database" />
         <exclude domain="sharedpref" />
         <exclude domain="external" />
+        <exclude domain="device_root" />
+        <exclude domain="device_file" />
+        <exclude domain="device_database" />
+        <exclude domain="device_sharedpref" />
     </cloud-backup>
     <device-transfer>
         <include domain="database" />
