@@ -110,6 +110,7 @@ fun LunaCard(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = container),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp), content = content)
