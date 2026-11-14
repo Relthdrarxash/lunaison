@@ -47,8 +47,6 @@ import platform.AVFoundation.AVMetadataObjectTypeQRCode
 import platform.AVFoundation.authorizationStatusForMediaType
 import platform.AVFoundation.requestAccessForMediaType
 import platform.Contacts.CNContact
-import platform.Contacts.CNContactFormatter
-import platform.Contacts.CNContactFormatterStyleFullName
 import platform.Contacts.CNLabeledValue
 import platform.Contacts.CNPhoneNumber
 import platform.ContactsUI.CNContactPickerDelegateProtocol
@@ -207,7 +205,7 @@ private class ContactPickerDelegate(
     private val onDone: () -> Unit,
 ) : NSObject(), CNContactPickerDelegateProtocol {
     override fun contactPicker(picker: CNContactPickerViewController, didSelectContact: CNContact) {
-        val name = CNContactFormatter.stringFromContact(didSelectContact, style = CNContactFormatterStyleFullName).orEmpty()
+        val name = "${didSelectContact.givenName} ${didSelectContact.familyName}".trim()
         val firstPhone = (didSelectContact.phoneNumbers.firstOrNull() as? CNLabeledValue)?.value as? CNPhoneNumber
         onPicked(name, firstPhone?.stringValue.orEmpty())
         onDone()
@@ -283,22 +281,22 @@ actual suspend fun shareHealthReportPdf(
     val ink = UIColor.blackColor
     val muted = UIColor.darkGrayColor
 
-    val lines = buildList {
+    val lines = buildList<Pair<UIFont, String>> {
         add(headingFont to tr("Bilan de cycle — Lunaison", "Cycle health report — Lunaison", pl = "Raport cyklu — Lunaison", uk = "Звіт про цикл — Lunaison", es = "Informe del ciclo — Lunaison", de = "Zyklusbericht — Lunaison"))
         add(bodyFont to "${tr("Jour du cycle", "Cycle day", pl = "Dzień cyklu", uk = "День циклу", es = "Día del ciclo", de = "Zyklustag")} : ${report.dayOfCycle}")
         add(bodyFont to "${tr("Dernières règles", "Last period", pl = "Ostatnia miesiączka", uk = "Остання менструація", es = "Última regla", de = "Letzte Periode")} : ${report.lastPeriodStart}")
         report.overview?.let { ov ->
             if (ReportSection.OVERVIEW in sections) {
                 add(headingFont to tr("Vue d'ensemble (90 jours)", "Overview (90 days)", pl = "Podsumowanie (90 dni)", uk = "Огляд (90 днів)", es = "Resumen (90 días)", de = "Übersicht (90 Tage)"))
-                ov.averageCycleDays?.let { add(bodyFont to "${tr("Durée moyenne de cycle", "Average cycle length", pl = "Średnia długość cyklu", uk = "Середня тривалість циклу", es = "Duración media del ciclo", de = "Durchschnittliche Zykluslänge")} : $it j") }
-                ov.averagePeriodDays?.let { add(bodyFont to "${tr("Durée moyenne des règles", "Average period length", pl = "Średnia długość miesiączki", uk = "Середня тривалість менструації", es = "Duración media de la regla", de = "Durchschnittliche Periodenlänge")} : $it j") }
+                add(bodyFont to "${tr("Durée moyenne de cycle", "Average cycle length", pl = "Średnia długość cyklu", uk = "Середня тривалість циклу", es = "Duración media del ciclo", de = "Durchschnittliche Zykluslänge")} : ${ov.usualLength} j")
+                ov.usualPeriodLength?.let { add(bodyFont to "${tr("Durée moyenne des règles", "Average period length", pl = "Średnia długość miesiączki", uk = "Середня тривалість менструації", es = "Duración media de la regla", de = "Durchschnittliche Periodenlänge")} : $it j") }
             }
         }
         if (ReportSection.ALERTS in sections && report.alerts.isNotEmpty()) {
             add(headingFont to tr("Signaux observés", "Observed signals", pl = "Zaobserwowane sygnały", uk = "Помічені сигнали", es = "Señales observadas", de = "Beobachtete Signale"))
-            report.alerts.forEach { add(bodyFont to "• ${it.kind.name}") }
+            report.alerts.forEach { add(bodyFont to "• ${it.name}") }
         }
-        if (ReportSection.PERIODS in sections && logs.isNotEmpty()) {
+        if (ReportSection.NOTES in sections && logs.isNotEmpty()) {
             add(headingFont to tr("Journal récent", "Recent logs", pl = "Ostatnie wpisy", uk = "Останні записи", es = "Registros recientes", de = "Letzte Einträge"))
             logs.sortedByDescending { it.date }.take(30).forEach { log ->
                 val note = log.note.takeIf { it.isNotBlank() }?.let { " — $it" }.orEmpty()
