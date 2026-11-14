@@ -273,64 +273,9 @@ actual suspend fun shareHealthReportPdf(
     logs: List<DayLog>,
     sections: Set<ReportSection>,
 ) {
-    val pageRect = CGRectMake(0.0, 0.0, 595.0, 842.0)
-    val renderer = UIGraphicsPDFRenderer(bounds = pageRect, format = UIGraphicsPDFRendererFormat())
-    val titleFont = UIFont.boldSystemFontOfSize(18.0)
-    val headingFont = UIFont.boldSystemFontOfSize(13.0)
-    val bodyFont = UIFont.systemFontOfSize(11.0)
-    val ink = UIColor.blackColor
-    val muted = UIColor.darkGrayColor
-
-    val lines = buildList<Pair<UIFont, String>> {
-        add(headingFont to tr("Bilan de cycle — Lunaison", "Cycle health report — Lunaison", pl = "Raport cyklu — Lunaison", uk = "Звіт про цикл — Lunaison", es = "Informe del ciclo — Lunaison", de = "Zyklusbericht — Lunaison"))
-        add(bodyFont to "${tr("Jour du cycle", "Cycle day", pl = "Dzień cyklu", uk = "День циклу", es = "Día del ciclo", de = "Zyklustag")} : ${report.dayOfCycle}")
-        add(bodyFont to "${tr("Dernières règles", "Last period", pl = "Ostatnia miesiączka", uk = "Остання менструація", es = "Última regla", de = "Letzte Periode")} : ${report.lastPeriodStart}")
-        report.overview?.let { ov ->
-            if (ReportSection.OVERVIEW in sections) {
-                add(headingFont to tr("Vue d'ensemble (90 jours)", "Overview (90 days)", pl = "Podsumowanie (90 dni)", uk = "Огляд (90 днів)", es = "Resumen (90 días)", de = "Übersicht (90 Tage)"))
-                add(bodyFont to "${tr("Durée moyenne de cycle", "Average cycle length", pl = "Średnia długość cyklu", uk = "Середня тривалість циклу", es = "Duración media del ciclo", de = "Durchschnittliche Zykluslänge")} : ${ov.usualLength} j")
-                ov.usualPeriodLength?.let { add(bodyFont to "${tr("Durée moyenne des règles", "Average period length", pl = "Średnia długość miesiączki", uk = "Середня тривалість менструації", es = "Duración media de la regla", de = "Durchschnittliche Periodenlänge")} : $it j") }
-            }
-        }
-        if (ReportSection.ALERTS in sections && report.alerts.isNotEmpty()) {
-            add(headingFont to tr("Signaux observés", "Observed signals", pl = "Zaobserwowane sygnały", uk = "Помічені сигнали", es = "Señales observadas", de = "Beobachtete Signale"))
-            report.alerts.forEach { add(bodyFont to "• ${it.name}") }
-        }
-        if (ReportSection.NOTES in sections && logs.isNotEmpty()) {
-            add(headingFont to tr("Journal récent", "Recent logs", pl = "Ostatnie wpisy", uk = "Останні записи", es = "Registros recientes", de = "Letzte Einträge"))
-            logs.sortedByDescending { it.date }.take(30).forEach { log ->
-                val note = log.note.takeIf { it.isNotBlank() }?.let { " — $it" }.orEmpty()
-                add(bodyFont to "• ${log.date}${note}")
-            }
-        }
-        if (medicationLabel.isNotBlank()) {
-            add(bodyFont to "${tr("Traitement suivi", "Tracked medication", pl = "Śledzony lek", uk = "Відстежувані ліки", es = "Tratamiento seguido", de = "Verfolgtes Medikament")} : $medicationLabel")
-        }
-    }
-
-    val pdfData = renderer.PDFDataWithActions { pdfCtx ->
-        var y = 48.0
-        pdfCtx?.beginPage()
-        val title = tr("Lunaison — Document d'échange médical", "Lunaison — Consultation summary", pl = "Lunaison — Podsumowanie na wizytę", uk = "Lunaison — Підсумок для консультації", es = "Lunaison — Resumen para consulta", de = "Lunaison — Gesprächsgrundlage")
-        (title as NSString).drawInRect(
-            CGRectMake(40.0, y, 515.0, 28.0),
-            withAttributes = mapOf(NSFontAttributeName to titleFont, NSForegroundColorAttributeName to ink),
-        )
-        y += 34.0
-        for ((font, text) in lines) {
-            if (y > 780.0) {
-                pdfCtx?.beginPage()
-                y = 48.0
-            }
-            val color = if (font == headingFont) ink else muted
-            (text as NSString).drawInRect(
-                CGRectMake(40.0, y, 515.0, 22.0),
-                withAttributes = mapOf(NSFontAttributeName to font, NSForegroundColorAttributeName to color),
-            )
-            y += if (font == headingFont) 24.0 else 18.0
-        }
-    }
-    val path = NSTemporaryDirectory() + "lunaison-bilan.pdf"
+    val document = buildReportDocument(report, medicationLabel, logs, sections)
+    val pdfData = HealthReportPdfIos.render(document)
+    val path = NSTemporaryDirectory() + "bilan-lunaison.pdf"
     NSFileManager.defaultManager.createFileAtPath(path, contents = pdfData, attributes = null)
     onMain { presentShareSheet(listOf(NSURL.fileURLWithPath(path))) }
 }

@@ -243,4 +243,21 @@ class HealthReportDocumentTest {
             Locale.setDefault(Locale.FRENCH)
         }
     }
+
+    @Test
+    fun categoryBadgesAndEarlyTrackingReflectStartupState() {
+        val early = buildReportDocument(
+            report(withOverview = false),
+            "",
+            emptyList(),
+            setOf(ReportSection.OVERVIEW, ReportSection.PAIN_AND_ENDOMETRIOSIS, ReportSection.WEIGHT),
+        )
+        assertEquals(3, early.categoryBadges.size)
+        assertTrue(early.categoryBadges.all { !it.hasData })
+        assertTrue(early.earlyTracking != null)
+
+        val mature = fullDocument()
+        assertTrue(mature.categoryBadges.any { it.hasData })
+        assertNull(mature.earlyTracking)
+    }
 }

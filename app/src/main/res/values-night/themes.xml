@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Thème sombre de la fenêtre, avant que Compose ne prenne le relais. -->
+    <style name="Theme.Lunaison" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/luna_cream</item>
+    </style>
+</resources>
