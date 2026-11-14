@@ -23,7 +23,17 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.useContents
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.launch
+import platform.CoreGraphics.CGBitmapContextCreate
+import platform.CoreGraphics.CGColorSpaceCreateDeviceGray
+import platform.CoreGraphics.CGColorSpaceRelease
+import platform.CoreGraphics.CGContextRelease
+import platform.CoreGraphics.CGImageAlphaInfo
+import platform.CoreGraphics.CGImageRelease
 import platform.CoreGraphics.CGRectMake
+import platform.CoreImage.CIContext
+import platform.CoreImage.CIFilter
+import platform.CoreImage.filterWithName
+import platform.Foundation.setValue
 import platform.Foundation.NSData
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSTemporaryDirectory
@@ -201,8 +211,49 @@ actual fun isCloudBackupEnabled(): Boolean = !isBackupExcluded()
 
 actual fun setCloudBackupEnabled(enabled: Boolean) = setBackupExcluded(!enabled)
 
-// L'encodeur de QR Code pour iOS reste à écrire : en attendant, le code se partage par message.
-actual fun encodeQr(content: String): QrMatrix? = null
+actual fun encodeQr(content: String): QrMatrix? {
+    val filter = CIFilter.filterWithName("CIQRCodeGenerator") ?: return null
+    val data = content.encodeToByteArray().toNSData()
+    filter.setValue(data, forKey = "inputMessage")
+    filter.setValue("M", forKey = "inputCorrectionLevel")
+    val output = filter.outputImage ?: return null
+    val (width, height) = output.extent.useContents { size.width.toInt() to size.height.toInt() }
+    if (width <= 0 || height <= 0) return null
+    val ciContext = CIContext.context()
+    val cgImage = ciContext.createCGImage(output, fromRect = output.extent) ?: return null
+    return try {
+        val pixels = ByteArray(width * height)
+        val colorSpace = CGColorSpaceCreateDeviceGray() ?: return null
+        try {
+            pixels.usePinned { pinned ->
+                val cgContext = CGBitmapContextCreate(
+                    data = pinned.addressOf(0),
+                    width = width.toULong(),
+                    height = height.toULong(),
+                    bitsPerComponent = 8u,
+                    bytesPerRow = width.toULong(),
+                    space = colorSpace,
+                    bitmapInfo = CGImageAlphaInfo.kCGImageAlphaNone.value,
+                ) ?: return null
+                try {
+                    platform.CoreGraphics.CGContextDrawImage(
+                        cgContext,
+                        CGRectMake(0.0, 0.0, width.toDouble(), height.toDouble()),
+                        cgImage,
+                    )
+                } finally {
+                    CGContextRelease(cgContext)
+                }
+            }
+        } finally {
+            CGColorSpaceRelease(colorSpace)
+        }
+        val modules = BooleanArray(width * height) { i -> (pixels[i].toInt() and 0xFF) < 128 }
+        QrMatrix(width = width, height = height, modules = modules)
+    } finally {
+        CGImageRelease(cgImage)
+    }
+}
 
 @Composable
 actual fun rememberScanner(onSnapshot: (PartnerSnapshot) -> Unit): ScannerState =

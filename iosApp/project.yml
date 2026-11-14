@@ -1,0 +1,32 @@
+# Coque iPhone de Lunaison, générée par XcodeGen (`xcodegen generate`).
+name: Lunaison
+options:
+  bundleIdPrefix: fr.lunaison
+  deploymentTarget:
+    iOS: "15.0"
+settings:
+  base:
+    MARKETING_VERSION: "1.5.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  Lunaison:
+    type: application
+    platform: iOS
+    sources:
+      - Lunaison
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.lunaison.app
+        PRODUCT_NAME: Lunaison
+        INFOPLIST_FILE: Lunaison/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        FRAMEWORK_SEARCH_PATHS: $(SRCROOT)/../ui/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+        OTHER_LDFLAGS: $(inherited) -framework LunaisonUi
+    preBuildScripts:
+      - name: Compiler le module ui
+        basedOnDependencyAnalysis: false
+        script: |
+          cd "$SRCROOT/.."
+          ./gradlew :ui:embedAndSignAppleFrameworkForXcode

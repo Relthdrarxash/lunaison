@@ -74,15 +74,20 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 14
 
-  # Compile le socle partagé (modèle, moteur du cycle, contenus) pour iOS : seul un Mac sait le faire.
+  # Compile le socle partagé et l'appli iPhone (simulateur, sans signature) : seul un Mac sait le faire.
   ios:
-    name: Socle partagé pour iOS (compilation)
-    runs-on: macos-latest
+    name: Application iOS (simulateur)
+    runs-on: macos-15
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
+
+      - name: Choisir Xcode 16
+        run: |
+          sudo xcode-select -s /Applications/Xcode_16.4.app
+          xcodebuild -version
 
       - uses: actions/setup-java@v4
         with:
@@ -98,3 +103,27 @@ jobs:
 
       - name: Compiler le socle pour le simulateur iOS
         run: ./gradlew :core:model:compileKotlinIosSimulatorArm64 :core:cycle:compileKotlinIosSimulatorArm64 :core:content:compileKotlinIosSimulatorArm64 :core:data:compileKotlinIosSimulatorArm64 :core:designsystem:compileKotlinIosSimulatorArm64 :ui:compileKotlinIosSimulatorArm64
+
+      - name: Générer le projet Xcode
+        run: |
+          brew install xcodegen
+          cd iosApp && xcodegen generate
+
+      - name: Compiler l'appli iPhone (simulateur, sans signature)
+        run: |
+          cd iosApp
+          xcodebuild -project Lunaison.xcodeproj -scheme Lunaison -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' -configuration Debug \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO build
+
+      - name: Préparer l'appli pour un simulateur en ligne
+        run: |
+          cd iosApp/build/Build/Products/Debug-iphonesimulator
+          zip -qr "$GITHUB_WORKSPACE/Lunaison-simulateur.zip" Lunaison.app
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lunaison-simulateur-ios
+          path: Lunaison-simulateur.zip
+          if-no-files-found: error
