@@ -106,6 +106,84 @@
       <p class="source">La version GitHub et la version Google Play ne sont pas signées par la même clé : pour passer de l'une à l'autre, désinstallez d'abord la première (en exportant vos données si besoin, depuis les réglages).</p>
     </section>
 
+    <section class="section" id="simulateur" aria-labelledby="sim-title">
+      <p class="eyebrow">Aperçu interactif</p>
+      <h2 id="sim-title">Se projeter dans Lunaison</h2>
+      <div style="display:flex;justify-content:center;margin-top:16px">
+        <div style="width:min(340px,100%);border:8px solid #241926;border-radius:32px;background:#fcf9fc;color:#231b24;overflow:hidden;box-shadow:0 18px 44px rgba(0,0,0,.22);font-size:14px">
+          <div style="background:#6c3b6e;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:700">
+            <span>Lunaison</span><span style="font-size:11px;opacity:.85">PIN local · Hors-ligne</span>
+          </div>
+          <div id="lu-screen" style="padding:14px;min-height:360px;display:grid;gap:10px;align-content:start;background:linear-gradient(180deg,rgba(108,59,110,.09),#fcf9fc 45%)"></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #eadfeb;background:#fff">
+            <button type="button" class="lu-tab" data-tab="home" style="padding:10px 4px;border:0;background:none;font:inherit;font-weight:700;color:#6c3b6e;cursor:pointer">Accueil</button>
+            <button type="button" class="lu-tab" data-tab="log" style="padding:10px 4px;border:0;background:none;font:inherit;font-weight:600;color:#666;cursor:pointer">Noter</button>
+            <button type="button" class="lu-tab" data-tab="cycles" style="padding:10px 4px;border:0;background:none;font:inherit;font-weight:600;color:#666;cursor:pointer">Cycles</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script>
+    (function(){
+      let tab = "home", card = 0, flow = "Moyen", pain = "Légère";
+      function render() {
+        const scr = document.getElementById("lu-screen");
+        document.querySelectorAll(".lu-tab").forEach(b => {
+          const act = b.dataset.tab === tab;
+          b.style.color = act ? "#6c3b6e" : "#6b5f6c";
+          b.style.fontWeight = act ? "700" : "500";
+        });
+        if (tab === "home") {
+          const cards = [
+            `<div style="background:#fff;border:1px solid #eadfeb;border-radius:14px;padding:12px"><strong>Phase folliculaire</strong><p style="margin:6px 0 0;font-size:12px;color:#5d515e">Énergie souvent plus stable, œstrogènes en hausse progressive.</p></div>`,
+            `<div style="background:#fff;border:1px solid #eadfeb;border-radius:14px;padding:12px"><strong>7 prochains jours</strong><p style="margin:6px 0 0;font-size:12px;color:#5d515e">J11 à J17 · Période ovulatoire estimée vers J14.</p></div>`,
+            `<div style="background:#fff;border:1px solid #eadfeb;border-radius:14px;padding:12px"><strong>Hormones</strong><p style="margin:6px 0 0;font-size:12px;color:#5d515e">Œstrogènes : en hausse · Progestérone : basse</p></div>`
+          ];
+          scr.innerHTML = `
+            <div style="background:#f3e6f4;border-radius:16px;padding:12px;display:flex;gap:12px;align-items:center">
+              <div style="width:52px;height:52px;border-radius:50%;background:#6c3b6e;color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px">J10</div>
+              <div><div style="font-weight:800">Prochaines règles : ~18 j</div><div style="font-size:12px;color:#5d515e">Fenêtre : 27–30 jours</div></div>
+            </div>
+            <div style="display:flex;gap:6px">
+              ${["Aujourd'hui","7 jours","Hormones"].map((l,i) => `<button type="button" data-c="${i}" style="padding:5px 9px;border-radius:999px;border:1px solid ${i===card?'#6c3b6e':'#dcd0dd'};background:${i===card?'#6c3b6e':'#fff'};color:${i===card?'#fff':'#231b24'};font-size:12px;cursor:pointer">${l}</button>`).join("")}
+            </div>
+            ${cards[card]}
+          `;
+        } else if (tab === "log") {
+          scr.innerHTML = `
+            <div style="font-weight:800;font-size:16px">Noter ma journée</div>
+            <div style="font-size:12px;color:#5d515e">Flux :</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              ${["Aucun","Léger","Moyen","Abondant"].map(f => `<button type="button" data-f="${f}" style="padding:5px 10px;border-radius:999px;border:1px solid ${f===flow?'#6c3b6e':'#dcd0dd'};background:${f===flow?'#6c3b6e':'#fff'};color:${f===flow?'#fff':'#231b24'};font-size:12px;cursor:pointer">${f}</button>`).join("")}
+            </div>
+            <div style="font-size:12px;color:#5d515e">Douleur :</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              ${["Aucune","Légère","Modérée","Forte"].map(p => `<button type="button" data-p="${p}" style="padding:5px 10px;border-radius:999px;border:1px solid ${p===pain?'#6c3b6e':'#dcd0dd'};background:${p===pain?'#6c3b6e':'#fff'};color:${p===pain?'#fff':'#231b24'};font-size:12px;cursor:pointer">${p}</button>`).join("")}
+            </div>
+            <div style="background:#fff;border:1px solid #eadfeb;border-radius:12px;padding:10px;font-size:12px">Enregistré localement : Flux <strong>${flow}</strong> · Douleur <strong>${pain}</strong></div>
+          `;
+        } else {
+          scr.innerHTML = `
+            <div style="font-weight:800;font-size:16px">Mes cycles récents</div>
+            <div style="background:#fff;border:1px solid #eadfeb;border-radius:14px;padding:12px;display:grid;gap:8px;font-size:12px">
+              <div>Cycle 1 · 28 jours <div style="height:8px;width:85%;background:#6c3b6e;border-radius:4px;margin-top:3px"></div></div>
+              <div>Cycle 2 · 29 jours <div style="height:8px;width:90%;background:#6c3b6e;border-radius:4px;margin-top:3px"></div></div>
+              <div>Cycle 3 · 27 jours <div style="height:8px;width:80%;background:#6c3b6e;border-radius:4px;margin-top:3px"></div></div>
+            </div>
+            <div style="font-size:12px;color:#5d515e">Export PDF clinique en 1 tap pour votre rendez-vous médical.</div>
+          `;
+        }
+      }
+      document.getElementById("simulateur").addEventListener("click", (e) => {
+        const t = e.target.closest(".lu-tab"); if (t) { tab = t.dataset.tab; render(); return; }
+        const c = e.target.closest("[data-c]"); if (c) { card = parseInt(c.dataset.c, 10); render(); return; }
+        const f = e.target.closest("[data-f]"); if (f) { flow = f.dataset.f; render(); return; }
+        const p = e.target.closest("[data-p]"); if (p) { pain = p.dataset.p; render(); }
+      });
+      render();
+    })();
+    </script>
+
     <section class="section" aria-labelledby="atelier">
       <p class="eyebrow">Du même atelier (Pilmil Studio)</p>
       <h2 id="atelier">Deux autres applications libres, gratuites et sans accès à Internet</h2>
