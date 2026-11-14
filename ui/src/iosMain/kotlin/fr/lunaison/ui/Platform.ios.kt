@@ -62,6 +62,7 @@ import platform.CoreGraphics.CGImageRelease
 import platform.CoreGraphics.CGRectMake
 import platform.CoreImage.CIContext
 import platform.CoreImage.CIFilter
+import platform.CoreImage.createCGImage
 import platform.CoreImage.filterWithName
 import platform.Foundation.NSDateComponents
 import platform.Foundation.NSString
@@ -453,17 +454,18 @@ actual fun rememberScanner(onSnapshot: (PartnerSnapshot) -> Unit): ScannerState 
             UIKitView(
                 modifier = Modifier.fillMaxSize(),
                 factory = {
-                    val container = UIView(frame = CGRectMake(0.0, 0.0, 320.0, 320.0))
                     val previewLayer = AVCaptureVideoPreviewLayer(session = session).apply {
                         videoGravity = AVLayerVideoGravityResizeAspectFill
-                        frame = container.bounds
                     }
-                    container.layer.addSublayer(previewLayer)
-                    container
-                },
-                onResize = { view, rect ->
-                    view.layer.sublayers?.filterIsInstance<AVCaptureVideoPreviewLayer>()?.forEach {
-                        it.frame = rect
+                    object : UIView(frame = CGRectMake(0.0, 0.0, 320.0, 320.0)) {
+                        init {
+                            layer.addSublayer(previewLayer)
+                        }
+
+                        override fun layoutSubviews() {
+                            super.layoutSubviews()
+                            previewLayer.frame = bounds
+                        }
                     }
                 },
             )
@@ -503,8 +505,8 @@ actual fun syncReminders(settings: AppSettings, prediction: Prediction?) {
             setSound(UNNotificationSound.defaultSound())
         }
         val components = NSDateComponents().apply {
-            setHour(reminders.medicationTime.hour.toLong())
-            setMinute(reminders.medicationTime.minute.toLong())
+            setHour(reminders.medicationReminderTime.hour.toLong())
+            setMinute(reminders.medicationReminderTime.minute.toLong())
         }
         val trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponents(components, repeats = true)
         center.addNotificationRequest(UNNotificationRequest.requestWithIdentifier(ID_MED_REMINDER, content, trigger), withCompletionHandler = null)
