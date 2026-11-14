@@ -25,7 +25,7 @@
     <!-- Pas de sauvegarde dans le nuage. Seul le transfert direct vers un nouveau téléphone est permis (voir data_extraction_rules). -->
     <application
         android:name=".LunaisonApplication"
-        android:allowBackup="true"
+        android:allowBackup="${allowAutoBackup}"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
