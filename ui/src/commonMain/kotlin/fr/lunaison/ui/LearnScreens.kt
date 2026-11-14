@@ -703,9 +703,9 @@ private fun CycleVisualGuide() {
 
         HormoneCurvesDiagram()
 
-        VulvaDiagram()
-
         InteractiveUterusDiagram()
+
+        VulvaDiagram()
 
         SectionTitle(tr("L'anatomie interne sans tabou", "Internal anatomy explained", pl = "Anatomia wewnętrzna bez tabu", uk = "Внутрішня анатомія без табу", es = "La anatomía interna sin tabúes", de = "Die innere Anatomie ohne Tabus"))
         LunaCard {
@@ -819,6 +819,12 @@ private fun MucusStageRow(stage: String, texture: String) {
 
 @Composable
 fun HormoneCurvesDiagram() {
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val estrogenColor = if (isDark) Color(0xFF66C79F) else Color(0xFF2E7D5E)
+    val progesteroneColor = if (isDark) Color(0xFFF08A78) else Color(0xFFC04E3A)
+    val lhColor = if (isDark) Color(0xFFF4C554) else Color(0xFFD49B24)
+    val baselineColor = MaterialTheme.colorScheme.outlineVariant
+
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         SectionTitle(tr("La courbe des hormones (cycle de 28 jours)", "Hormone level curves (28-day cycle)", pl = "Krzywe hormonów (cykl 28-dniowy)", uk = "Криві гормонів (28-денний цикл)", es = "La curva de las hormonas (ciclo de 28 días)", de = "Die Hormonkurven (28-Tage-Zyklus)"))
         LunaCard {
@@ -870,7 +876,7 @@ fun HormoneCurvesDiagram() {
 
                 // Ligne de base
                 drawLine(
-                    color = Color.LightGray.copy(alpha = 0.35f),
+                    color = baselineColor,
                     start = Offset(0f, y(0f)),
                     end = Offset(w, y(0f)),
                     strokeWidth = 1.dp.toPx(),
@@ -889,7 +895,7 @@ fun HormoneCurvesDiagram() {
                     Offset(x(25f), y(0.32f)),
                     Offset(x(28f), y(0.12f)),
                 )
-                drawSmoothCurve(estrogenPoints, Color(0xFF2E7D5E), 3.dp.toPx())
+                drawSmoothCurve(estrogenPoints, estrogenColor, 3.dp.toPx())
 
                 // 2. Progestérone (Terracotta chaud - Trait tireté pour accessibilité daltonisme WCAG 1.4.1)
                 val progesteronePoints = listOf(
@@ -904,7 +910,7 @@ fun HormoneCurvesDiagram() {
                     Offset(x(28f), y(0.06f)),
                 )
                 val progDash = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(14f, 8f), 0f)
-                drawSmoothCurve(progesteronePoints, Color(0xFFC04E3A), 3.dp.toPx(), pathEffect = progDash)
+                drawSmoothCurve(progesteronePoints, progesteroneColor, 3.dp.toPx(), pathEffect = progDash)
 
                 // 3. Pic de LH (Ambre doré - Trait pointillé)
                 val lhPoints = listOf(
@@ -917,7 +923,7 @@ fun HormoneCurvesDiagram() {
                     Offset(x(28f), y(0.08f)),
                 )
                 val lhDots = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(5f, 6f), 0f)
-                drawSmoothCurve(lhPoints, Color(0xFFD49B24), 2.5.dp.toPx(), pathEffect = lhDots)
+                drawSmoothCurve(lhPoints, lhColor, 2.5.dp.toPx(), pathEffect = lhDots)
             }
 
             // Repères temporels horizontaux
@@ -936,17 +942,17 @@ fun HormoneCurvesDiagram() {
 
             // Légende descriptive avec repère visuel tactile
             HormoneLegendItem(
-                color = Color(0xFF2E7D5E),
+                color = estrogenColor,
                 name = tr("Œstrogènes (Ligne continue)", "Estrogen (Solid line)", pl = "Estrogeny (linia ciągła)", uk = "Естрогени (суцільна лінія)", es = "Estrógenos (línea continua)", de = "Östrogen (durchgezogene Linie)"),
                 role = tr("Pic pré-ovulatoire. Stimule le renouvellement de l'endomètre, fluidifie la glaire cervicale et soutient l'énergie.", "Peaks before ovulation. Stimulates endometrial renewal, thins cervical mucus and supports energy.", pl = "Szczyt przedowulacyjny. Pobudza odnowę endometrium, rozrzedza śluz szyjkowy i wspiera energię.", uk = "Передовуляторний пік. Стимулює оновлення ендометрія, розріджує цервікальний слиз і підтримує енергію.", es = "Pico preovulatorio. Estimula la renovación del endometrio, fluidifica el moco cervical y sostiene la energía.", de = "Höhepunkt vor dem Eisprung. Regt die Erneuerung der Gebärmutterschleimhaut an, macht den Zervixschleim flüssiger und stützt die Energie."),
             )
             HormoneLegendItem(
-                color = Color(0xFFC04E3A),
+                color = progesteroneColor,
                 name = tr("Progestérone (Ligne tiretée)", "Progesterone (Dashed line)", pl = "Progesteron (linia przerywana)", uk = "Прогестерон (штрихова лінія)", es = "Progesterona (línea discontinua)", de = "Progesteron (gestrichelte Linie)"),
                 role = tr("Pic en milieu de phase lutéale (sécrétée par le corps jaune). Maintient l'endomètre réceptif pour une éventuelle nidation. Sa chute déclenche les règles.", "Peaks in mid-luteal phase (secreted by corpus luteum). Maintains endometrial readiness for implantation. Its drop triggers menstruation.", pl = "Szczyt w środku fazy lutealnej (wydzielany przez ciałko żółte). Utrzymuje endometrium gotowe na ewentualne zagnieżdżenie. Jego spadek wywołuje miesiączkę.", uk = "Пік у середині лютеїнової фази (виробляється жовтим тілом). Підтримує ендометрій готовим до можливої імплантації. Його падіння запускає менструацію.", es = "Pico a mitad de la fase lútea (secretada por el cuerpo lúteo). Mantiene el endometrio receptivo para una posible implantación. Su descenso desencadena la regla.", de = "Höhepunkt in der Mitte der Lutealphase (vom Gelbkörper gebildet). Hält die Gebärmutterschleimhaut für eine mögliche Einnistung aufnahmebereit. Sein Abfall löst die Periode aus."),
             )
             HormoneLegendItem(
-                color = Color(0xFFD49B24),
+                color = lhColor,
                 name = tr("Pic de LH (Ligne pointillée)", "LH surge (Dotted line)", pl = "Szczyt LH (linia kropkowana)", uk = "Пік ЛГ (пунктирна лінія)", es = "Pico de LH (línea de puntos)", de = "LH-Gipfel (gepunktete Linie)"),
                 role = tr("Décharge brève et intense à J13-J14 qui déclenche l'expulsion de l'ovule par le follicule en 24 à 36 heures.", "Brief, intense surge at Days 13-14 that triggers egg release within 24 to 36 hours.", pl = "Krótki, intensywny wyrzut w dniach 13-14, który w ciągu 24 do 36 godzin powoduje uwolnienie komórki jajowej z pęcherzyka.", uk = "Короткий інтенсивний викид на 13-14-й день, що протягом 24-36 годин спричиняє вивільнення яйцеклітини з фолікула.", es = "Descarga breve e intensa en los días 13-14 que desencadena la expulsión del óvulo por el folículo en 24 a 36 horas.", de = "Kurze, intensive Ausschüttung an den Tagen 13 und 14, die innerhalb von 24 bis 36 Stunden die Freisetzung der Eizelle aus dem Follikel auslöst."),
             )
@@ -1138,19 +1144,6 @@ fun InteractiveUterusDiagram(
 
     SectionTitle(tr("Voyage interactif dans votre cycle", "Interactive journey inside your cycle", pl = "Interaktywna podróż przez Twój cykl", uk = "Інтерактивна подорож вашим циклом", es = "Viaje interactivo por tu ciclo", de = "Interaktive Reise durch deinen Zyklus"))
     LunaCard {
-        Text(
-            tr(
-                fr = "Faites glisser le curseur pour observer l'évolution de la muqueuse et des ovaires au fil des jours (J1 à J28). Touchez un organe sur le schéma pour afficher ses explications :",
-                en = "Drag the slider to observe changes in the uterine lining and ovaries across days (D1 to D28). Tap an organ on the diagram to see its details:",
-                pl = "Przesuń suwak, aby obserwować zmiany błony śluzowej i jajników z dnia na dzień (D1 do D28). Dotknij narządu na schemacie, aby zobaczyć jego opis:",
-                uk = "Пересувайте повзунок, щоб спостерігати за змінами слизової оболонки та яєчників день за днем (Д1-Д28). Торкніться органа на схемі, щоб побачити його опис:",
-                es = "Desliza el control para observar la evolución de la mucosa y de los ovarios a lo largo de los días (D1 a D28). Toca un órgano en el esquema para ver sus explicaciones:",
-                de = "Verschiebe den Regler, um die Entwicklung der Schleimhaut und der Eierstöcke im Lauf der Tage zu beobachten (T1 bis T28). Tippe auf ein Organ im Schema, um seine Erklärungen anzuzeigen:",
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            color = colors.onSurfaceVariant,
-        )
-
         // 1. Curseur temporel du cycle (Slider J1 - J28)
         Surface(
             modifier = Modifier.fillMaxWidth(),
@@ -1248,13 +1241,6 @@ fun InteractiveUterusDiagram(
                         }
                     }
                 }
-
-                // Synthèse physiologique de la phase active
-                Text(
-                    cyclePhaseDescription(currentDay),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = colors.onSurfaceVariant,
-                )
             }
         }
 
@@ -1875,6 +1861,13 @@ fun InteractiveUterusDiagram(
                 }
             }
         }
+
+        // Synthèse physiologique de la phase active (sous le schéma pour garder le slider et l'appareil visibles ensemble)
+        Text(
+            cyclePhaseDescription(currentDay),
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.onSurfaceVariant,
+        )
 
         // 2. Boutons sélecteurs (Chips)
         FlowRow(
