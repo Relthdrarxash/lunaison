@@ -19,18 +19,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.background
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import fr.lunaison.core.model.tr
 
-/** Colonne de page défilante, avec les marges communes. */
+/** Colonne de page défilante, avec les marges communes et un léger dégradé d'arrière-plan. */
 @Composable
 fun Page(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    val bgBrush = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+            MaterialTheme.colorScheme.background,
+            MaterialTheme.colorScheme.background,
+        ),
+    )
     // La surface fixe la couleur du texte, y compris hors de la barre de navigation (démarrage, thème sombre).
-    Surface(color = MaterialTheme.colorScheme.background) { PageColumn(modifier, content) }
+    Surface(color = MaterialTheme.colorScheme.background) {
+        PageColumn(modifier.background(bgBrush), content)
+    }
 }
 
 @Composable

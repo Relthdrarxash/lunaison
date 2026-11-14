@@ -9,11 +9,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -316,21 +321,65 @@ fun HomeScreen(
         }
 
         if (!paused && cycle is CycleState.Known) {
-            PhaseCard(state, cycle, onArticle)
-            // Prévisions détaillées et hormones : repliées par défaut pour garder l'accueil court.
-            var showDetails by rememberSaveable { mutableStateOf(false) }
-            LunaButton(
-                if (showDetails) {
-                    tr("Masquer prévisions et hormones", "Hide forecast and hormones", pl = "Ukryj prognozę i hormony", uk = "Сховати прогноз і гормони", es = "Ocultar previsión y hormonas", de = "Vorschau und Hormone ausblenden")
-                } else {
-                    tr("Prévisions des 7 jours et hormones", "7-day forecast and hormones", pl = "Prognoza na 7 dni i hormony", uk = "Прогноз на 7 днів і гормони", es = "Previsión de 7 días y hormonas", de = "7-Tage-Vorschau und Hormone")
-                },
-                onClick = { showDetails = !showDetails },
-                style = LunaButtonStyle.Quiet,
+            val pages = listOf(
+                tr("Aujourd'hui", "Today", pl = "Dziś", uk = "Сьогодні", es = "Hoy", de = "Heute"),
+                tr("7 prochains jours", "Next 7 days", pl = "Kolejne 7 dni", uk = "Наступні 7 днів", es = "Próximos 7 días", de = "Nächste 7 Tage"),
+                tr("Hormones", "Hormones", pl = "Hormony", uk = "Гормони", es = "Hormonas", de = "Hormone"),
             )
-            if (showDetails) {
-                UpcomingForecastCard(cycle)
-                PhaseHormonesCard(cycle.phase, onArticle)
+            val pagerState = rememberPagerState(pageCount = { pages.size })
+            val scope = rememberCoroutineScope()
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    pages.forEachIndexed { idx, label ->
+                        val selected = pagerState.currentPage == idx
+                        Surface(
+                            shape = RoundedCornerShape(18.dp),
+                            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                            modifier = Modifier.clickable { scope.launch { pagerState.animateScrollToPage(idx) } },
+                        ) {
+                            Text(
+                                text = label,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp),
+                            )
+                        }
+                    }
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
+                    pages.indices.forEach { idx ->
+                        val selected = pagerState.currentPage == idx
+                        Box(
+                            modifier = Modifier
+                                .height(6.dp)
+                                .width(if (selected) 16.dp else 6.dp)
+                                .background(
+                                    color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                                    shape = CircleShape,
+                                ),
+                        )
+                    }
+                }
+            }
+
+            HorizontalPager(
+                state = pagerState,
+                pageSpacing = 12.dp,
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.fillMaxWidth(),
+            ) { page ->
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    when (page) {
+                        0 -> PhaseCard(state, cycle, onArticle)
+                        1 -> UpcomingForecastCard(cycle)
+                        else -> PhaseHormonesCard(cycle.phase, onArticle)
+                    }
+                }
             }
             if (cycle.stats.completedCycles >= CycleConfig.MIN_CYCLES_FOR_STATS) {
                 LunaButton(tr("Mes cycles", "My cycles", pl = "Moje cykle", uk = "Мої цикли", es = "Mis ciclos", de = "Meine Zyklen"), onClick = onInsights, style = LunaButtonStyle.Quiet, icon = Icons.Filled.DateRange)
@@ -405,7 +454,7 @@ private fun CycleCard(cycle: CycleState.Known, showFertility: Boolean, showPregn
             }
             Column {
                 Text(phaseName, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                if (!cycle.inPeriod) {
+                if (!cycle.inPeriod && cycle.stats.completedCycles < 2) {
                     Text(tr("Phase estimée", "Estimated phase", pl = "Szacowana faza", uk = "Орієнтовна фаза", es = "Fase estimada", de = "Geschätzte Phase"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
             }
@@ -415,11 +464,13 @@ private fun CycleCard(cycle: CycleState.Known, showFertility: Boolean, showPregn
             Text(Format.range(cycle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
             if (showFertility) {
                 Text(Format.fertileWindow(cycle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                Text(
-                    tr("Repère de calendrier : ne remplace pas une contraception.", "Calendar estimate: does not replace contraception.", pl = "Szacunek kalendarzowy: nie zastępuje antykoncepcji.", uk = "Календарна оцінка: не замінює контрацепцію.", es = "Estimación de calendario: no sustituye a un anticonceptivo.", de = "Kalenderschätzung: ersetzt keine Verhütung."),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                )
+                if (cycle.stats.completedCycles < 2) {
+                    Text(
+                        tr("Repère de calendrier : ne remplace pas une contraception.", "Calendar estimate: does not replace contraception.", pl = "Szacunek kalendarzowy: nie zastępuje antykoncepcji.", uk = "Календарна оцінка: не замінює контрацепцію.", es = "Estimación de calendario: no sustituye a un anticonceptivo.", de = "Kalenderschätzung: ersetzt keine Verhütung."),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                }
             }
         }
 
