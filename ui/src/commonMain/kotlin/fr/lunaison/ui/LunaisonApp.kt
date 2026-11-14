@@ -38,6 +38,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import fr.lunaison.core.cycle.CycleState
 import fr.lunaison.core.data.AppSettings
 import fr.lunaison.core.data.ImportSummary
 import fr.lunaison.core.data.LunaisonRepository
@@ -150,6 +151,10 @@ fun LunaisonApp(
     }
 
     val state = remember(currentLogs, currentSettings, today) { AppState.compute(currentLogs, currentSettings, today) }
+    val nextPrediction = (state.cycle as? CycleState.Known)?.next
+    LaunchedEffect(currentSettings.reminders, nextPrediction?.start) {
+        syncReminders(currentSettings, nextPrediction)
+    }
     val actions = remember(repository) { RepositoryActions(repository, scope) }
     MainScaffold(
         state,

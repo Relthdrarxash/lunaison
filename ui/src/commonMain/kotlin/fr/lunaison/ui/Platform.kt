@@ -2,6 +2,8 @@ package fr.lunaison.ui
 
 import androidx.compose.runtime.Composable
 import fr.lunaison.core.cycle.HealthReport
+import fr.lunaison.core.cycle.Prediction
+import fr.lunaison.core.data.AppSettings
 import fr.lunaison.core.data.Partner
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.PartnerSnapshot
@@ -107,3 +109,6 @@ class ScannerState(
 
 @Composable
 expect fun rememberScanner(onSnapshot: (PartnerSnapshot) -> Unit): ScannerState
+
+/** Synchronise les rappels locaux sur la plateforme (iOS : `UNCalendarNotificationTrigger`). */
+expect fun syncReminders(settings: AppSettings, prediction: Prediction?)

@@ -22,7 +22,7 @@ fun MainViewController(appVersion: String = "1.5.0"): UIViewController {
         LunaisonTheme(palette = settings?.themePalette?.name ?: "PLUM") {
             LunaisonApp(
                 repository = repo,
-                appVersion = appVersion,
+                versionName = appVersion,
                 link = requestedLink,
                 onLinkHandled = { requestedLink = null },
             )

@@ -25,6 +25,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import fr.lunaison.core.cycle.HealthReport
+import fr.lunaison.core.cycle.Prediction
+import fr.lunaison.core.data.AppSettings
 import fr.lunaison.core.model.DayLog
 import fr.lunaison.core.model.tr
 import kotlinx.coroutines.Dispatchers
@@ -211,3 +213,6 @@ actual val cloudBackupControllable: Boolean = false
 actual fun isCloudBackupEnabled(): Boolean = false
 
 actual fun setCloudBackupEnabled(enabled: Boolean) = Unit
+
+// Android : WorkManager observe déjà le dépôt dans LunaisonApplication.
+actual fun syncReminders(settings: AppSettings, prediction: Prediction?) = Unit
