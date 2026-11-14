@@ -15,6 +15,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "lunaison"
+includeBuild("pilmil-core")
 
 include(":app")
 

@@ -59,6 +59,7 @@ kotlin {
 
 dependencies {
     implementation(project(":ui"))
+    implementation("fr.pilmil.core:core-platform:0.1.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
